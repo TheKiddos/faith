@@ -7,6 +7,9 @@ before_script:
 
 script: ./mvnw test -B
 
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
 branches:
   only:
     - main
