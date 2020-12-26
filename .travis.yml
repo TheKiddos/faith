@@ -2,9 +2,10 @@ language: java
 jdk: openjdk14
 
 before_script:
-  - chmod +x ./code/mvnw
+  - cd code
+  - chmod +x mvnw
 
-script: ./code/mvnw test -B
+script: ./mvnw test -B
 
 branches:
   only:
