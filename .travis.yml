@@ -1,0 +1,10 @@
+language: java
+jdk: openjdk14
+
+script: code/mvnw test -B
+
+branches:
+  only:
+    - main
+    - master
+    - /^feature.*$/

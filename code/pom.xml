@@ -15,7 +15,7 @@
     <description>F.A.I.T.H. is a freelancers website for Syria.</description>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>14</java.version>
     </properties>
 
     <dependencies>
