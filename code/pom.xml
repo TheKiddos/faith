@@ -16,7 +16,6 @@
 
     <properties>
         <java.version>14</java.version>
-        <junit.version>4.13</junit.version>
         <cucumber.version>5.6.0</cucumber.version>
     </properties>
 
