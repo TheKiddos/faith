@@ -3,6 +3,8 @@
     {
       "name": "selenium.edge.driver.path",
       "type": "java.lang.String",
-      "description": "The full path to Microsoft Edge browser driver."
-  }
-] }
+      "description": "Full path to microsoft edge driver for selenium."
+    }
+  ]
+}
+
