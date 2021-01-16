@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Scope;
 
 @Configuration
 public class TestsConfig {
-    @Value( "${selenium.edge.driver.path}" )
+    @Value( "${selenium.edge.driver.path:dummyUrl}" ) // dummy url for Travis-CI
     private String driverPath;
 
     /**
