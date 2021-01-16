@@ -1,4 +1,4 @@
-package org.thekiddos.faith;
+package org.thekiddos.faith.functional;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
