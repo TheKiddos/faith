@@ -27,7 +27,7 @@ public class SeleniumStepDefs {
 
     @When( "User visits homepage" )
     public void userVisitsHomepage() {
-        webDriver.get( "http://localhost:8080/" );
+        webDriver.get( Utils.SITE_ROOT );
     }
 
     @Then( "User will see homepage" )
