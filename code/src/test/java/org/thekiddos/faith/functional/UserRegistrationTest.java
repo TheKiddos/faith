@@ -22,7 +22,7 @@ public class UserRegistrationTest {
     public void userIsNotLoggedIn() {
         webDriver.manage().window().maximize();
         webDriver.get( Utils.SITE_ROOT + "register" );
-        assertEquals( webDriver.getCurrentUrl(), Utils.SITE_ROOT + "register" );
+        assertEquals( Utils.SITE_ROOT + "register", webDriver.getCurrentUrl() );
     }
 
     @io.cucumber.java.en.And( "User fills required info" )
