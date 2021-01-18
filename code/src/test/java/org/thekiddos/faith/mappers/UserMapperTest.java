@@ -11,7 +11,7 @@ class UserMapperTest {
 
     @Test
     void userDtoToUser() {
-        UserDTO userDTO = UserDTO.builder().email( "Hello" ).build(); // TODO: add other stuff
+        UserDTO userDTO = UserDTO.builder().email( "test@gmail.com" ).build(); // TODO: add other stuff
         User user = userMapper.userDtoToUser( userDTO );
         assertEquals( userDTO.getEmail(), user.getEmail() );
         // TODO: assert Rest of stuff
