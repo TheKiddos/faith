@@ -5,17 +5,23 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.thekiddos.faith.Utils;
+import org.thekiddos.faith.models.User;
+import org.thekiddos.faith.services.UserService;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserRegistrationTest {
     private final WebDriver webDriver;
+    private final UserService userService;
 
     @Autowired
-    public UserRegistrationTest( WebDriver webDriver ) {
+    public UserRegistrationTest( WebDriver webDriver, UserService userService ) {
         this.webDriver = webDriver;
+        this.userService = userService;
     }
 
     @io.cucumber.java.en.Given( "A new user visits registration page" )
@@ -44,6 +50,9 @@ public class UserRegistrationTest {
 
     @io.cucumber.java.en.Then( "Account is created and deactivated" )
     public void accountIsCreatedAndDeactivated() {
+        webDriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+        User user = (User) userService.loadUserByUsername( "testuser@test.com" );
+        assertFalse( user.isEnabled() );
     }
 
     @io.cucumber.java.en.And( "Admin receives an email" )

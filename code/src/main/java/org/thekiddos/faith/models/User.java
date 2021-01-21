@@ -6,8 +6,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -16,6 +19,19 @@ import java.util.Objects;
 public class User implements UserDetails {
     @Email @NotNull @Id
     private String email;
+
+    @Size(max = 30) @NotNull
+    private String firstName;
+    @Size(max = 30) @NotNull
+    private String lastName;
+    @NotNull
+    private String phoneNumber;
+    @NotNull @Lob
+    private byte[] civilId;
+    @NotNull
+    private String address;
+    @OneToOne
+    private UserType type;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

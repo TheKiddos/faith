@@ -11,9 +11,20 @@ class UserMapperTest {
 
     @Test
     void userDtoToUser() {
-        UserDTO userDTO = UserDTO.builder().email( "test@gmail.com" ).build(); // TODO: add other stuff
+        UserDTO userDTO = UserDTO.builder().email( "test@gmail.com" )
+                                           .firstName( "Test" )
+                                           .lastName( "User" )
+                                           .civilId( new byte[]{} )
+                                           .phoneNumber( "+963987654321" )
+                                           .address( "Street" )
+                                           .type( null )
+                                           .build();
         User user = userMapper.userDtoToUser( userDTO );
         assertEquals( userDTO.getEmail(), user.getEmail() );
-        // TODO: assert Rest of stuff
+        assertEquals( userDTO.getFirstName(), user.getFirstName() );
+        assertEquals( userDTO.getLastName(), user.getLastName() );
+        assertArrayEquals( userDTO.getCivilId(), user.getCivilId() );
+        assertEquals( userDTO.getAddress(), user.getAddress() );
+        assertNull( user.getType() );
     }
 }

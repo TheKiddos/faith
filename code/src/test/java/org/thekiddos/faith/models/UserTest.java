@@ -29,7 +29,7 @@ class UserTest {
 
     @Test
     void createUser() {
-        UserDTO userDTO = UserDTO.builder().email( "test@test.com" ).build(); // TODO: add rest of fields
+        UserDTO userDTO = UserDTO.builder().email( "test@test.com" ).build();
         User user = userMapper.userDtoToUser( userDTO );
 
         Mockito.doReturn( Optional.empty() ).when( userRepository ).findById( anyString() );
@@ -45,7 +45,7 @@ class UserTest {
 
     @Test
     void uniqueEmail() {
-        UserDTO userDTO = UserDTO.builder().email( "test@test.com" ).build(); // TODO: add rest of fields
+        UserDTO userDTO = UserDTO.builder().email( "test@test.com" ).build();
         User user = userMapper.userDtoToUser( userDTO );
 
         Mockito.doReturn( Optional.empty() ).when( userRepository ).findById( anyString() );
