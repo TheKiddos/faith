@@ -10,7 +10,7 @@ import org.thekiddos.faith.dtos.UserDTO;
 import org.thekiddos.faith.exceptions.UserAlreadyExistException;
 import org.thekiddos.faith.mappers.UserMapper;
 import org.thekiddos.faith.repositories.UserRepository;
-import org.thekiddos.faith.services.UserService;
+import org.thekiddos.faith.services.UserServiceImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +24,7 @@ class UserTest {
     @Mock
     private UserRepository userRepository;
     @InjectMocks
-    private UserService userService;
+    private UserServiceImpl userService;
     private final UserMapper userMapper = UserMapper.INSTANCE;
 
     @Test
@@ -71,6 +71,8 @@ class UserTest {
         user.setEmail( "abc@gmail2.com" );
 
         assertNotEquals( user, otherUser );
+        assertEquals( user, user );
+        assertNotEquals( user, null );
         assertNotEquals( user.hashCode(), otherUser.hashCode() );
     }
 

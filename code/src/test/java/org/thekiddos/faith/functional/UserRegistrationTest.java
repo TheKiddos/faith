@@ -50,7 +50,7 @@ public class UserRegistrationTest {
 
     @io.cucumber.java.en.Then( "Account is created and deactivated" )
     public void accountIsCreatedAndDeactivated() {
-        webDriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+        webDriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS );
         User user = (User) userService.loadUserByUsername( "testuser@test.com" );
         assertFalse( user.isEnabled() );
     }

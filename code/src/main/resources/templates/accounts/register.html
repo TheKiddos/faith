@@ -1,19 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-    <form method="post">
-        <input type="email" name="email" id="email">
-        <input type="text" name="firstName" id="first-name">
-        <input type="text" name="lastName" id="last-name">
-        <input type="file" name="civilId" id="civil-id">
-        <input type="tel" name="phoneNumber" id="phone-number">
-        <input type="text" name="address" id="address">
-        <input type="radio" name="type" id="freelancer">
-        <input type="radio" name="type" id="stakeholder">
+    <form method="post" th:object="${user}">
+        <input
+                type="hidden"
+                th:name="${_csrf.parameterName}"
+                th:value="${_csrf.token}" />
+        <input type="email" name="email" th:field="*{email}" id="email">
+        <input type="text" name="firstName" th:field="*{firstName}" id="first-name">
+        <input type="text" name="lastName" th:field="*{lastName}" id="last-name">
+        <input type="file" name="civilId" th:field="*{civilId}" id="civil-id">
+        <input type="tel" name="phoneNumber" th:field="*{phoneNumber}" id="phone-number">
+        <input type="text" name="address" th:field="*{address}" id="address">
+        <input type="radio" name="type" th:value="freelancer" id="freelancer">
+        <input type="radio" name="type" th:value="stakeholder" id="stakeholder">
         <button type="submit" id="submit"></button>
     </form>
 </body>

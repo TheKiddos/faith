@@ -1,7 +1,7 @@
 package org.thekiddos.faith.dtos;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
+import org.thekiddos.faith.validators.UniqueEmail;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
@@ -9,8 +9,10 @@ import javax.validation.constraints.Size;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDTO {
-    @Email @NotNull
+    @Email @NotNull @UniqueEmail
     private String email;
     @Size(max = 30) @NotNull
     private String firstName;
@@ -22,5 +24,5 @@ public class UserDTO {
     private byte[] civilId;
     @NotNull
     private String address;
-    private UserTypeDTO type;
+    private String type;
 }
