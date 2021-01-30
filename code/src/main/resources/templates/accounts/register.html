@@ -13,6 +13,8 @@
                 th:name="${_csrf.parameterName}"
                 th:value="${_csrf.token}" />
         <input type="email" name="email" th:field="*{email}" id="email">
+        <input type="password" name="password" th:field="*{password}" id="password">
+        <input type="password" name="passwordConfirm" th:field="*{passwordConfirm}" id="password-confirm">
         <input type="text" name="firstName" th:field="*{firstName}" id="first-name">
         <input type="text" name="lastName" th:field="*{lastName}" id="last-name">
         <input type="file" name="civilId" th:field="*{civilId}" id="civil-id">

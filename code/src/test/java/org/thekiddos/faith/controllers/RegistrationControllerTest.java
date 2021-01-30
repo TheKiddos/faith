@@ -43,7 +43,10 @@ class RegistrationControllerTest {
 
     @Test
     void createUser() throws Exception {
+        String password = "password";
         UserDTO userDTO = UserDTO.builder().email( "test@gmail.com" )
+                .password( password )
+                .passwordConfirm( password )
                 .firstName( "Test" )
                 .lastName( "User" )
                 .civilId( new byte[]{} )
@@ -56,6 +59,8 @@ class RegistrationControllerTest {
         mockMvc.perform(post("/register")
                         .with( csrf() )
                         .param( "email", userDTO.getEmail() )
+                        .param( "password", password )
+                        .param( "passwordConfirm", password )
                         .param( "firstName", userDTO.getFirstName() )
                         .param( "lastName", userDTO.getLastName() )
                         .param( "civilId", civilIdPath )
@@ -70,7 +75,10 @@ class RegistrationControllerTest {
 
     @Test
     void createUserThatAlreadyExists() throws Exception {
+        String password = "password";
         UserDTO userDTO = UserDTO.builder().email( "test@gmail.com" )
+                .password( password )
+                .passwordConfirm( password )
                 .firstName( "Test" )
                 .lastName( "User" )
                 .civilId( new byte[]{} )
@@ -84,6 +92,8 @@ class RegistrationControllerTest {
         mockMvc.perform(post("/register")
                 .with( csrf() )
                 .param( "email", userDTO.getEmail() )
+                .param( "password", password )
+                .param( "passwordConfirm", password )
                 .param( "firstName", userDTO.getFirstName() )
                 .param( "lastName", userDTO.getLastName() )
                 .param( "civilId", civilIdPath )

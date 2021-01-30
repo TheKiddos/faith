@@ -36,6 +36,8 @@ public class UserRegistrationTest {
         webDriver.findElement( By.id( "email" ) ).sendKeys( "testuser@test.com" );
         webDriver.findElement( By.id( "first-name" ) ).sendKeys( "Test" );
         webDriver.findElement( By.id( "last-name" ) ).sendKeys( "User" );
+        webDriver.findElement( By.id( "password" ) ).sendKeys( "password" );
+        webDriver.findElement( By.id( "password-confirm" ) ).sendKeys( "password" );
         String civilIdPath = new ClassPathResource("banner.txt").getFile().getAbsolutePath();
         webDriver.findElement( By.id( "civil-id" ) ).sendKeys( civilIdPath );
         webDriver.findElement( By.id( "phone-number" ) ).sendKeys( "+963987654321" );

@@ -11,7 +11,9 @@ class UserMapperTest {
 
     @Test
     void userDtoToUser() {
+        String password = "password";
         UserDTO userDTO = UserDTO.builder().email( "test@gmail.com" )
+                                           .password( password )
                                            .firstName( "Test" )
                                            .lastName( "User" )
                                            .civilId( new byte[]{} )
@@ -19,8 +21,13 @@ class UserMapperTest {
                                            .address( "Street" )
                                            .type( null )
                                            .build();
+
+        assertEquals( password, userDTO.getPassword() );
+
         User user = userMapper.userDtoToUser( userDTO );
         assertEquals( userDTO.getEmail(), user.getEmail() );
+        assertNotEquals( password, user.getPassword() );
+        assertTrue( user.checkPassword( "password" ) );
         assertEquals( userDTO.getFirstName(), user.getFirstName() );
         assertEquals( userDTO.getLastName(), user.getLastName() );
         assertArrayEquals( userDTO.getCivilId(), user.getCivilId() );
