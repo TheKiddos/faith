@@ -1,6 +1,8 @@
 package org.thekiddos.faith.models;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.thekiddos.faith.utils.Util;
@@ -37,6 +39,10 @@ public class User implements UserDetails {
     @OneToOne
     private UserType type;
 
+    private boolean enabled = true;
+    @Getter( AccessLevel.NONE )
+    private boolean locked = false;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
@@ -44,32 +50,32 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return getEmail();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return !locked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return enabled;
     }
 
     @Override
@@ -90,6 +96,11 @@ public class User implements UserDetails {
     }
 
     public boolean checkPassword( String password ) {
-        return Util.PASSWORD_ENCODER.matches( password, this.password );
+        return Util.PASSWORD_ENCODER.matches( password, getPassword() );
+    }
+
+    // TODO: implement real one
+    public boolean isAdmin() {
+        return true;
     }
 }

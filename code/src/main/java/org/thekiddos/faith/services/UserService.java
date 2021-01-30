@@ -20,4 +20,10 @@ public interface UserService extends UserDetailsService {
      * @return All users in database
      */
     List<User> getAll();
+
+    /**
+     * Disable the user and send an email for all admins to asking them to approve the user
+     * @param user The user that requires approval
+     */
+    void requireAdminApprovalFor( User user );
 }

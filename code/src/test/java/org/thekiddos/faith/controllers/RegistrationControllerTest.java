@@ -9,6 +9,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.thekiddos.faith.dtos.UserDTO;
+import org.thekiddos.faith.mappers.UserMapper;
+import org.thekiddos.faith.models.User;
 import org.thekiddos.faith.repositories.UserRepository;
 import org.thekiddos.faith.services.UserService;
 
@@ -30,6 +32,7 @@ class RegistrationControllerTest {
     private UserService userService;
     @MockBean
     private UserRepository userRepository;
+    private UserMapper userMapper = UserMapper.INSTANCE;
 
     @Autowired
     RegistrationControllerTest( MockMvc mockMvc ) {
@@ -39,6 +42,11 @@ class RegistrationControllerTest {
     @Test
     void registrationPageLoadsSuccessfully() throws Exception {
         mockMvc.perform( get( "/register" ) ).andExpect( status().isOk() );
+    }
+
+    @Test
+    void registrationSuccessfulPageLoadsSuccessfully() throws Exception {
+        mockMvc.perform( get( "/register/success" ) ).andExpect( status().isOk() );
     }
 
     @Test
@@ -54,6 +62,9 @@ class RegistrationControllerTest {
                 .address( "Street" )
                 .type( null )
                 .build();
+
+        User user = userMapper.userDtoToUser( userDTO );
+        Mockito.doReturn( user ).when( userService ).createUser( any() );
 
         String civilIdPath = new ClassPathResource("banner.txt").getFile().getAbsolutePath();
         mockMvc.perform(post("/register")
@@ -71,6 +82,7 @@ class RegistrationControllerTest {
                 .andReturn();
 
         Mockito.verify( userService, Mockito.times( 1 ) ).createUser( any( UserDTO.class ) );
+        Mockito.verify( userService, Mockito.times( 1 ) ).requireAdminApprovalFor( any( User.class ) );
     }
 
     @Test
@@ -104,5 +116,7 @@ class RegistrationControllerTest {
                 .andReturn();
 
         Mockito.verify( userService, Mockito.times( 0 ) ).createUser( any() );
+        Mockito.verify( userService, Mockito.times( 0 ) ).requireAdminApprovalFor( any() );
+
     }
 }

@@ -59,11 +59,12 @@ public class UserRegistrationTest {
 
     @io.cucumber.java.en.And( "Admin receives an email" )
     public void adminReceivesAnEmail() {
-
+        // TODO
     }
 
     @And( "User is redirected to thank you page" )
     public void userIsRedirectedToThankYouPage() {
+        assertEquals( Utils.REGISTRATION_SUCCESSFUL_URL, webDriver.getCurrentUrl() );
         webDriver.close();
     }
 }

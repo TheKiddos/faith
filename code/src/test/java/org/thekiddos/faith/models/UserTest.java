@@ -10,19 +10,21 @@ import org.thekiddos.faith.dtos.UserDTO;
 import org.thekiddos.faith.exceptions.UserAlreadyExistException;
 import org.thekiddos.faith.mappers.UserMapper;
 import org.thekiddos.faith.repositories.UserRepository;
+import org.thekiddos.faith.services.EmailService;
 import org.thekiddos.faith.services.UserServiceImpl;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith( MockitoExtension.class )
 class UserTest {
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private EmailService emailService;
     @InjectMocks
     private UserServiceImpl userService;
     private final UserMapper userMapper = UserMapper.INSTANCE;
@@ -41,6 +43,39 @@ class UserTest {
 
         assertEquals( 1, userService.getAll().size() );
         assertTrue( userService.getAll().contains( user ) );
+    }
+
+    @Test
+    void userAccountManagement() {
+        UserDTO userDTO = UserDTO.builder().email( "test@test.com" ).password( "password" ).build();
+        User user = userMapper.userDtoToUser( userDTO );
+
+        assertEquals( user.getEmail(), user.getUsername() );
+
+        assertTrue( user.isEnabled() );
+        user.setEnabled( false );
+        assertFalse( user.isEnabled() );
+
+        assertTrue( user.isAccountNonExpired() );
+        assertTrue( user.isCredentialsNonExpired() );
+        assertTrue( user.isAccountNonLocked() );
+    }
+
+    @Test
+    void requireAdminApprovalFor() {
+        UserDTO userDTO = UserDTO.builder().email( "test@test.com" ).password( "password" ).build();
+        User user = userMapper.userDtoToUser( userDTO );
+        assertTrue( user.isEnabled() );
+
+        UserDTO adminDTO = UserDTO.builder().email( "admin@test.com" ).password( "password" ).build();
+        User admin = userMapper.userDtoToUser( adminDTO );
+
+        Mockito.doReturn( List.of( admin ) ).when( userRepository ).findAll();
+        Mockito.doReturn( null ).when( userRepository ).save( any() );
+        userService.requireAdminApprovalFor( user );
+        assertFalse( user.isEnabled() );
+        Mockito.verify( emailService, Mockito.times( 1 ) )
+                .sendTemplateMail( eq( List.of( admin.getEmail() ) ), anyString(), anyString(), anyString(), any() );
     }
 
     @Test

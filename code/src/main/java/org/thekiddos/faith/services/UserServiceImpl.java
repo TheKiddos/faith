@@ -8,16 +8,20 @@ import org.thekiddos.faith.exceptions.UserAlreadyExistException;
 import org.thekiddos.faith.mappers.UserMapper;
 import org.thekiddos.faith.models.User;
 import org.thekiddos.faith.repositories.UserRepository;
+import org.thymeleaf.context.Context;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
     private final UserMapper userMapper = UserMapper.INSTANCE;
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
-    public UserServiceImpl( UserRepository userRepository ) {
+    public UserServiceImpl( UserRepository userRepository, EmailService emailService ) {
         this.userRepository = userRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -32,6 +36,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAll() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public void requireAdminApprovalFor( User user ) {
+        user.setEnabled( false );
+        userRepository.save( user );
+        Context context = new Context();
+        context.setVariable( "user", user );
+        emailService.sendTemplateMail( getAdminEmails(), "faith@noreplay.com", "User Requires Approval", "user", context );
+    }
+
+    private List<String> getAdminEmails() {
+        List<String> adminEmails = new ArrayList<>();
+        userRepository.findAll().forEach( user -> {
+            if ( user.isAdmin() )
+                adminEmails.add( user.getEmail() );
+        } );
+        return adminEmails;
     }
 
     @Override

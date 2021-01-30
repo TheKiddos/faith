@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.thekiddos.faith.dtos.UserDTO;
+import org.thekiddos.faith.models.User;
 import org.thekiddos.faith.services.UserService;
 
 import javax.validation.Valid;
@@ -35,7 +36,13 @@ public class RegistrationController {
             model.addAttribute( "user", userDTO );
             return "accounts/register";
         }
-        userService.createUser( userDTO );
-        return "redirect:/success";
+        User user = userService.createUser( userDTO );
+        userService.requireAdminApprovalFor( user );
+        return "redirect:/register/success";
+    }
+
+    @GetMapping( value = "/success")
+    public String getSuccess() {
+        return "accounts/success";
     }
 }
