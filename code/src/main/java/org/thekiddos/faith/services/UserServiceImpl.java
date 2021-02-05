@@ -8,6 +8,8 @@ import org.thekiddos.faith.exceptions.UserAlreadyExistException;
 import org.thekiddos.faith.mappers.UserMapper;
 import org.thekiddos.faith.models.User;
 import org.thekiddos.faith.repositories.UserRepository;
+import org.thekiddos.faith.utils.EmailSubjectConstants;
+import org.thekiddos.faith.utils.EmailTemplatesConstants;
 import org.thymeleaf.context.Context;
 
 import java.util.ArrayList;
@@ -44,7 +46,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save( user );
         Context context = new Context();
         context.setVariable( "user", user );
-        emailService.sendTemplateMail( getAdminEmails(), "faith@noreplay.com", "User Requires Approval", "user", context );
+        emailService.sendTemplateMail( getAdminEmails(), "faith@noreplay.com", EmailSubjectConstants.USER_REQUIRES_APPROVAL, EmailTemplatesConstants.USER_REQUIRES_APPROVAL_TEMPLATE, context );
     }
 
     private List<String> getAdminEmails() {

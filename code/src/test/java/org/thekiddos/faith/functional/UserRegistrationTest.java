@@ -6,10 +6,14 @@ import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.thekiddos.faith.Utils;
+import org.thekiddos.faith.models.Email;
 import org.thekiddos.faith.models.User;
+import org.thekiddos.faith.services.EmailService;
 import org.thekiddos.faith.services.UserService;
+import org.thekiddos.faith.utils.EmailSubjectConstants;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,11 +21,13 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserRegistrationTest {
     private final WebDriver webDriver;
     private final UserService userService;
+    private final EmailService emailService;
 
     @Autowired
-    public UserRegistrationTest( WebDriver webDriver, UserService userService ) {
+    public UserRegistrationTest( WebDriver webDriver, UserService userService, EmailService emailService ) {
         this.webDriver = webDriver;
         this.userService = userService;
+        this.emailService = emailService;
     }
 
     @io.cucumber.java.en.Given( "A new user visits registration page" )
@@ -59,7 +65,13 @@ public class UserRegistrationTest {
 
     @io.cucumber.java.en.And( "Admin receives an email" )
     public void adminReceivesAnEmail() {
-        // TODO
+        List<Email> emails = emailService.getEmails();
+        assertEquals( 1, emails.size() );
+        assertEquals( EmailSubjectConstants.USER_REQUIRES_APPROVAL, emails.get( 0 ).getSubject() );
+
+        String adminEmail = emails.get( 0 ).getTo();
+        User user = (User) userService.loadUserByUsername( adminEmail );
+        assertTrue( user.isAdmin() );
     }
 
     @And( "User is redirected to thank you page" )

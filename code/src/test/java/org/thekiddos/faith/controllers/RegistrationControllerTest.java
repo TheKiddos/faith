@@ -64,7 +64,7 @@ class RegistrationControllerTest {
                 .build();
 
         User user = userMapper.userDtoToUser( userDTO );
-        Mockito.doReturn( user ).when( userService ).createUser( any() );
+        Mockito.doReturn( user ).when( userService ).createUser( any( UserDTO.class ) );
 
         String civilIdPath = new ClassPathResource("banner.txt").getFile().getAbsolutePath();
         mockMvc.perform(post("/register")
@@ -117,6 +117,5 @@ class RegistrationControllerTest {
 
         Mockito.verify( userService, Mockito.times( 0 ) ).createUser( any() );
         Mockito.verify( userService, Mockito.times( 0 ) ).requireAdminApprovalFor( any() );
-
     }
 }
