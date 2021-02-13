@@ -6,6 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.thekiddos.faith.dtos.UserDTO;
 import org.thekiddos.faith.exceptions.UserAlreadyExistException;
 import org.thekiddos.faith.mappers.UserMapper;
@@ -13,6 +15,7 @@ import org.thekiddos.faith.repositories.UserRepository;
 import org.thekiddos.faith.services.EmailService;
 import org.thekiddos.faith.services.UserServiceImpl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +38,9 @@ class UserTest {
         User user = userMapper.userDtoToUser( userDTO );
 
         Mockito.doReturn( Optional.empty() ).when( userRepository ).findById( anyString() );
+
+        assertThrows( UsernameNotFoundException.class, () -> userService.loadUserByUsername( "test@test.com" ) );
+
         Mockito.doReturn( user ).when( userRepository ).save( any( User.class ) );
 
         user = userService.createUser( userDTO );
@@ -43,6 +49,9 @@ class UserTest {
 
         assertEquals( 1, userService.getAll().size() );
         assertTrue( userService.getAll().contains( user ) );
+
+        assertFalse( user.isAdmin() );
+        assertEquals( Collections.singletonList( new SimpleGrantedAuthority( "USER" ) ), user.getAuthorities() );
     }
 
     @Test
@@ -59,6 +68,8 @@ class UserTest {
         assertTrue( user.isAccountNonExpired() );
         assertTrue( user.isCredentialsNonExpired() );
         assertTrue( user.isAccountNonLocked() );
+        assertFalse( user.isAdmin() );
+        assertEquals( Collections.singletonList( new SimpleGrantedAuthority( "USER" ) ), user.getAuthorities() );
     }
 
     @Test
@@ -70,7 +81,7 @@ class UserTest {
         UserDTO adminDTO = UserDTO.builder().email( "admin@test.com" ).password( "password" ).build();
         User admin = userMapper.userDtoToUser( adminDTO );
 
-        Mockito.doReturn( List.of( admin ) ).when( userRepository ).findAll();
+        Mockito.doReturn( List.of( admin ) ).when( userRepository ).findByAdminTrue();
         Mockito.doReturn( null ).when( userRepository ).save( any() );
         userService.requireAdminApprovalFor( user );
         assertFalse( user.isEnabled() );
@@ -103,12 +114,23 @@ class UserTest {
         user.setEmail( "abc@gmail.com" );
 
         User otherUser = new User();
-        user.setEmail( "abc@gmail2.com" );
+        otherUser.setEmail( "abc@gmail2.com" );
 
         assertNotEquals( user, otherUser );
         assertEquals( user, user );
         assertNotEquals( user, null );
         assertNotEquals( user.hashCode(), otherUser.hashCode() );
+
+        UserDTO userDTO = new UserDTO();
+        userDTO.setEmail( "abc@gmail.com" );
+
+        UserDTO otherUserDTO = new UserDTO();
+        otherUserDTO.setEmail( "abc@gmail2.com" );
+
+        assertNotEquals( userDTO, otherUserDTO );
+        assertEquals( userDTO, userDTO );
+        assertNotEquals( userDTO, null );
+        assertNotEquals( userDTO.hashCode(), otherUserDTO.hashCode() );
     }
 
 }

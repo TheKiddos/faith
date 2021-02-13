@@ -32,7 +32,6 @@ public class RegistrationController {
     @PostMapping
     public String createUser( @Valid UserDTO userDTO, BindingResult binding, Model model ) {
         if ( binding.hasErrors() ) {
-            System.out.println(binding.getAllErrors());
             model.addAttribute( "user", userDTO );
             return "accounts/register";
         }

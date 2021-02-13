@@ -34,7 +34,7 @@ public class EmailServiceImpl implements EmailService {
         String contents = templateEngine.process( template, context );
 
         MimeMessage message = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = null;
+        MimeMessageHelper helper;
 
         try {
             helper = new MimeMessageHelper( message, true );

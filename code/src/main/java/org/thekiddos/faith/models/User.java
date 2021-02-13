@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.thekiddos.faith.utils.Util;
 
@@ -16,6 +17,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 
 @Data
@@ -30,11 +32,9 @@ public class User implements UserDetails {
     private String firstName;
     @Size(max = 30) @NotNull
     private String lastName;
-    @NotNull
     private String phoneNumber;
-    @NotNull @Lob
+    @Lob
     private byte[] civilId;
-    @NotNull
     private String address;
     @OneToOne
     private UserType type;
@@ -42,10 +42,11 @@ public class User implements UserDetails {
     private boolean enabled = true;
     @Getter( AccessLevel.NONE )
     private boolean locked = false;
+    private boolean admin = false;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return isAdmin() ? Collections.singletonList( new SimpleGrantedAuthority( "ADMIN" ) ) : Collections.singletonList( new SimpleGrantedAuthority( "USER" ) );
     }
 
     @Override
@@ -97,10 +98,5 @@ public class User implements UserDetails {
 
     public boolean checkPassword( String password ) {
         return Util.PASSWORD_ENCODER.matches( password, getPassword() );
-    }
-
-    // TODO: implement real one
-    public boolean isAdmin() {
-        return true;
     }
 }

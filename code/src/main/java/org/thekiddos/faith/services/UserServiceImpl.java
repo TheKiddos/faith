@@ -51,10 +51,7 @@ public class UserServiceImpl implements UserService {
 
     private List<String> getAdminEmails() {
         List<String> adminEmails = new ArrayList<>();
-        userRepository.findAll().forEach( user -> {
-            if ( user.isAdmin() )
-                adminEmails.add( user.getEmail() );
-        } );
+        userRepository.findByAdminTrue().forEach( user -> adminEmails.add( user.getEmail() ) );
         return adminEmails;
     }
 

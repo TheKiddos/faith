@@ -1,10 +1,14 @@
 package org.thekiddos.faith.functional;
 
 import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.thekiddos.faith.Utils;
 import org.thekiddos.faith.models.Email;
 import org.thekiddos.faith.models.User;
@@ -13,6 +17,7 @@ import org.thekiddos.faith.services.UserService;
 import org.thekiddos.faith.utils.EmailSubjectConstants;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -61,6 +66,8 @@ public class UserRegistrationTest {
         webDriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS );
         User user = (User) userService.loadUserByUsername( "testuser@test.com" );
         assertFalse( user.isEnabled() );
+        assertFalse( user.isAdmin() );
+        assertEquals( Collections.singletonList( new SimpleGrantedAuthority( "USER" ) ), user.getAuthorities() );
     }
 
     @io.cucumber.java.en.And( "Admin receives an email" )
@@ -78,5 +85,42 @@ public class UserRegistrationTest {
     public void userIsRedirectedToThankYouPage() {
         assertEquals( Utils.REGISTRATION_SUCCESSFUL_URL, webDriver.getCurrentUrl() );
         webDriver.close();
+    }
+
+    @Given( "User visits login page" )
+    public void userVisitsLoginPage() {
+        webDriver.get( Utils.LOGIN_PAGE );
+    }
+
+    @And( "User enters default admin credentials" )
+    public void userEntersDefaultAdminCredentials() {
+        webDriver.findElement( By.id( "email" ) ).sendKeys( "admin@faith.com" );
+        webDriver.findElement( By.id( "password" ) ).sendKeys( "Admin@Fa1ith" );
+    }
+
+    @When( "User Clicks the login button" )
+    public void userClicksTheLoginButton() {
+        webDriver.findElement( By.id( "submit" ) ).click();
+    }
+
+    @Then( "User is redirected to admin panel" )
+    public void userIsRedirectedToAdminPanel() {
+        assertEquals( Utils.ADMIN_PANEL, webDriver.getCurrentUrl() );
+    }
+
+    @Given( "Admin visits a deactivated user management page" )
+    public void adminVisitsADeactivatedUserManagementPage() {
+    }
+
+    @When( "Admin clicks the activate button" )
+    public void adminClicksTheActivateButton() {
+    }
+
+    @Then( "User is activated" )
+    public void userIsActivated() {
+    }
+
+    @And( "User receives an email" )
+    public void userReceivesAnEmail() {
     }
 }

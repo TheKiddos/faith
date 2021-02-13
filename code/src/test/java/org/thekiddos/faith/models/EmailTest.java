@@ -6,6 +6,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mail.MailException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.thekiddos.faith.dtos.UserDTO;
 import org.thekiddos.faith.repositories.EmailRepository;
@@ -63,5 +64,17 @@ class EmailTest {
         emails = emailService.getEmails();
         assertEquals( 1, emails.size() );
         assertTrue( emails.contains( email ) );
+    }
+
+    @Test
+    void testEmailSendingSideEffects() {
+        assertThrows( MailException.class, () -> emailService.sendTemplateMail(
+                List.of( "testtest" ), // Wrong email so shouldn't save
+                "no-reply@faith.com",
+                EmailSubjectConstants.USER_REQUIRES_APPROVAL,
+                EmailTemplatesConstants.USER_REQUIRES_APPROVAL_TEMPLATE,
+                new Context()
+        ) );
+        Mockito.verify( emailRepository, Mockito.times( 0 ) ).save( any() );
     }
 }

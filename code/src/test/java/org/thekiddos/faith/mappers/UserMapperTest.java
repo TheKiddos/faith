@@ -23,7 +23,6 @@ class UserMapperTest {
                                            .build();
 
         assertEquals( password, userDTO.getPassword() );
-
         User user = userMapper.userDtoToUser( userDTO );
         assertEquals( userDTO.getEmail(), user.getEmail() );
         assertNotEquals( password, user.getPassword() );
@@ -33,5 +32,10 @@ class UserMapperTest {
         assertArrayEquals( userDTO.getCivilId(), user.getCivilId() );
         assertEquals( userDTO.getAddress(), user.getAddress() );
         assertNull( user.getType() );
+    }
+
+    @Test
+    void nullTest() {
+        assertNull( userMapper.userDtoToUser( null ) );
     }
 }
