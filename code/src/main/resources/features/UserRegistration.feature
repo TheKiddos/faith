@@ -17,7 +17,7 @@ Feature: User Registration
 
 
   Scenario: Admin Accepts Request
-    Given Admin visits a deactivated user management page
-    When Admin clicks the activate button
+    Given Admin visits users admin page
+    When Admin clicks the activate button on a deactivated user
     Then User is activated
     And User receives an email

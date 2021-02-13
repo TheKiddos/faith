@@ -106,21 +106,39 @@ public class UserRegistrationTest {
     @Then( "User is redirected to admin panel" )
     public void userIsRedirectedToAdminPanel() {
         assertEquals( Utils.ADMIN_PANEL, webDriver.getCurrentUrl() );
+        webDriver.close();
     }
 
-    @Given( "Admin visits a deactivated user management page" )
-    public void adminVisitsADeactivatedUserManagementPage() {
+    @Given( "Admin visits users admin page" )
+    public void adminVisitsUsersAdminPage() {
+        User user = (User) userService.loadUserByUsername( "testuser@test.com" ); // TODO: this uses the previous test is this OK?
+
+        // Sanity Check
+        assertFalse( user.isEnabled() );
+        List<Email> emails = emailService.getEmailsFor( user.getEmail() );
+        assertEquals( 0, emails.size() );
+        assertEquals( EmailSubjectConstants.ACCOUNT_ACTIVATED, emails.get( 0 ).getSubject() );
+
+        webDriver.get( Utils.USER_ADMIN_PANEL );
     }
 
-    @When( "Admin clicks the activate button" )
-    public void adminClicksTheActivateButton() {
+    @When( "Admin clicks the activate button on a deactivated user" )
+    public void adminClicksTheActivateButtonOnADeactivatedUser() {
+        webDriver.findElement( By.className( "enable-user-btn" ) ).click();
     }
 
     @Then( "User is activated" )
     public void userIsActivated() {
+        User user = (User) userService.loadUserByUsername( "testuser@test.com" );
+        assertTrue( user.isEnabled() );
     }
 
     @And( "User receives an email" )
     public void userReceivesAnEmail() {
+        User user = (User) userService.loadUserByUsername( "testuser@test.com" );
+
+        List<Email> emails = emailService.getEmailsFor( user.getEmail() );
+        assertEquals( 1, emails.size() );
+        assertEquals( EmailSubjectConstants.ACCOUNT_ACTIVATED, emails.get( 0 ).getSubject() );
     }
 }
