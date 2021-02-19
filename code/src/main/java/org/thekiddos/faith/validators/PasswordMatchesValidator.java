@@ -1,6 +1,6 @@
 package org.thekiddos.faith.validators;
 
-import org.thekiddos.faith.dtos.UserDTO;
+import org.thekiddos.faith.dtos.UserDto;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -13,7 +13,7 @@ public class PasswordMatchesValidator implements ConstraintValidator<PasswordMat
 
     @Override
     public boolean isValid(Object obj, ConstraintValidatorContext context){
-        UserDTO user = (UserDTO) obj;
+        UserDto user = (UserDto) obj;
         return user.getPassword().equals( user.getPasswordConfirm() );
     }
 }

@@ -15,7 +15,7 @@ import javax.validation.constraints.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @PasswordMatches
-public class UserDTO {
+public class UserDto {
     @Email @NotNull @NotBlank
     @UniqueEmail
     private String email;

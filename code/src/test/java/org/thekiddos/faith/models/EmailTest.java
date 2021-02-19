@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.MailException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.thekiddos.faith.dtos.UserDTO;
+import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.repositories.EmailRepository;
 import org.thekiddos.faith.services.EmailServiceImpl;
 import org.thekiddos.faith.utils.EmailSubjectConstants;
@@ -35,7 +35,7 @@ class EmailTest {
 
     @Test
     void sentEmailIsSaved() {
-        UserDTO user = UserDTO.builder().email( "user@test.com" ).password( "password" ).build();
+        UserDto user = UserDto.builder().email( "user@test.com" ).password( "password" ).build();
         Context context = new Context();
         context.setVariable( "user", user );
 

@@ -3,7 +3,7 @@ package org.thekiddos.faith.services;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.thekiddos.faith.dtos.UserDTO;
+import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.exceptions.UserAlreadyExistException;
 import org.thekiddos.faith.mappers.UserMapper;
 import org.thekiddos.faith.models.User;
@@ -27,11 +27,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser( UserDTO userDTO ) throws UserAlreadyExistException {
-        if ( userRepository.findById( userDTO.getEmail() ).isPresent() )
+    public User createUser( UserDto userDto ) throws UserAlreadyExistException {
+        if ( userRepository.findById( userDto.getEmail() ).isPresent() )
             throw new UserAlreadyExistException( "A user with this email already exists" );
 
-        User user = userMapper.userDtoToUser( userDTO );
+        User user = userMapper.userDtoToUser( userDto );
         return userRepository.save( user );
     }
 

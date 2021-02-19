@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.thekiddos.faith.dtos.UserDTO;
+import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.mappers.UserMapper;
 import org.thekiddos.faith.models.User;
 import org.thekiddos.faith.repositories.UserRepository;
@@ -50,7 +50,7 @@ class RegistrationControllerTest {
     @Test
     void createUser() throws Exception {
         String password = "password";
-        UserDTO userDTO = UserDTO.builder().email( "test@gmail.com" )
+        UserDto userDto = UserDto.builder().email( "test@gmail.com" )
                 .password( password )
                 .passwordConfirm( password )
                 .nickname( "tasty" )
@@ -62,33 +62,33 @@ class RegistrationControllerTest {
                 .type( null )
                 .build();
 
-        User user = userMapper.userDtoToUser( userDTO );
-        Mockito.doReturn( user ).when( userService ).createUser( any( UserDTO.class ) );
+        User user = userMapper.userDtoToUser( userDto );
+        Mockito.doReturn( user ).when( userService ).createUser( any( UserDto.class ) );
 
         String civilIdPath = new ClassPathResource("banner.txt").getFile().getAbsolutePath();
         mockMvc.perform(post("/register")
                         .with( csrf() )
-                        .param( "email", userDTO.getEmail() )
+                        .param( "email", userDto.getEmail() )
                         .param( "password", password )
                         .param( "passwordConfirm", password )
-                        .param( "nickname", userDTO.getNickname() )
-                        .param( "firstName", userDTO.getFirstName() )
-                        .param( "lastName", userDTO.getLastName() )
+                        .param( "nickname", userDto.getNickname() )
+                        .param( "firstName", userDto.getFirstName() )
+                        .param( "lastName", userDto.getLastName() )
                         .param( "civilId", civilIdPath )
-                        .param( "phoneNumber", userDTO.getPhoneNumber() )
-                        .param( "address", userDTO.getAddress() )
+                        .param( "phoneNumber", userDto.getPhoneNumber() )
+                        .param( "address", userDto.getAddress() )
                         .param( "type", "freelancer" ) )
                 .andExpect( status().is3xxRedirection() )
                 .andReturn();
 
-        Mockito.verify( userService, Mockito.times( 1 ) ).createUser( any( UserDTO.class ) );
+        Mockito.verify( userService, Mockito.times( 1 ) ).createUser( any( UserDto.class ) );
         Mockito.verify( userService, Mockito.times( 1 ) ).requireAdminApprovalFor( any( User.class ) );
     }
 
     @Test
     void createUserThatAlreadyExists() throws Exception {
         String password = "password";
-        UserDTO userDTO = UserDTO.builder().email( "test@gmail.com" )
+        UserDto userDto = UserDto.builder().email( "test@gmail.com" )
                 .password( password )
                 .passwordConfirm( password )
                 .nickname( "tasty" )
@@ -100,19 +100,19 @@ class RegistrationControllerTest {
                 .type( null )
                 .build();
 
-        Mockito.doReturn( Optional.of( userDTO ) ).when( userRepository ).findById( userDTO.getEmail() );
+        Mockito.doReturn( Optional.of( userDto ) ).when( userRepository ).findById( userDto.getEmail() );
         String civilIdPath = new ClassPathResource("banner.txt").getFile().getAbsolutePath();
         mockMvc.perform(post("/register")
                 .with( csrf() )
-                .param( "email", userDTO.getEmail() )
+                .param( "email", userDto.getEmail() )
                 .param( "password", password )
                 .param( "passwordConfirm", password )
-                .param( "nickname", userDTO.getNickname() )
-                .param( "firstName", userDTO.getFirstName() )
-                .param( "lastName", userDTO.getLastName() )
+                .param( "nickname", userDto.getNickname() )
+                .param( "firstName", userDto.getFirstName() )
+                .param( "lastName", userDto.getLastName() )
                 .param( "civilId", civilIdPath )
-                .param( "phoneNumber", userDTO.getPhoneNumber() )
-                .param( "address", userDTO.getAddress() )
+                .param( "phoneNumber", userDto.getPhoneNumber() )
+                .param( "address", userDto.getAddress() )
                 .param( "type", "freelancer" ) )
                 .andExpect( status().isOk() )
                 .andReturn();
@@ -124,7 +124,7 @@ class RegistrationControllerTest {
     @Test
     void createUserThatAlreadyExistsForNickName() throws Exception {
         String password = "password";
-        UserDTO userDTO = UserDTO.builder().email( "test@gmail.com" )
+        UserDto userDto = UserDto.builder().email( "test@gmail.com" )
                 .password( password )
                 .passwordConfirm( password )
                 .nickname( "tasty" )
@@ -136,19 +136,19 @@ class RegistrationControllerTest {
                 .type( null )
                 .build();
 
-        Mockito.doReturn( Optional.of( userMapper.userDtoToUser( userDTO ) ) ).when( userRepository ).findByNickname( userDTO.getNickname() );
+        Mockito.doReturn( Optional.of( userMapper.userDtoToUser( userDto ) ) ).when( userRepository ).findByNickname( userDto.getNickname() );
         String civilIdPath = new ClassPathResource("banner.txt").getFile().getAbsolutePath();
         mockMvc.perform(post("/register")
                 .with( csrf() )
                 .param( "email", "otheruser@test.com" )
                 .param( "password", password )
                 .param( "passwordConfirm", password )
-                .param( "nickname", userDTO.getNickname() )
-                .param( "firstName", userDTO.getFirstName() )
-                .param( "lastName", userDTO.getLastName() )
+                .param( "nickname", userDto.getNickname() )
+                .param( "firstName", userDto.getFirstName() )
+                .param( "lastName", userDto.getLastName() )
                 .param( "civilId", civilIdPath )
-                .param( "phoneNumber", userDTO.getPhoneNumber() )
-                .param( "address", userDTO.getAddress() )
+                .param( "phoneNumber", userDto.getPhoneNumber() )
+                .param( "address", userDto.getAddress() )
                 .param( "type", "freelancer" ) )
                 .andExpect( status().isOk() )
                 .andReturn();

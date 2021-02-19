@@ -8,7 +8,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.thekiddos.faith.dtos.UserDTO;
+import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.exceptions.UserAlreadyExistException;
 import org.thekiddos.faith.mappers.UserMapper;
 import org.thekiddos.faith.repositories.UserRepository;
@@ -34,7 +34,7 @@ class UserTest {
 
     @Test
     void createUser() {
-        UserDTO userDTO = UserDTO.builder().email( "test@test.com" ).password( "password" ).build();
+        UserDto userDTO = UserDto.builder().email( "test@test.com" ).password( "password" ).build();
         User user = userMapper.userDtoToUser( userDTO );
 
         Mockito.doReturn( Optional.empty() ).when( userRepository ).findById( anyString() );
@@ -56,7 +56,7 @@ class UserTest {
 
     @Test
     void userAccountManagement() {
-        UserDTO userDTO = UserDTO.builder().email( "test@test.com" ).password( "password" ).build();
+        UserDto userDTO = UserDto.builder().email( "test@test.com" ).password( "password" ).build();
         User user = userMapper.userDtoToUser( userDTO );
 
         assertEquals( user.getEmail(), user.getUsername() );
@@ -74,11 +74,11 @@ class UserTest {
 
     @Test
     void requireAdminApprovalFor() {
-        UserDTO userDTO = UserDTO.builder().email( "test@test.com" ).password( "password" ).build();
+        UserDto userDTO = UserDto.builder().email( "test@test.com" ).password( "password" ).build();
         User user = userMapper.userDtoToUser( userDTO );
         assertTrue( user.isEnabled() );
 
-        UserDTO adminDTO = UserDTO.builder().email( "admin@test.com" ).password( "password" ).build();
+        UserDto adminDTO = UserDto.builder().email( "admin@test.com" ).password( "password" ).build();
         User admin = userMapper.userDtoToUser( adminDTO );
 
         Mockito.doReturn( List.of( admin ) ).when( userRepository ).findByAdminTrue();
@@ -91,7 +91,7 @@ class UserTest {
 
     @Test
     void uniqueEmail() {
-        UserDTO userDTO = UserDTO.builder().email( "test@test.com" ).password( "password" ).build();
+        UserDto userDTO = UserDto.builder().email( "test@test.com" ).password( "password" ).build();
         User user = userMapper.userDtoToUser( userDTO );
 
         Mockito.doReturn( Optional.empty() ).when( userRepository ).findById( anyString() );
@@ -121,15 +121,15 @@ class UserTest {
         assertNotEquals( user, null );
         assertNotEquals( user.hashCode(), otherUser.hashCode() );
 
-        UserDTO userDTO = new UserDTO();
-        userDTO.setEmail( "abc@gmail.com" );
+        UserDto userDto = new UserDto();
+        userDto.setEmail( "abc@gmail.com" );
 
-        UserDTO otherUserDTO = new UserDTO();
-        otherUserDTO.setEmail( "abc@gmail2.com" );
+        UserDto otherUserDto = new UserDto();
+        otherUserDto.setEmail( "abc@gmail2.com" );
 
-        assertNotEquals( userDTO, otherUserDTO );
-        assertEquals( userDTO, userDTO );
-        assertNotEquals( userDTO, null );
-        assertNotEquals( userDTO.hashCode(), otherUserDTO.hashCode() );
+        assertNotEquals( userDto, otherUserDto );
+        assertEquals( userDto, userDto );
+        assertNotEquals( userDto, null );
+        assertNotEquals( userDto.hashCode(), otherUserDto.hashCode() );
     }
 }

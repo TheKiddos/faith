@@ -1,7 +1,7 @@
 package org.thekiddos.faith.mappers;
 
 import org.junit.jupiter.api.Test;
-import org.thekiddos.faith.dtos.UserDTO;
+import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.models.User;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,7 +12,7 @@ class UserMapperTest {
     @Test
     void userDtoToUser() {
         String password = "password";
-        UserDTO userDTO = UserDTO.builder().email( "test@gmail.com" )
+        UserDto userDto = UserDto.builder().email( "test@gmail.com" )
                                            .password( password )
                                            .nickname( "tasty" )
                                            .firstName( "Test" )
@@ -23,16 +23,16 @@ class UserMapperTest {
                                            .type( null )
                                            .build();
 
-        assertEquals( password, userDTO.getPassword() );
-        User user = userMapper.userDtoToUser( userDTO );
-        assertEquals( userDTO.getEmail(), user.getEmail() );
+        assertEquals( password, userDto.getPassword() );
+        User user = userMapper.userDtoToUser( userDto );
+        assertEquals( userDto.getEmail(), user.getEmail() );
         assertNotEquals( password, user.getPassword() );
         assertTrue( user.checkPassword( "password" ) );
-        assertEquals( userDTO.getNickname(), user.getNickname() );
-        assertEquals( userDTO.getFirstName(), user.getFirstName() );
-        assertEquals( userDTO.getLastName(), user.getLastName() );
-        assertArrayEquals( userDTO.getCivilId(), user.getCivilId() );
-        assertEquals( userDTO.getAddress(), user.getAddress() );
+        assertEquals( userDto.getNickname(), user.getNickname() );
+        assertEquals( userDto.getFirstName(), user.getFirstName() );
+        assertEquals( userDto.getLastName(), user.getLastName() );
+        assertArrayEquals( userDto.getCivilId(), user.getCivilId() );
+        assertEquals( userDto.getAddress(), user.getAddress() );
         assertNull( user.getType() );
     }
 
