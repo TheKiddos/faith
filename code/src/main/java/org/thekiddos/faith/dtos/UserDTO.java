@@ -1,13 +1,14 @@
 package org.thekiddos.faith.dtos;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.thekiddos.faith.validators.PasswordMatches;
 import org.thekiddos.faith.validators.UniqueEmail;
+import org.thekiddos.faith.validators.UniqueNickname;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 @Data
 @Builder
@@ -15,8 +16,11 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @PasswordMatches
 public class UserDTO {
-    @Email @NotNull @UniqueEmail
+    @Email @NotNull @NotBlank
+    @UniqueEmail
     private String email;
+    @NotNull @NotEmpty @UniqueNickname
+    private String nickname;
     @NotNull @NotEmpty
     private String password;
     @NotNull @NotEmpty

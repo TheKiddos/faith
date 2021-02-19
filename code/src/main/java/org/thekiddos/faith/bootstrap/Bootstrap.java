@@ -31,6 +31,7 @@ public class Bootstrap implements CommandLineRunner {
         admin.setEmail( "admin@faith.com" );
         admin.setPassword( "Admin@Fa1ith" );
         admin.setAdmin( true );
+        admin.setNickname( "Admin" );
         admin.setFirstName( "Admin" );
         admin.setLastName( "Faith" );
         userRepository.save( admin );

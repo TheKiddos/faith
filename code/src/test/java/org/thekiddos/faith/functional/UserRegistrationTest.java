@@ -45,6 +45,7 @@ public class UserRegistrationTest {
     @io.cucumber.java.en.And( "User fills required info" )
     public void userFillsRequiredInfo() throws IOException {
         webDriver.findElement( By.id( "email" ) ).sendKeys( "testuser@test.com" );
+        webDriver.findElement( By.id( "nickname" ) ).sendKeys( "tasty" );
         webDriver.findElement( By.id( "first-name" ) ).sendKeys( "Test" );
         webDriver.findElement( By.id( "last-name" ) ).sendKeys( "User" );
         webDriver.findElement( By.id( "password" ) ).sendKeys( "password" );
@@ -117,7 +118,6 @@ public class UserRegistrationTest {
         assertFalse( user.isEnabled() );
         List<Email> emails = emailService.getEmailsFor( user.getEmail() );
         assertEquals( 0, emails.size() );
-        assertEquals( EmailSubjectConstants.ACCOUNT_ACTIVATED, emails.get( 0 ).getSubject() );
 
         webDriver.get( Utils.USER_ADMIN_PANEL );
     }

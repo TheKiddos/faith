@@ -22,8 +22,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @AutoConfigureMockMvc
 @SpringBootTest
 class RegistrationControllerTest {
@@ -55,6 +53,7 @@ class RegistrationControllerTest {
         UserDTO userDTO = UserDTO.builder().email( "test@gmail.com" )
                 .password( password )
                 .passwordConfirm( password )
+                .nickname( "tasty" )
                 .firstName( "Test" )
                 .lastName( "User" )
                 .civilId( new byte[]{} )
@@ -72,6 +71,7 @@ class RegistrationControllerTest {
                         .param( "email", userDTO.getEmail() )
                         .param( "password", password )
                         .param( "passwordConfirm", password )
+                        .param( "nickname", userDTO.getNickname() )
                         .param( "firstName", userDTO.getFirstName() )
                         .param( "lastName", userDTO.getLastName() )
                         .param( "civilId", civilIdPath )
@@ -91,6 +91,7 @@ class RegistrationControllerTest {
         UserDTO userDTO = UserDTO.builder().email( "test@gmail.com" )
                 .password( password )
                 .passwordConfirm( password )
+                .nickname( "tasty" )
                 .firstName( "Test" )
                 .lastName( "User" )
                 .civilId( new byte[]{} )
@@ -106,6 +107,43 @@ class RegistrationControllerTest {
                 .param( "email", userDTO.getEmail() )
                 .param( "password", password )
                 .param( "passwordConfirm", password )
+                .param( "nickname", userDTO.getNickname() )
+                .param( "firstName", userDTO.getFirstName() )
+                .param( "lastName", userDTO.getLastName() )
+                .param( "civilId", civilIdPath )
+                .param( "phoneNumber", userDTO.getPhoneNumber() )
+                .param( "address", userDTO.getAddress() )
+                .param( "type", "freelancer" ) )
+                .andExpect( status().isOk() )
+                .andReturn();
+
+        Mockito.verify( userService, Mockito.times( 0 ) ).createUser( any() );
+        Mockito.verify( userService, Mockito.times( 0 ) ).requireAdminApprovalFor( any() );
+    }
+
+    @Test
+    void createUserThatAlreadyExistsForNickName() throws Exception {
+        String password = "password";
+        UserDTO userDTO = UserDTO.builder().email( "test@gmail.com" )
+                .password( password )
+                .passwordConfirm( password )
+                .nickname( "tasty" )
+                .firstName( "Test" )
+                .lastName( "User" )
+                .civilId( new byte[]{} )
+                .phoneNumber( "+963987654321" )
+                .address( "Street" )
+                .type( null )
+                .build();
+
+        Mockito.doReturn( Optional.of( userMapper.userDtoToUser( userDTO ) ) ).when( userRepository ).findByNickname( userDTO.getNickname() );
+        String civilIdPath = new ClassPathResource("banner.txt").getFile().getAbsolutePath();
+        mockMvc.perform(post("/register")
+                .with( csrf() )
+                .param( "email", "otheruser@test.com" )
+                .param( "password", password )
+                .param( "passwordConfirm", password )
+                .param( "nickname", userDTO.getNickname() )
                 .param( "firstName", userDTO.getFirstName() )
                 .param( "lastName", userDTO.getLastName() )
                 .param( "civilId", civilIdPath )

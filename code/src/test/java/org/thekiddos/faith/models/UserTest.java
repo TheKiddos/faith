@@ -132,5 +132,4 @@ class UserTest {
         assertNotEquals( userDTO, null );
         assertNotEquals( userDTO.hashCode(), otherUserDTO.hashCode() );
     }
-
 }
