@@ -19,7 +19,6 @@ import org.thekiddos.faith.utils.EmailSubjectConstants;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -64,7 +63,6 @@ public class UserRegistrationTest {
 
     @io.cucumber.java.en.Then( "Account is created and deactivated" )
     public void accountIsCreatedAndDeactivated() {
-        webDriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS );
         User user = (User) userService.loadUserByUsername( "testuser@test.com" );
         assertFalse( user.isEnabled() );
         assertFalse( user.isAdmin() );
@@ -119,7 +117,15 @@ public class UserRegistrationTest {
         List<Email> emails = emailService.getEmailsFor( user.getEmail() );
         assertEquals( 0, emails.size() );
 
+        loginAsAdmin();
+
         webDriver.get( Utils.USER_ADMIN_PANEL );
+    }
+
+    private void loginAsAdmin() {
+        userVisitsLoginPage();
+        userEntersDefaultAdminCredentials();
+        userClicksTheLoginButton();
     }
 
     @When( "Admin clicks the activate button on a deactivated user" )
@@ -140,5 +146,7 @@ public class UserRegistrationTest {
         List<Email> emails = emailService.getEmailsFor( user.getEmail() );
         assertEquals( 1, emails.size() );
         assertEquals( EmailSubjectConstants.ACCOUNT_ACTIVATED, emails.get( 0 ).getSubject() );
+
+        webDriver.close();
     }
 }

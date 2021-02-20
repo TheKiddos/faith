@@ -1,5 +1,6 @@
 package org.thekiddos.faith.services;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import org.thymeleaf.context.Context;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
     private final UserMapper userMapper = UserMapper.INSTANCE;
@@ -58,5 +60,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetails loadUserByUsername( String email ) throws UsernameNotFoundException {
         return userRepository.findById( email ).orElseThrow( () -> new UsernameNotFoundException( "No user with specified email was found" ) );
+    }
+
+    @Override
+    public void activateUser( String nickname ) {
+        User user = userRepository.findByNickname( nickname ).orElse( null );
+
+        if ( user == null ) {
+            log.warn( "Attempting to activate a user that does not exists. IGNORING...");
+            return;
+        }
+
+        user.setEnabled( true );
+        userRepository.save( user );
+
+        sendActivationInfoMail( user );
+    }
+
+    private void sendActivationInfoMail( User user ) {
+        Context context = new Context();
+        context.setVariable( "user", user );
+        emailService.sendTemplateMail( List.of( user.getEmail() ), "faith@noreplay.com", EmailSubjectConstants.ACCOUNT_ACTIVATED, EmailTemplatesConstants.ACCOUNT_ACTIVATED_TEMPLATE, context );
     }
 }

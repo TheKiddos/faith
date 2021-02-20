@@ -10,7 +10,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.thekiddos.faith.services.UserService;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
@@ -27,7 +29,7 @@ class AdminControllerTest {
     }
 
     @Test
-    @WithMockUser( roles = {"ADMIN"} )
+    @WithMockUser( authorities = {"ADMIN"} )
     void adminPanelLoadsOk() throws Exception {
         mockMvc.perform( get( "/admin" ) ).andExpect( status().isOk() );
     }
@@ -39,10 +41,21 @@ class AdminControllerTest {
     }
 
     @Test
-    @WithMockUser( roles = {"ADMIN"} )
+    @WithMockUser( authorities = {"ADMIN"} )
     void usersAdminPanelLoadsOk() throws Exception {
         mockMvc.perform( get( "/admin/users" ) ).andExpect( status().isOk() );
 
         Mockito.verify( userService, Mockito.times( 1 ) ).getAll();
+    }
+
+    @Test
+    @WithMockUser( authorities = {"ADMIN"} )
+    void activateUserAccount() throws Exception {
+        mockMvc.perform( post("/admin/users")
+                .with( csrf() )
+                .param( "nickname", "someidiot" ) )
+                .andExpect( status().is3xxRedirection() );
+
+        Mockito.verify( userService, Mockito.times( 1 ) ).activateUser( "someidiot" );
     }
 }

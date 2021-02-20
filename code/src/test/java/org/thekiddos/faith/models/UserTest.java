@@ -14,6 +14,8 @@ import org.thekiddos.faith.mappers.UserMapper;
 import org.thekiddos.faith.repositories.UserRepository;
 import org.thekiddos.faith.services.EmailService;
 import org.thekiddos.faith.services.UserServiceImpl;
+import org.thekiddos.faith.utils.EmailSubjectConstants;
+import org.thekiddos.faith.utils.EmailTemplatesConstants;
 
 import java.util.Collections;
 import java.util.List;
@@ -131,5 +133,46 @@ class UserTest {
         assertEquals( userDto, userDto );
         assertNotEquals( userDto, null );
         assertNotEquals( userDto.hashCode(), otherUserDto.hashCode() );
+    }
+
+    @Test
+    void activateUser() {
+        String nickname = "someidiot";
+        UserDto userDTO = UserDto.builder().email( "test@test.com" ).password( "password" ).nickname( nickname ).build();
+        User user = userMapper.userDtoToUser( userDTO );
+        user.setEnabled( false );
+
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findByNickname( nickname );
+
+        userService.activateUser( nickname );
+
+        assertTrue( user.isEnabled() );
+        Mockito.verify( emailService, Mockito.times( 1 ) )
+                .sendTemplateMail( eq( List.of( user.getEmail() ) ), anyString(), eq( EmailSubjectConstants.ACCOUNT_ACTIVATED ), eq( EmailTemplatesConstants.ACCOUNT_ACTIVATED_TEMPLATE ), any() );
+    }
+
+    @Test
+    void activateUserThatIsAlreadyActivatedDoesNothing() {
+        String nickname = "someidiot";
+        UserDto userDTO = UserDto.builder().email( "test@test.com" ).password( "password" ).nickname( nickname ).build();
+        User user = userMapper.userDtoToUser( userDTO );
+        user.setEnabled( true );
+
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findByNickname( nickname );
+
+        userService.activateUser( nickname );
+
+        assertTrue( user.isEnabled() );
+    }
+
+    @Test
+    void activateUserThatDoesNotExistsDoesNothing() {
+        String nickname = "someidiot";
+
+        Mockito.doReturn( Optional.empty() ).when( userRepository ).findByNickname( nickname );
+
+        userService.activateUser( nickname );
+
+        // No excptoion was thrown so we are done
     }
 }

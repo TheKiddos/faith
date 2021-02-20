@@ -20,6 +20,7 @@ public class UserDto {
     @UniqueEmail
     private String email;
     @NotNull @NotEmpty @UniqueNickname
+    @Pattern(regexp="^[A-Za-z][A-Za-z0-9]*$",message = "Invalid Input")
     private String nickname;
     @NotNull @NotEmpty
     private String password;

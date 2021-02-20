@@ -22,6 +22,7 @@ public class User implements UserDetails {
     private String email;
 
     @NotNull @NotBlank @Column( unique = true )
+    @Pattern(regexp="^[A-Za-z][A-Za-z0-9]*$",message = "Invalid Input")
     private String nickname;
 
     @NotNull @NotEmpty
@@ -44,7 +45,8 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return isAdmin() ? Collections.singletonList( new SimpleGrantedAuthority( "ADMIN" ) ) : Collections.singletonList( new SimpleGrantedAuthority( "USER" ) );
+        String role = isAdmin() ? "ADMIN" : "USER";
+        return Collections.singletonList( new SimpleGrantedAuthority( role ) );
     }
 
     @Override

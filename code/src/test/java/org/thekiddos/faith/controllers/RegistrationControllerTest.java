@@ -156,4 +156,40 @@ class RegistrationControllerTest {
         Mockito.verify( userService, Mockito.times( 0 ) ).createUser( any() );
         Mockito.verify( userService, Mockito.times( 0 ) ).requireAdminApprovalFor( any() );
     }
+
+    @Test
+    void createUserWithInvalidNickname() throws Exception {
+        String password = "password";
+        UserDto userDto = UserDto.builder().email( "test@gmail.com" )
+                .password( password )
+                .passwordConfirm( password )
+                .nickname( "0tasty" )
+                .firstName( "Test" )
+                .lastName( "User" )
+                .civilId( new byte[]{} )
+                .phoneNumber( "+963987654321" )
+                .address( "Street" )
+                .type( null )
+                .build();
+
+        Mockito.doReturn( Optional.empty() ).when( userRepository ).findByNickname( userDto.getNickname() );
+        String civilIdPath = new ClassPathResource("banner.txt").getFile().getAbsolutePath();
+        mockMvc.perform(post("/register")
+                .with( csrf() )
+                .param( "email", "otheruser@test.com" )
+                .param( "password", password )
+                .param( "passwordConfirm", password )
+                .param( "nickname", userDto.getNickname() )
+                .param( "firstName", userDto.getFirstName() )
+                .param( "lastName", userDto.getLastName() )
+                .param( "civilId", civilIdPath )
+                .param( "phoneNumber", userDto.getPhoneNumber() )
+                .param( "address", userDto.getAddress() )
+                .param( "type", "freelancer" ) )
+                .andExpect( status().isOk() )
+                .andReturn();
+
+        Mockito.verify( userService, Mockito.times( 0 ) ).createUser( any() );
+        Mockito.verify( userService, Mockito.times( 0 ) ).requireAdminApprovalFor( any() );
+    }
 }

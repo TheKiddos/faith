@@ -1,10 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Users</title>
 </head>
 <body>
+<!--    todo make just one form with one submit button and make a button to set the value of the submit-->
+<form th:each="user: ${users}" role="form" th:method="post">
+    <div th:unless="${user.enabled}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <input hidden readonly type="text" id="nickname" name="nickname" th:value="${user.nickname}">
 
+        <input type="submit" class="enable-user-btn" id="submit">
+    </div>
+</form>
 </body>
 </html>

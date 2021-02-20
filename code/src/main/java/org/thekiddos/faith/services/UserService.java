@@ -26,4 +26,12 @@ public interface UserService extends UserDetailsService {
      * @param user The user that requires approval
      */
     void requireAdminApprovalFor( User user );
+
+    /**
+     * Activate the user account with the provided nickname and send an email to that user
+     * if the user is already activated nothing should happen
+     * if the user does not exists the method will simply log that and ignore it.
+     * @param nickname The nickname if the user to activate
+     */
+    void activateUser( String nickname );
 }

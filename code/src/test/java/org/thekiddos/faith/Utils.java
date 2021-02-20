@@ -11,7 +11,7 @@ public final class Utils {
     public static final String REGISTRATION_SUCCESSFUL_URL = SITE_ROOT + "register/success";
     public static final String LOGIN_PAGE = SITE_ROOT + "login";
     public static final String ADMIN_PANEL = SITE_ROOT + "admin";
-    public static final String USER_ADMIN_PANEL = ADMIN_PANEL + "users/";
+    public static final String USER_ADMIN_PANEL = ADMIN_PANEL + "/users/";
 
     public static String toJson( Object object ) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
