@@ -3,6 +3,7 @@ package org.thekiddos.faith.controllers;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.thekiddos.faith.services.UserService;
@@ -27,9 +28,15 @@ public class AdminController {
         return "admin/users";
     }
 
-    @PostMapping( value = "/users" )
-    String activateUser( String nickname ) {
+    @PostMapping( value = "/users/activate/{nickname}" )
+    String activateUser( @PathVariable String nickname ) {
         userService.activateUser( nickname );
+        return "redirect:/admin/users";
+    }
+
+    @PostMapping( value = "/users/delete/{nickname}" )
+    String deleteUser( @PathVariable String nickname ) {
+        userService.deleteUser( nickname );
         return "redirect:/admin/users";
     }
 }

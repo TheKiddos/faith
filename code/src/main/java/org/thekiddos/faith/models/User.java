@@ -22,7 +22,7 @@ public class User implements UserDetails {
     private String email;
 
     @NotNull @NotBlank @Column( unique = true )
-    @Pattern(regexp="^[A-Za-z][A-Za-z0-9]*$",message = "Invalid Input")
+    @Pattern(regexp="^[A-Za-z][A-Za-z0-9]*$", message = "Invalid Input")
     private String nickname;
 
     @NotNull @NotEmpty
@@ -98,5 +98,11 @@ public class User implements UserDetails {
 
     public boolean checkPassword( String password ) {
         return Util.PASSWORD_ENCODER.matches( password, getPassword() );
+    }
+
+    public void setNickname( String nickname ) {
+        if ( nickname == null )
+            return;
+        this.nickname = nickname.toLowerCase();
     }
 }

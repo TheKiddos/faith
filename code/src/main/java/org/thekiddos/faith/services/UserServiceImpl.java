@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void activateUser( String nickname ) {
-        User user = userRepository.findByNickname( nickname ).orElse( null );
+        User user = userRepository.findByNicknameIgnoreCase( nickname ).orElse( null );
 
         if ( user == null ) {
             log.warn( "Attempting to activate a user that does not exists. IGNORING...");
@@ -81,5 +81,23 @@ public class UserServiceImpl implements UserService {
         Context context = new Context();
         context.setVariable( "user", user );
         emailService.sendTemplateMail( List.of( user.getEmail() ), "faith@noreplay.com", EmailSubjectConstants.ACCOUNT_ACTIVATED, EmailTemplatesConstants.ACCOUNT_ACTIVATED_TEMPLATE, context );
+    }
+
+    @Override
+    public void deleteUser( String nickname ) {
+        var user = userRepository.findByNicknameIgnoreCase( nickname );
+        if ( user.isEmpty() ) {
+            log.warn( "Attempting to delete a user that does not exists. IGNORING..." );
+            return;
+        }
+
+        userRepository.deleteById( user.get().getEmail() );
+        sendAccountDeletedInfoMail( user.get() );
+    }
+
+    private void sendAccountDeletedInfoMail( User user ) {
+        Context context = new Context();
+        context.setVariable( "user", user );
+        emailService.sendTemplateMail( List.of( user.getEmail() ), "faith@noreplay.com", EmailSubjectConstants.ACCOUNT_DELETED, EmailTemplatesConstants.ACCOUNT_DELETED_TEMPLATE, context );
     }
 }

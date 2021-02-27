@@ -34,4 +34,11 @@ public interface UserService extends UserDetailsService {
      * @param nickname The nickname if the user to activate
      */
     void activateUser( String nickname );
+
+    /**
+     * Delete the user account with the provided nickname and send an email to that user
+     * if the user does not exists the method will simply log that and ignore it.
+     * @param nickname The nickname if the user to delete
+     */
+    void deleteUser( String nickname );
 }

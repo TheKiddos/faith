@@ -142,7 +142,7 @@ class UserTest {
         User user = userMapper.userDtoToUser( userDTO );
         user.setEnabled( false );
 
-        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findByNickname( nickname );
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findByNicknameIgnoreCase( nickname );
 
         userService.activateUser( nickname );
 
@@ -158,7 +158,7 @@ class UserTest {
         User user = userMapper.userDtoToUser( userDTO );
         user.setEnabled( true );
 
-        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findByNickname( nickname );
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findByNicknameIgnoreCase( nickname );
 
         userService.activateUser( nickname );
 
@@ -169,10 +169,51 @@ class UserTest {
     void activateUserThatDoesNotExistsDoesNothing() {
         String nickname = "someidiot";
 
-        Mockito.doReturn( Optional.empty() ).when( userRepository ).findByNickname( nickname );
+        Mockito.doReturn( Optional.empty() ).when( userRepository ).findByNicknameIgnoreCase( nickname );
 
         userService.activateUser( nickname );
 
-        // No excptoion was thrown so we are done
+        // No exception was thrown so we are done
+    }
+
+    @Test
+    void normalizedNickname() {
+        UserDto userDTO = UserDto.builder().email( "test@test.com" ).password( "password" ).nickname( "NiCkname" ).build();
+        User user = userMapper.userDtoToUser( userDTO );
+        assertEquals( "nickname", user.getNickname() );
+    }
+
+    @Test
+    void nullNickname() {
+        UserDto userDTO = UserDto.builder().email( "test@test.com" ).password( "password" ).nickname( null ).build();
+        userMapper.userDtoToUser( userDTO );
+
+        // Nothing thrown we are good
+    }
+
+    @Test
+    void deleteUser() {
+        String nickname = "someidiot";
+        UserDto userDTO = UserDto.builder().email( "test@test.com" ).password( "password" ).nickname( nickname ).build();
+        User user = userMapper.userDtoToUser( userDTO );
+
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findByNicknameIgnoreCase( nickname );
+
+        userService.deleteUser( nickname );
+
+        Mockito.verify( userRepository, Mockito.times( 1 ) ).deleteById( user.getEmail() );
+        Mockito.verify( emailService, Mockito.times( 1 ) )
+                .sendTemplateMail( eq( List.of( user.getEmail() ) ), anyString(), eq( EmailSubjectConstants.ACCOUNT_DELETED ), eq( EmailTemplatesConstants.ACCOUNT_DELETED_TEMPLATE ), any() );
+    }
+
+    @Test
+    void deleteUserThatDoesNotExistsDoesNothing() {
+        String nickname = "someidiot";
+
+        Mockito.doReturn( Optional.empty() ).when( userRepository ).findByNicknameIgnoreCase( nickname );
+
+        userService.deleteUser( nickname );
+
+        // No exception was thrown so we are done
     }
 }

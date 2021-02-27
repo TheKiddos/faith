@@ -51,11 +51,20 @@ class AdminControllerTest {
     @Test
     @WithMockUser( authorities = {"ADMIN"} )
     void activateUserAccount() throws Exception {
-        mockMvc.perform( post("/admin/users")
-                .with( csrf() )
-                .param( "nickname", "someidiot" ) )
+        mockMvc.perform( post("/admin/users/activate/someidiot" )
+                .with( csrf() ) )
                 .andExpect( status().is3xxRedirection() );
 
         Mockito.verify( userService, Mockito.times( 1 ) ).activateUser( "someidiot" );
+    }
+
+    @Test
+    @WithMockUser( authorities = {"ADMIN"} )
+    void deleteUserAccount() throws Exception {
+        mockMvc.perform( post("/admin/users/delete/someidiot" )
+                .with( csrf() ) )
+                .andExpect( status().is3xxRedirection() );
+
+        Mockito.verify( userService, Mockito.times( 1 ) ).deleteUser( "someidiot" );
     }
 }

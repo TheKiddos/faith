@@ -34,7 +34,7 @@ public class BootstrapTest {
         assertTrue( user.isAccountNonLocked() );
         assertTrue( user.isCredentialsNonExpired() );
         assertTrue( user.isAccountNonExpired() );
-        assertEquals( "Admin", user.getNickname() );
+        assertTrue( "Admin".equalsIgnoreCase( user.getNickname() ) );
         assertEquals( "Admin", user.getFirstName() );
         assertEquals( "Faith", user.getLastName() );
         assertEquals( Collections.singletonList( new SimpleGrantedAuthority( "ADMIN" ) ), user.getAuthorities() );

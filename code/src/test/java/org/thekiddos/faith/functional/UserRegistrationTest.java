@@ -9,9 +9,13 @@ import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.thekiddos.faith.Utils;
+import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.models.Email;
 import org.thekiddos.faith.models.User;
+import org.thekiddos.faith.repositories.EmailRepository;
+import org.thekiddos.faith.repositories.UserRepository;
 import org.thekiddos.faith.services.EmailService;
 import org.thekiddos.faith.services.UserService;
 import org.thekiddos.faith.utils.EmailSubjectConstants;
@@ -26,12 +30,16 @@ public class UserRegistrationTest {
     private final WebDriver webDriver;
     private final UserService userService;
     private final EmailService emailService;
+    private final UserRepository userRepository;
+    private final EmailRepository emailRepository;
 
     @Autowired
-    public UserRegistrationTest( WebDriver webDriver, UserService userService, EmailService emailService ) {
+    public UserRegistrationTest( WebDriver webDriver, UserService userService, EmailService emailService, UserRepository userRepository, EmailRepository emailRepository ) {
         this.webDriver = webDriver;
         this.userService = userService;
         this.emailService = emailService;
+        this.userRepository = userRepository;
+        this.emailRepository = emailRepository;
     }
 
     @io.cucumber.java.en.Given( "A new user visits registration page" )
@@ -110,16 +118,37 @@ public class UserRegistrationTest {
 
     @Given( "Admin visits users admin page" )
     public void adminVisitsUsersAdminPage() {
-        User user = (User) userService.loadUserByUsername( "testuser@test.com" ); // TODO: this uses the previous test is this OK?
+        User user = getOrCreateTestUser();
 
-        // Sanity Check
-        assertFalse( user.isEnabled() );
-        List<Email> emails = emailService.getEmailsFor( user.getEmail() );
-        assertEquals( 0, emails.size() );
+        // setup user for this test (user must be disabled and have no emails)
+        user.setEnabled( false );
+        userRepository.save( user );
+        emailRepository.deleteAll( emailRepository.findAllByTo( user.getEmail() ) );
 
         loginAsAdmin();
 
         webDriver.get( Utils.USER_ADMIN_PANEL );
+    }
+
+    private User getOrCreateTestUser() {
+        try {
+            return (User) userService.loadUserByUsername( "testuser@test.com" );
+        }
+        catch ( UsernameNotFoundException e ) {
+            String password = "password";
+            UserDto userDto = UserDto.builder().email( "testuser@test.com" )
+                    .password( password )
+                    .passwordConfirm( password )
+                    .nickname( "tasty" )
+                    .firstName( "Test" )
+                    .lastName( "User" )
+                    .civilId( new byte[]{} )
+                    .phoneNumber( "+963987654321" )
+                    .address( "Street" )
+                    .type( null )
+                    .build();
+            return userService.createUser( userDto );
+        }
     }
 
     private void loginAsAdmin() {
@@ -147,6 +176,30 @@ public class UserRegistrationTest {
         assertEquals( 1, emails.size() );
         assertEquals( EmailSubjectConstants.ACCOUNT_ACTIVATED, emails.get( 0 ).getSubject() );
 
+        webDriver.close();
+    }
+
+    @When( "Admin clicks the reject button on a deactivated user" )
+    public void adminClicksTheRejectButtonOnADeactivatedUser() {
+        User user = getOrCreateTestUser();
+
+        // setup user for this test (user must be disabled and have no emails)
+        user.setEnabled( false );
+        userRepository.save( user );
+        emailRepository.deleteAll( emailRepository.findAllByTo( user.getEmail() ) );
+
+        webDriver.findElement( By.id( "delete-" + user.getNickname() ) ).click();
+    }
+
+    @Then( "User receives an email with the {string} Subject" )
+    public void userReceivesAnEmailWithTheSubject( String emailSubject ) {
+        List<Email> emails = emailService.getEmailsFor( "testuser@test.com" );
+        assertEquals( emailSubject, emails.get( 0 ).getSubject() );
+    }
+
+    @And( "User is deleted" )
+    public void userIsDeleted() {
+        assertThrows( UsernameNotFoundException.class, () -> userService.loadUserByUsername( "testuser@test.com" ) );
         webDriver.close();
     }
 }

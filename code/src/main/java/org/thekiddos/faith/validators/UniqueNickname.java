@@ -10,7 +10,7 @@ import static java.lang.annotation.ElementType.FIELD;
 
 @Constraint(validatedBy = { UniqueNicknameValidator.class })
 @Target({ FIELD })
-@Retention( RetentionPolicy.RUNTIME)
+@Retention( RetentionPolicy.RUNTIME )
 public @interface UniqueNickname {
     String message() default "A user with this nickname already exists";
 

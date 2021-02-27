@@ -136,7 +136,7 @@ class RegistrationControllerTest {
                 .type( null )
                 .build();
 
-        Mockito.doReturn( Optional.of( userMapper.userDtoToUser( userDto ) ) ).when( userRepository ).findByNickname( userDto.getNickname() );
+        Mockito.doReturn( Optional.of( userMapper.userDtoToUser( userDto ) ) ).when( userRepository ).findByNicknameIgnoreCase( userDto.getNickname() );
         String civilIdPath = new ClassPathResource("banner.txt").getFile().getAbsolutePath();
         mockMvc.perform(post("/register")
                 .with( csrf() )
@@ -172,7 +172,7 @@ class RegistrationControllerTest {
                 .type( null )
                 .build();
 
-        Mockito.doReturn( Optional.empty() ).when( userRepository ).findByNickname( userDto.getNickname() );
+        Mockito.doReturn( Optional.empty() ).when( userRepository ).findByNicknameIgnoreCase( userDto.getNickname() );
         String civilIdPath = new ClassPathResource("banner.txt").getFile().getAbsolutePath();
         mockMvc.perform(post("/register")
                 .with( csrf() )

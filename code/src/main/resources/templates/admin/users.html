@@ -4,14 +4,15 @@
     <title>Users</title>
 </head>
 <body>
-<!--    todo make just one form with one submit button and make a button to set the value of the submit-->
-<form th:each="user: ${users}" role="form" th:method="post">
+<!--    todo make just one form with one submit button and make a button to set the value of the submit or make the delete/activate a get request-->
+<form th:each="user: ${users}" th:action="@{'/admin/users/activate/' + ${user.nickname}}" role="form" th:method="post">
     <div th:unless="${user.enabled}">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-        <input hidden readonly type="text" id="nickname" name="nickname" th:value="${user.nickname}">
-
         <input type="submit" class="enable-user-btn" id="submit">
     </div>
+</form>
+
+<form th:each="user: ${users}" th:action="@{'/admin/users/delete/' + ${user.nickname}}" role="form" th:method="post">
+    <input class="delete-user-btn" th:id="'delete-' + ${user.nickname}" type="submit">
 </form>
 </body>
 </html>

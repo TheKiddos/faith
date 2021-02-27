@@ -21,3 +21,10 @@ Feature: User Registration
     When Admin clicks the activate button on a deactivated user
     Then User is activated
     And User receives an email
+
+
+  Scenario: Admin Deletes Request
+    Given Admin visits users admin page
+    When Admin clicks the reject button on a deactivated user
+    Then User receives an email with the "Faith Account Deleted!" Subject
+    And User is deleted
