@@ -12,9 +12,11 @@ import org.thekiddos.faith.models.User;
 import org.thekiddos.faith.services.UserService;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -101,5 +103,16 @@ class LoginControllerTest {
         mockMvc.perform( login )
                 .andExpect( unauthenticated() )
                 .andExpect( status().is3xxRedirection() );
+    }
+
+    @Test
+    void forgotPasswordPageLoadsOk() throws Exception {
+        mockMvc.perform( get( "/forgot-password" ) ).andExpect( status().isOk() );
+    }
+
+    @Test
+    void generateToken() throws Exception {
+        mockMvc.perform( post( "/forgot-password" ).with( csrf() ).param( "email", "test@test.com" ) ).andExpect( status().isOk() );
+        Mockito.verify( userService, Mockito.times( 1 ) ).createForgotPasswordToken( "test@test.com" );
     }
 }

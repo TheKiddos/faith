@@ -11,10 +11,10 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.thekiddos.faith.Utils;
-import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.models.Email;
 import org.thekiddos.faith.models.User;
 import org.thekiddos.faith.repositories.EmailRepository;
+import org.thekiddos.faith.repositories.PasswordResetTokenRepository;
 import org.thekiddos.faith.repositories.UserRepository;
 import org.thekiddos.faith.services.EmailService;
 import org.thekiddos.faith.services.UserService;
@@ -32,18 +32,23 @@ public class UserRegistrationTest {
     private final EmailService emailService;
     private final UserRepository userRepository;
     private final EmailRepository emailRepository;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Autowired
-    public UserRegistrationTest( WebDriver webDriver, UserService userService, EmailService emailService, UserRepository userRepository, EmailRepository emailRepository ) {
+    public UserRegistrationTest( WebDriver webDriver, UserService userService, EmailService emailService, UserRepository userRepository, EmailRepository emailRepository, PasswordResetTokenRepository passwordResetTokenRepository ) {
         this.webDriver = webDriver;
         this.userService = userService;
         this.emailService = emailService;
         this.userRepository = userRepository;
         this.emailRepository = emailRepository;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
     }
 
     @io.cucumber.java.en.Given( "A new user visits registration page" )
     public void userIsNotLoggedIn() {
+        userRepository.deleteById( "testuser@test.com" );
+        emailRepository.deleteAll();
+
         webDriver.manage().window().maximize();
         webDriver.get( Utils.SITE_ROOT + "register" );
         assertEquals( Utils.SITE_ROOT + "register", webDriver.getCurrentUrl() );
@@ -118,7 +123,7 @@ public class UserRegistrationTest {
 
     @Given( "Admin visits users admin page" )
     public void adminVisitsUsersAdminPage() {
-        User user = getOrCreateTestUser();
+        User user = Utils.getOrCreateTestUser( userService );
 
         // setup user for this test (user must be disabled and have no emails)
         user.setEnabled( false );
@@ -128,27 +133,6 @@ public class UserRegistrationTest {
         loginAsAdmin();
 
         webDriver.get( Utils.USER_ADMIN_PANEL );
-    }
-
-    private User getOrCreateTestUser() {
-        try {
-            return (User) userService.loadUserByUsername( "testuser@test.com" );
-        }
-        catch ( UsernameNotFoundException e ) {
-            String password = "password";
-            UserDto userDto = UserDto.builder().email( "testuser@test.com" )
-                    .password( password )
-                    .passwordConfirm( password )
-                    .nickname( "tasty" )
-                    .firstName( "Test" )
-                    .lastName( "User" )
-                    .civilId( new byte[]{} )
-                    .phoneNumber( "+963987654321" )
-                    .address( "Street" )
-                    .type( null )
-                    .build();
-            return userService.createUser( userDto );
-        }
     }
 
     private void loginAsAdmin() {
@@ -181,13 +165,7 @@ public class UserRegistrationTest {
 
     @When( "Admin clicks the reject button on a deactivated user" )
     public void adminClicksTheRejectButtonOnADeactivatedUser() {
-        User user = getOrCreateTestUser();
-
-        // setup user for this test (user must be disabled and have no emails)
-        user.setEnabled( false );
-        userRepository.save( user );
-        emailRepository.deleteAll( emailRepository.findAllByTo( user.getEmail() ) );
-
+        User user = Utils.getOrCreateTestUser( userService );
         webDriver.findElement( By.id( "delete-" + user.getNickname() ) ).click();
     }
 

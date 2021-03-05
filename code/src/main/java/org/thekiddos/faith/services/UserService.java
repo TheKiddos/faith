@@ -3,6 +3,7 @@ package org.thekiddos.faith.services;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.exceptions.UserAlreadyExistException;
+import org.thekiddos.faith.models.PasswordResetToken;
 import org.thekiddos.faith.models.User;
 
 import java.util.List;
@@ -41,4 +42,12 @@ public interface UserService extends UserDetailsService {
      * @param nickname The nickname if the user to delete
      */
     void deleteUser( String nickname );
+
+    /**
+     * Creates and send a unique token to user email so he can reset his password
+     * if the user doesn't exists this method will log and return null
+     *
+     * @return The token generated or null if no user with the specified email was found
+     */
+    PasswordResetToken createForgotPasswordToken( String email );
 }

@@ -7,11 +7,7 @@
     <title>Title</title>
 </head>
 <body>
-    <form method="post" th:object="${user}">
-        <input
-                type="hidden"
-                th:name="${_csrf.parameterName}"
-                th:value="${_csrf.token}" />
+    <form method="post" th:object="${user}" th:action="@{/register}">
         <input type="email" name="email" th:field="*{email}" id="email">
         <input type="text" name="nickname" th:field="*{nickname}" id="nickname">
         <input type="password" name="password" th:field="*{password}" id="password">

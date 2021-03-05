@@ -7,4 +7,5 @@ public final class EmailSubjectConstants {
     public static final String USER_REQUIRES_APPROVAL = "User Requires Approval";
     public static final String ACCOUNT_ACTIVATED = "Faith Account Activated!";
     public static final String ACCOUNT_DELETED = "Faith Account Deleted!";
+    public static final String PASSWORD_RESET = "Password Reset Request";
 }

@@ -37,6 +37,8 @@ public class User implements UserDetails {
     private String address;
     @OneToOne
     private UserType type;
+    @OneToOne( cascade = CascadeType.ALL )
+    private PasswordResetToken passwordResetToken;
 
     private boolean enabled = true;
     @Getter( AccessLevel.NONE )

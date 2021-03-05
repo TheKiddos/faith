@@ -11,17 +11,21 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.exceptions.UserAlreadyExistException;
 import org.thekiddos.faith.mappers.UserMapper;
+import org.thekiddos.faith.repositories.PasswordResetTokenRepository;
 import org.thekiddos.faith.repositories.UserRepository;
 import org.thekiddos.faith.services.EmailService;
 import org.thekiddos.faith.services.UserServiceImpl;
 import org.thekiddos.faith.utils.EmailSubjectConstants;
 import org.thekiddos.faith.utils.EmailTemplatesConstants;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith( MockitoExtension.class )
@@ -30,6 +34,8 @@ class UserTest {
     private UserRepository userRepository;
     @Mock
     private EmailService emailService;
+    @Mock
+    private PasswordResetTokenRepository passwordResetTokenRepository;
     @InjectMocks
     private UserServiceImpl userService;
     private final UserMapper userMapper = UserMapper.INSTANCE;
@@ -215,5 +221,44 @@ class UserTest {
         userService.deleteUser( nickname );
 
         // No exception was thrown so we are done
+    }
+
+    @Test
+    void createForgotPasswordToken() {
+        UserDto userDTO = UserDto.builder().email( "test@test.com" ).password( "password" ).build();
+        User user = userMapper.userDtoToUser( userDTO );
+
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findById( user.getEmail() );
+        Mockito.doReturn( Optional.empty() ).when( passwordResetTokenRepository ).findByUser_Email( user.getEmail() );
+        Mockito.doAnswer( returnsFirstArg() ).when( passwordResetTokenRepository ).save( any( PasswordResetToken.class ) );
+        PasswordResetToken token = userService.createForgotPasswordToken( user.getEmail() );
+
+        assertEquals( user.getEmail(), token.getUser().getEmail() );
+        assertEquals( 1, Duration.between( LocalDateTime.now(), LocalDateTime.now().with( token.getExpirationDate() ) ).toDays() );
+
+        Mockito.verify( passwordResetTokenRepository, Mockito.times( 1 ) ).save( any( PasswordResetToken.class ) );
+        Mockito.verify( emailService, Mockito.times( 1 ) )
+                .sendTemplateMail( eq( List.of( user.getEmail() ) ), anyString(), eq( EmailSubjectConstants.PASSWORD_RESET ), eq( EmailTemplatesConstants.PASSWORD_RESET_TEMPLATE ), any() );
+        Mockito.verify( userRepository, Mockito.times( 1 ) ).save( any() );
+
+    }
+
+    @Test
+    void createForgotPasswordTokenAndReplaceOldToken() {
+        UserDto userDTO = UserDto.builder().email( "test@test.com" ).password( "password" ).build();
+        User user = userMapper.userDtoToUser( userDTO );
+
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findById( user.getEmail() );
+        Mockito.doReturn( Optional.of( new PasswordResetToken() ) ).when( passwordResetTokenRepository ).findByUser_Email( user.getEmail() );
+        Mockito.doAnswer( returnsFirstArg() ).when( passwordResetTokenRepository ).save( any( PasswordResetToken.class ) );
+        PasswordResetToken token = userService.createForgotPasswordToken( user.getEmail() );
+
+        assertEquals( user.getEmail(), token.getUser().getEmail() );
+        assertEquals( 1, Duration.between( LocalDateTime.now(), LocalDateTime.now().with( token.getExpirationDate() ) ).toDays() );
+
+        Mockito.verify( passwordResetTokenRepository, Mockito.times( 1 ) ).save( any( PasswordResetToken.class ) );
+        Mockito.verify( emailService, Mockito.times( 1 ) )
+                .sendTemplateMail( eq( List.of( user.getEmail() ) ), anyString(), eq( EmailSubjectConstants.PASSWORD_RESET ), eq( EmailTemplatesConstants.PASSWORD_RESET_TEMPLATE ), any() );
+        Mockito.verify( userRepository, Mockito.times( 1 ) ).save( any() );
     }
 }
