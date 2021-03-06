@@ -14,7 +14,7 @@ public class PasswordResetToken {
     @GeneratedValue( strategy = GenerationType.AUTO )
     private Long id;
 
-    @OneToOne( mappedBy = "passwordResetToken" )
+    @OneToOne( mappedBy = "passwordResetToken", fetch = FetchType.EAGER )
     private User user;
     @NotNull @NotEmpty
     private String token;
@@ -23,5 +23,10 @@ public class PasswordResetToken {
 
     public PasswordResetToken() {
         this.expirationDate = LocalDate.now().plusDays( 1 );
+    }
+
+    @Override
+    public String toString() {
+        return "Token(token=" + getToken() + ")";
     }
 }

@@ -261,4 +261,38 @@ class UserTest {
                 .sendTemplateMail( eq( List.of( user.getEmail() ) ), anyString(), eq( EmailSubjectConstants.PASSWORD_RESET ), eq( EmailTemplatesConstants.PASSWORD_RESET_TEMPLATE ), any() );
         Mockito.verify( userRepository, Mockito.times( 1 ) ).save( any() );
     }
+
+    @Test
+    void resetUserPassword() {
+        var token = new PasswordResetToken();
+        var user = new User();
+        token.setUser( user );
+
+        Mockito.doReturn( Optional.of( token ) ).when( passwordResetTokenRepository ).findByToken( "token" );
+        userService.resetUserPassword( "token", "newpassword" );
+
+        assertTrue( user.checkPassword( "newpassword" ) );
+        Mockito.verify( userRepository, Mockito.times( 1 ) ).save( user );
+        Mockito.verify( passwordResetTokenRepository, Mockito.times( 1 ) ).deleteById( any() );
+    }
+
+    @Test
+    void resetUserPasswordWithNoToken() {
+        Mockito.doReturn( Optional.empty() ).when( passwordResetTokenRepository ).findByToken( any() );
+        userService.resetUserPassword( "token", "newpassword" );
+
+        Mockito.verify( userRepository, Mockito.times( 0 ) ).save( any() );
+        Mockito.verify( passwordResetTokenRepository, Mockito.times( 0 ) ).deleteById( any() );
+    }
+
+    @Test
+    void resetUserPasswordWithInvalidToken() {
+        var token = new PasswordResetToken();
+
+        Mockito.doReturn( Optional.of( token ) ).when( passwordResetTokenRepository ).findByToken( "token" );
+        userService.resetUserPassword( "token", "newpassword" );
+
+        Mockito.verify( userRepository, Mockito.times( 0 ) ).save( any() );
+        Mockito.verify( passwordResetTokenRepository, Mockito.times( 0 ) ).deleteById( any() );
+    }
 }

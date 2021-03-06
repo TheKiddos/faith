@@ -50,4 +50,11 @@ public interface UserService extends UserDetailsService {
      * @return The token generated or null if no user with the specified email was found
      */
     PasswordResetToken createForgotPasswordToken( String email );
+
+    /**
+     * Changes the specified user password if the user has a reset password token
+     * @param token The password reset token value
+     * @param newPassword The new password to use
+     */
+    void resetUserPassword( String token, String newPassword );
 }

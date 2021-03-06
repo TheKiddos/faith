@@ -37,7 +37,7 @@ public class User implements UserDetails {
     private String address;
     @OneToOne
     private UserType type;
-    @OneToOne( cascade = CascadeType.ALL )
+    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
     private PasswordResetToken passwordResetToken;
 
     private boolean enabled = true;
@@ -106,5 +106,10 @@ public class User implements UserDetails {
         if ( nickname == null )
             return;
         this.nickname = nickname.toLowerCase();
+    }
+
+    @Override
+    public String toString() {
+        return "User(email=" + getEmail() + ")";
     }
 }

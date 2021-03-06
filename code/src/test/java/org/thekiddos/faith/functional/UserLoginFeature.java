@@ -71,17 +71,31 @@ public class UserLoginFeature {
 
     @Given( "a user with a token visits the password reset page" )
     public void aUserWithATokenVisitsThePasswordResetPage() {
+        User user = Utils.getOrCreateTestUser( userService );
+        var token = userService.createForgotPasswordToken( user.getEmail() );
+
+        webDriver.get( Utils.getPasswordResetTokenUrl( token.getToken() ) );
     }
 
     @And( "user enters his new password and password confirm" )
     public void userEntersHisNewPasswordAndPasswordConfirm() {
+        webDriver.findElement( By.id( "password" ) ).sendKeys( "newpassword" );
+        webDriver.findElement( By.id( "password-confirm" ) ).sendKeys( "newpassword" );
     }
+
+    // Click button is above
 
     @Then( "his password changes" )
     public void hisPasswordChanges() {
+        User user = Utils.getOrCreateTestUser( userService );
+        assertTrue( user.checkPassword( "newpassword" ) );
     }
 
     @And( "token is deleted" )
     public void tokenIsDeleted() {
+        User user = Utils.getOrCreateTestUser( userService );
+        assertNull( user.getPasswordResetToken() );
+        assertTrue( passwordResetTokenRepository.findByUser_Email( user.getEmail() ).isEmpty() );
+        webDriver.close();
     }
 }

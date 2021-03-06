@@ -17,6 +17,7 @@ public final class Utils {
     public static final String ADMIN_PANEL = SITE_ROOT + "admin";
     public static final String USER_ADMIN_PANEL = ADMIN_PANEL + "/users/";
     public static final String FORGOT_PASSWORD_URL = SITE_ROOT + "forgot-password";
+    public static final String PASSWORD_RESET_URL = SITE_ROOT + "reset-password";
 
     public static String toJson( Object object ) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -42,5 +43,9 @@ public final class Utils {
                     .build();
             return userService.createUser( userDto );
         }
+    }
+
+    public static String getPasswordResetTokenUrl( String token ) {
+        return PASSWORD_RESET_URL + "/" + token;
     }
 }

@@ -121,6 +121,22 @@ public class UserServiceImpl implements UserService {
         return token;
     }
 
+    @Override
+    public void resetUserPassword( String token, String newPassword ) {
+        var optionalToken = passwordResetTokenRepository.findByToken( token );
+        if ( optionalToken.isEmpty() )
+            return;
+
+        var user = optionalToken.get().getUser();
+        if ( user == null )
+            return;
+
+        user.setPassword( newPassword );
+        user.setPasswordResetToken( null );
+        passwordResetTokenRepository.deleteById( optionalToken.get().getId() );
+        userRepository.save( user );
+    }
+
     private PasswordResetToken getTokenForUser( User user ) {
         String tokenValue = UUID.randomUUID().toString();
 
