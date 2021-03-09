@@ -1,18 +1,74 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <title>Users</title>
+    <title>Register</title>
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+            rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+            rel="stylesheet"
+    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <!-- MDB -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.3.0/mdb.min.css"
+            rel="stylesheet"
+    />
+    <style>
+        .jumbotron {
+            width: 50%;
+        }
+    </style>
 </head>
 <body>
-<!--    todo make just one form with one submit button and make a button to set the value of the submit or make the delete/activate a get request-->
-<form th:each="user: ${users}" th:action="@{'/admin/users/activate/' + ${user.nickname}}" role="form" th:method="post">
-    <div th:unless="${user.enabled}">
-        <input type="submit" class="enable-user-btn" id="submit">
-    </div>
-</form>
-
-<form th:each="user: ${users}" th:action="@{'/admin/users/delete/' + ${user.nickname}}" role="form" th:method="post">
-    <input class="delete-user-btn" th:id="'delete-' + ${user.nickname}" type="submit">
-</form>
+<div class="container">
+    <table class="table align-middle mt-3 caption-top table-hover">
+        <caption class="lead">
+            List of users
+        </caption>
+        <thead class="table-dark">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Nickname</th>
+            <th scope="col">Email</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Phone Number</th>
+            <th scope="col">Delete</th>
+            <th scope="col">Activate</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user, iter: ${users}">
+            <th scope="row" th:text="${iter.count}">1</th>
+            <td th:text="${user.nickname}">tasty</td>
+            <td th:text="${user.email}">test@gmail.com</td>
+            <td th:text="${user.firstName}">Test</td>
+            <td th:text="${user.lastName}">User</td>
+            <td th:text="${user.phoneNumber}">+963956592332</td>
+            <td>
+                <form th:action="@{'/admin/users/delete/' + ${user.nickname}}" class="form" role="form" th:method="post">
+                    <button class="delete-user-btn btn btn btn-danger" th:id="'delete-' + ${user.nickname}"><span class="fas fa-times"></span></button>
+                </form>
+            </td>
+            <td>
+                <form th:unless="${user.enabled}" th:action="@{'/admin/users/activate/' + ${user.nickname}}" class="form" role="form" th:method="post">
+                    <button class="enable-user-btn btn btn-success" id="submit"><span class="fas fa-check"></span></button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<!-- MDB -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+<script
+        type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.3.0/mdb.min.js"
+></script>
 </body>
 </html>
