@@ -4,10 +4,31 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.thekiddos.faith.Utils;
+import org.thekiddos.faith.services.UserService;
 
 public class ProjectFeature {
+    private final UserService userService;
+    private final WebDriver webDriver;
+
+    public ProjectFeature( UserService userService, WebDriver webDriver ) {
+        this.userService = userService;
+        this.webDriver = webDriver;
+    }
+
     @Given( "Stakeholder logins" )
     public void stakeholderLogins() {
+        var email = "stakeholder@test.com";
+        var type = "Stakeholder";
+
+        Utils.getOrCreateTestUser( userService, email, type );
+
+        webDriver.get( Utils.LOGIN_PAGE );
+        webDriver.findElement( By.id( "email" ) ).sendKeys( email );
+        webDriver.findElement( By.id( "password" ) ).sendKeys( "password" );
+        webDriver.findElement( By.id( "submit" ) ).click();
     }
 
     @And( "Stakeholder visits my projects page" )

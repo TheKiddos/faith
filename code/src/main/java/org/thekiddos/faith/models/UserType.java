@@ -5,9 +5,10 @@ import lombok.Data;
 import javax.persistence.*;
 
 @Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Data
-public class UserType {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+public abstract class UserType {
+    @Id @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
     @OneToOne(mappedBy = "type")
     private User user;

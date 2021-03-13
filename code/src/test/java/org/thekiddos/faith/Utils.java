@@ -11,6 +11,7 @@ import org.thekiddos.faith.services.UserService;
  * Utilities Class for functional tests
  */
 public final class Utils {
+    private static int nicknameCounter = 0;
     public static final String SITE_ROOT = "http://localhost:8080/"; // Port must match one from application.properties
     public static final String REGISTRATION_SUCCESSFUL_URL = SITE_ROOT + "register/success";
     public static final String LOGIN_PAGE = SITE_ROOT + "login";
@@ -25,27 +26,39 @@ public final class Utils {
     }
 
     public static User getOrCreateTestUser( UserService userService ) {
+        return getOrCreateTestUser( userService, "testuser@test.com", null );
+    }
+
+    public static String getPasswordResetTokenUrl( String token ) {
+        return PASSWORD_RESET_URL + "/" + token;
+    }
+
+    public static User getOrCreateTestUser( UserService userService, String email, String type ) {
+        User user;
         try {
-            return (User) userService.loadUserByUsername( "testuser@test.com" );
+            user = (User) userService.loadUserByUsername( email );
+            if ( type == null && user.getType() == null )
+                return user;
+            if ( !user.getType().toString().equals( type ) ) {
+                userService.deleteUser( user.getNickname() );
+                throw new UsernameNotFoundException( "Die" );
+            }
         }
         catch ( UsernameNotFoundException e ) {
-            String password = "password";
-            UserDto userDto = UserDto.builder().email( "testuser@test.com" )
+            var password = "password";
+            UserDto userDto = UserDto.builder().email( email )
                     .password( password )
                     .passwordConfirm( password )
-                    .nickname( "tasty" )
+                    .nickname( "tasty" + ++nicknameCounter )
                     .firstName( "Test" )
                     .lastName( "User" )
                     .civilId( new byte[]{} )
                     .phoneNumber( "+963987654321" )
                     .address( "Street" )
-                    .type( null )
+                    .type( type )
                     .build();
-            return userService.createUser( userDto );
+            user = userService.createUser( userDto );
         }
-    }
-
-    public static String getPasswordResetTokenUrl( String token ) {
-        return PASSWORD_RESET_URL + "/" + token;
+        return user;
     }
 }

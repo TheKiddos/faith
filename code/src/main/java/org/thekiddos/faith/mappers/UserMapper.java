@@ -3,6 +3,7 @@ package org.thekiddos.faith.mappers;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 import org.thekiddos.faith.dtos.UserDto;
+import org.thekiddos.faith.models.Stakeholder;
 import org.thekiddos.faith.models.User;
 import org.thekiddos.faith.models.UserType;
 
@@ -13,6 +14,12 @@ public interface UserMapper {
     User userDtoToUser( UserDto userDTO );
 
     default UserType UserTypeDtoToUserType( String userType ) {
-        return null;
+        if ( userType == null )
+            return null;
+
+        return switch ( userType ) {
+            case "Stakeholder" -> new Stakeholder();
+            default -> null;
+        };
     }
 }

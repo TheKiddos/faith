@@ -65,8 +65,8 @@ class RegistrationControllerTest {
         User user = userMapper.userDtoToUser( userDto );
         Mockito.doReturn( user ).when( userService ).createUser( any( UserDto.class ) );
 
-        String civilIdPath = new ClassPathResource("banner.txt").getFile().getAbsolutePath();
-        mockMvc.perform(post("/register")
+        String civilIdPath = new ClassPathResource( "banner.txt" ).getFile().getAbsolutePath();
+        mockMvc.perform(post( "/register" )
                         .with( csrf() )
                         .param( "email", userDto.getEmail() )
                         .param( "password", password )
@@ -101,8 +101,8 @@ class RegistrationControllerTest {
                 .build();
 
         Mockito.doReturn( Optional.of( userDto ) ).when( userRepository ).findById( userDto.getEmail() );
-        String civilIdPath = new ClassPathResource("banner.txt").getFile().getAbsolutePath();
-        mockMvc.perform(post("/register")
+        String civilIdPath = new ClassPathResource( "banner.txt" ).getFile().getAbsolutePath();
+        mockMvc.perform(post( "/register" )
                 .with( csrf() )
                 .param( "email", userDto.getEmail() )
                 .param( "password", password )
@@ -173,8 +173,8 @@ class RegistrationControllerTest {
                 .build();
 
         Mockito.doReturn( Optional.empty() ).when( userRepository ).findByNicknameIgnoreCase( userDto.getNickname() );
-        String civilIdPath = new ClassPathResource("banner.txt").getFile().getAbsolutePath();
-        mockMvc.perform(post("/register")
+        String civilIdPath = new ClassPathResource( "banner.txt" ).getFile().getAbsolutePath();
+        mockMvc.perform(post( "/register" )
                 .with( csrf() )
                 .param( "email", "otheruser@test.com" )
                 .param( "password", password )

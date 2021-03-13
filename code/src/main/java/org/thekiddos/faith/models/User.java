@@ -35,7 +35,7 @@ public class User implements UserDetails {
     @Lob
     private byte[] civilId;
     private String address;
-    @OneToOne
+    @OneToOne( cascade = CascadeType.ALL )
     private UserType type;
     @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
     private PasswordResetToken passwordResetToken;
