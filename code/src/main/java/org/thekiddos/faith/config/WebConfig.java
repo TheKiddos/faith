@@ -29,6 +29,7 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
     protected void configure( HttpSecurity http ) throws Exception {
         http.authorizeRequests()
                 .antMatchers( "/admin", "/admin/**" ).hasAuthority( "ADMIN" )
+                .antMatchers( "/stakeholder", "/stakeholder/**" ).hasAuthority( "STAKEHOLDER" )
                 .antMatchers( "/register", "/register/**", "/forgot-password", "/reset-password", "/reset-password/**" ).permitAll()
                 .anyRequest().authenticated()
                 .and()

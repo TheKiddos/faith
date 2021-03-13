@@ -9,6 +9,8 @@ import org.openqa.selenium.WebDriver;
 import org.thekiddos.faith.Utils;
 import org.thekiddos.faith.services.UserService;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class ProjectFeature {
     private final UserService userService;
     private final WebDriver webDriver;
@@ -33,10 +35,13 @@ public class ProjectFeature {
 
     @And( "Stakeholder visits my projects page" )
     public void stakeholderVisitsMyProjectsPage() {
+        webDriver.get( Utils.MY_PROJECTS_PAGE );
     }
 
     @And( "Stakeholder clicks add project buttons" )
     public void stakeholderClicksAddProjectButtons() {
+        webDriver.findElement( By.id( "add-project" ) ).click();
+        assertEquals( Utils.ADD_PROJECT_PAGE , webDriver.getCurrentUrl() );
     }
 
     @And( "Stakeholder fills project details" )

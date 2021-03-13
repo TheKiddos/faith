@@ -81,6 +81,15 @@ class UserTest {
     }
 
     @Test
+    void stakeholderHasRightAuthorities() {
+        UserDto userDTO = UserDto.builder().email( "test@test.com" ).password( "password" ).type( "Stakeholder" ).build();
+        User user = userMapper.userDtoToUser( userDTO );
+
+        assertFalse( user.isAdmin() );
+        assertEquals( List.of( new SimpleGrantedAuthority( "USER" ), new SimpleGrantedAuthority( "STAKEHOLDER" ) ), user.getAuthorities() );
+    }
+
+    @Test
     void requireAdminApprovalFor() {
         UserDto userDTO = UserDto.builder().email( "test@test.com" ).password( "password" ).build();
         User user = userMapper.userDtoToUser( userDTO );

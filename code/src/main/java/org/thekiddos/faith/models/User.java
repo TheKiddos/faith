@@ -11,8 +11,8 @@ import org.thekiddos.faith.utils.Util;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.*;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Objects;
 
 @Data
@@ -48,7 +48,12 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         String role = isAdmin() ? "ADMIN" : "USER";
-        return Collections.singletonList( new SimpleGrantedAuthority( role ) );
+        ArrayList<SimpleGrantedAuthority> auth = new ArrayList<>();
+        auth.add( new SimpleGrantedAuthority( role ) );
+        if ( getType() == null )
+            return auth;
+        auth.add( new SimpleGrantedAuthority( getType().toString().toUpperCase() ) );
+        return auth;
     }
 
     @Override
