@@ -20,4 +20,17 @@ public class Project {
 
     @ManyToOne( optional = false ) @NotNull
     private Stakeholder owner;
+
+    @Override
+    public String toString() {
+        return "Project(" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", preferredBid=" + preferredBid +
+                ", duration=" + duration +
+                ", minimumQualification=" + minimumQualification +
+                ", allowBidding=" + allowBidding +
+                ')';
+    }
 }
