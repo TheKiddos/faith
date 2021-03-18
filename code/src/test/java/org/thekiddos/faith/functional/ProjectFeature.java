@@ -13,7 +13,7 @@ import org.thekiddos.faith.services.UserService;
 import org.thekiddos.faith.repositories.*;
 import org.thekiddos.faith.models.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ProjectFeature {
     private final UserService userService;
