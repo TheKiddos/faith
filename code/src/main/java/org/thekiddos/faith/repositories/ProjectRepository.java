@@ -6,4 +6,5 @@ import org.thekiddos.faith.models.Project;
 
 @Repository
 public interface ProjectRepository extends CrudRepository<Project, Long> {
+    List<Project> findAll();
 }
