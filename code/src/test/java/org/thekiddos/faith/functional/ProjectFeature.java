@@ -52,9 +52,9 @@ public class ProjectFeature {
     public void stakeholderFillsProjectDetails() {
             webDriver.findElement( By.id( "name" ) ).sendKeys( "new world order" );
             webDriver.findElement( By.id( "description" ) ).sendKeys( "Make all people slaves" );
-            webDriver.findElement( By.id( "preferredBid" ) ).sendKeys( "200.0" );
+            webDriver.findElement( By.id( "preferred-bid" ) ).sendKeys( "200.0" );
             webDriver.findElement( By.id( "duration" ) ).sendKeys( "31" );
-            webDriver.findElement( By.id( "minimumQualification" ) ).sendKeys( "100" );
+            webDriver.findElement( By.id( "minimum-qualification" ) ).sendKeys( "100" );
     }
 
     @And( "Stakeholder sets the project public" )
