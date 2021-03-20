@@ -42,7 +42,7 @@ class ProjectTest {
                 .name( "new world order" )
                 .description( "Make all people slaves" )
                 .preferredBid( 200.0 )
-                .duration( Duration.ofDays( 31 ) )
+                .duration( 31 )
                 .minimumQualification( 100 )
                 .allowBidding( true )
                 .build();
@@ -63,7 +63,7 @@ class ProjectTest {
         assertEquals( projectDto.getName(), project.getName() );
         assertEquals( projectDto.getDescription(), project.getDescription() );
         assertEquals( projectDto.getPreferredBid(), project.getPreferredBid() );
-        assertEquals( projectDto.getDuration(), project.getDuration() );
+        assertEquals( Duration.ofDays( projectDto.getDuration() ), project.getDuration() );
         assertEquals( projectDto.getMinimumQualification(), project.getMinimumQualification() );
         assertEquals( projectDto.isAllowBidding(), project.isAllowBidding() );
         assertEquals( stakeholder, project.getOwner() );
@@ -73,7 +73,7 @@ class ProjectTest {
         assertEquals( projectDto.getName(), project.getName() );
         assertEquals( projectDto.getDescription(), project.getDescription() );
         assertEquals( projectDto.getPreferredBid(), project.getPreferredBid() );
-        assertEquals( projectDto.getDuration(), project.getDuration() );
+        assertEquals( Duration.ofDays( projectDto.getDuration() ), project.getDuration() );
         assertEquals( projectDto.getMinimumQualification(), project.getMinimumQualification() );
         assertEquals( projectDto.isAllowBidding(), project.isAllowBidding() );
     }
