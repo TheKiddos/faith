@@ -1,17 +1,16 @@
 package org.thekiddos.faith.functional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.thekiddos.faith.Utils;
+import org.thekiddos.faith.models.User;
+import org.thekiddos.faith.repositories.ProjectRepository;
 import org.thekiddos.faith.services.UserService;
-import org.thekiddos.faith.repositories.*;
-import org.thekiddos.faith.models.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -52,42 +51,43 @@ public class ProjectFeature {
     public void stakeholderFillsProjectDetails() {
             webDriver.findElement( By.id( "name" ) ).sendKeys( "new world order" );
             webDriver.findElement( By.id( "description" ) ).sendKeys( "Make all people slaves" );
+            webDriver.findElement( By.id( "preferred-bid" ) ).clear();
             webDriver.findElement( By.id( "preferred-bid" ) ).sendKeys( "200.0" );
+            webDriver.findElement( By.id( "duration" ) ).clear();
             webDriver.findElement( By.id( "duration" ) ).sendKeys( "31" );
+            webDriver.findElement( By.id( "minimum-qualification" ) ).clear();
             webDriver.findElement( By.id( "minimum-qualification" ) ).sendKeys( "100" );
     }
 
     @And( "Stakeholder sets the project public" )
     public void stakeholderSetsTheProjectPublic() {
-        webDriver.findElement( By.id( "allowBidding" ) ).click();
+        webDriver.findElement( By.id( "allow-bidding" ) ).click();
     }
 
     @When( "Stakeholder clicks the submit button" )
     public void stakeholderClicksTheSubmitButton() {
-        webDriver.findElement( By.id( "submit" ) ).click();
+        webDriver.findElement( By.id( "submit-project" ) ).click();
     }
 
-    @Then( "Project is added" )
-    public void projectIsAdded() {
+    @Then( "Project is added with {string} for bidding" )
+    public void projectIsAddedWithForBidding( String bidding ) {
         var projects = projectRepository.findAll();
-        
+
         assertFalse( projects.isEmpty() );
-        
+
         var project = projects.get( 0 );
         assertNotNull( project );
         assertEquals( "new world order", project.getName() );
         assertEquals( "Make all people slaves", project.getDescription() );
         assertEquals( 200.0, project.getPreferredBid() );
-        assertEquals( 31, project.getDuration() );
+        assertEquals( 31, project.getDuration().toDays() );
         assertEquals( 100, project.getMinimumQualification() );
-        assertEquals( true, project.isAllowBidding() );
-        assertEquals( (Stakeholder) user.getType(), project.getOwner() );
-    }
+        assertEquals( bidding, String.valueOf( project.isAllowBidding() ) );
+        assertNotNull( project.getOwner() );
+        assertEquals( this.user.getEmail(), project.getOwner().getUser().getEmail() );
 
-    @And( "Project is seen on homepage new projects section" )
-    public void projectIsSeenOnHomepageNewProjectsSection() {
-        var project = projectRepository.findAll().get( 0 );
-        webDriver.findElement( By.id( "project_" + project.getId() ) );
+        projectRepository.deleteAll(); // For other tests
+        webDriver.close();
     }
 
     @And( "Stakeholder sets the project private" )

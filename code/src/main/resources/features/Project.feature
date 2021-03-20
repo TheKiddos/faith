@@ -6,8 +6,7 @@ Feature: Create Project
     And Stakeholder fills project details
     And Stakeholder sets the project public
     When Stakeholder clicks the submit button
-    Then Project is added
-    And Project is seen on homepage new projects section
+    Then Project is added with "true" for bidding
 
   Scenario: Private Project
     Given Stakeholder logins
@@ -16,5 +15,4 @@ Feature: Create Project
     And Stakeholder fills project details
     And Stakeholder sets the project private
     When Stakeholder clicks the submit button
-    Then Project is added
-    And Project is seen on homepage new projects section
+    Then Project is added with "false" for bidding

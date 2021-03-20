@@ -61,13 +61,13 @@
 
                 <div class="col-4 my-auto">
                     <div class="form-check mb-4">
-                        <input class="form-check-input" type="checkbox" name="allowBidding" th:value="allowBidding" id="allow-bidding">
+                        <input class="form-check-input" type="checkbox" name="allowBidding" th:field="*{allowBidding}" id="allow-bidding">
                         <label class="form-check-label" for="allow-bidding">Bidding</label>
                     </div>
                 </div>
             </div>
 
-            <input class="btn-block btn btn-success" id="submit" type="submit">
+            <input class="btn-block btn btn-success" id="submit-project" type="submit">
         </form>
     </div>
 </div>

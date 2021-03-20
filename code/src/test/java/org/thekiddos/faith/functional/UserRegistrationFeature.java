@@ -14,7 +14,6 @@ import org.thekiddos.faith.Utils;
 import org.thekiddos.faith.models.Email;
 import org.thekiddos.faith.models.User;
 import org.thekiddos.faith.repositories.EmailRepository;
-import org.thekiddos.faith.repositories.PasswordResetTokenRepository;
 import org.thekiddos.faith.repositories.UserRepository;
 import org.thekiddos.faith.services.EmailService;
 import org.thekiddos.faith.services.UserService;
@@ -26,22 +25,20 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UserRegistrationTest {
+public class UserRegistrationFeature {
     private final WebDriver webDriver;
     private final UserService userService;
     private final EmailService emailService;
     private final UserRepository userRepository;
     private final EmailRepository emailRepository;
-    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Autowired
-    public UserRegistrationTest( WebDriver webDriver, UserService userService, EmailService emailService, UserRepository userRepository, EmailRepository emailRepository, PasswordResetTokenRepository passwordResetTokenRepository ) {
+    public UserRegistrationFeature( WebDriver webDriver, UserService userService, EmailService emailService, UserRepository userRepository, EmailRepository emailRepository ) {
         this.webDriver = webDriver;
         this.userService = userService;
         this.emailService = emailService;
         this.userRepository = userRepository;
         this.emailRepository = emailRepository;
-        this.passwordResetTokenRepository = passwordResetTokenRepository;
     }
 
     @io.cucumber.java.en.Given( "A new user visits registration page" )
