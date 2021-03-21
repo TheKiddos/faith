@@ -46,7 +46,7 @@ public class FreelancerProfileFeature {
     @And( "Freelancer fills his details" )
     public void freelancerFillsHisDetails() {
         webDriver.findElement( By.id( "summary" ) ).sendKeys( "Blah Blah" );
-        webDriver.findElement( By.id( "skills" ) ).sendKeys( "python\tc++ sleeping" );
+        webDriver.findElement( By.id( "skills" ) ).sendKeys( "python\nc++ sleeping" );
         webDriver.findElement( By.id( "is-available" ) ).click();
     }
 
@@ -63,7 +63,7 @@ public class FreelancerProfileFeature {
         assertEquals( "Blah Blah", freelancer.getSummary() );
         assertTrue( freelancer.isAvailable() );
 
-        Set<Skill> skills = Set.of( Skill.of( "python" ), Skill.of( "c++" ), Skill.of( "sleep" ) );
+        Set<Skill> skills = Set.of( Skill.of( "python" ), Skill.of( "c++ sleeping" ) );
         assertEquals( skills, freelancer.getSkills() );
     }
 }

@@ -2,7 +2,7 @@ package org.thekiddos.faith.models;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
 import java.util.Set;
 
 @Data
@@ -10,6 +10,11 @@ import java.util.Set;
 public class Freelancer extends UserType {
     private String summary;
     private boolean available;
+
+    @ManyToMany(cascade = CascadeType.DETACH)
+    @JoinTable(name="skill_freelancer",
+            joinColumns={@JoinColumn(name="freelancer_id")},
+            inverseJoinColumns={@JoinColumn(name="skill_name")})
     private Set<Skill> skills;
 
     @Override
