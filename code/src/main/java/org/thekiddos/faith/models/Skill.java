@@ -3,6 +3,7 @@ package org.thekiddos.faith.models;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.thekiddos.faith.repositories.SkillRepository;
 import org.thekiddos.faith.utils.ContextManager;
 
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Entity
 @Data
 @AllArgsConstructor
@@ -26,7 +28,13 @@ public class Skill {
             return null;
 
         var skillObject = new Skill( skill );
-        return ContextManager.getBean( SkillRepository.class ).save( skillObject );
+        try {
+            ContextManager.getBean( SkillRepository.class ).save( skillObject );
+        }
+        catch ( NullPointerException e ) {
+            log.error( "Couldn't save Skill, Null repository..." );
+        }
+        return skillObject;
     }
 
     public static List<Skill> createSkills( String skills ) {
