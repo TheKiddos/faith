@@ -7,7 +7,8 @@ import org.thekiddos.faith.models.Skill;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class FreelancerMapperTest {
     private final FreelancerMapper freelancerMapper = FreelancerMapper.INSTANCE;
@@ -26,8 +27,9 @@ public class FreelancerMapperTest {
                             .build();
         
         Freelancer freelancer = freelancerMapper.toEntity( dto );
-        assertEquals( "Hehhehe", freelancer.getSummary() );
-        assertTrue( freelancer.isAvailable() );
+        assertEquals( dto.getSummary(), freelancer.getSummary() );
+        assertEquals( dto.isAvailable(), freelancer.isAvailable() );
+        assertEquals( "c++\nsuck", dto.getSkills() );
         assertEquals( Set.of( Skill.of( "c++" ), Skill.of( "suck" ) ), freelancer.getSkills() );
     }
 }
