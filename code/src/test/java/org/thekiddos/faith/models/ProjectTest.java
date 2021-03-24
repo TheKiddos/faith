@@ -1,14 +1,17 @@
 package org.thekiddos.faith.models;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.thekiddos.faith.dtos.ProjectDto;
 import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.repositories.ProjectRepository;
+import org.thekiddos.faith.repositories.UserRepository;
 import org.thekiddos.faith.services.ProjectService;
 import org.thekiddos.faith.services.UserService;
 
@@ -23,17 +26,35 @@ class ProjectTest {
     private final ProjectService projectService;
     private final ProjectRepository projectRepository;
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @Autowired
-    ProjectTest( ProjectService projectService, ProjectRepository projectRepository, UserService userService ) {
+    ProjectTest( ProjectService projectService, ProjectRepository projectRepository, UserService userService, UserRepository userRepository ) {
         this.projectService = projectService;
         this.projectRepository = projectRepository;
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @BeforeEach
     public void setUp() {
         projectRepository.deleteAll();
+        try {
+            userRepository.deleteById( "bhbh@gmail.com" );
+        }
+        catch ( EmptyResultDataAccessException e ) {
+            // ignore
+        }
+    }
+
+    @AfterEach
+    void tearDown() {
+        try {
+            userRepository.deleteById( "bhbh@gmail.com" );
+        }
+        catch ( EmptyResultDataAccessException e ) {
+            // ignore
+        }
     }
 
     @Test

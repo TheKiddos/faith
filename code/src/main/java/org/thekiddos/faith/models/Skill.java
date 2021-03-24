@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.thekiddos.faith.repositories.SkillRepository;
-import org.thekiddos.faith.utils.ContextManager;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -27,14 +25,7 @@ public class Skill {
         if ( skill == null || skill.isEmpty() )
             return null;
 
-        var skillObject = new Skill( skill );
-        try {
-            ContextManager.getBean( SkillRepository.class ).save( skillObject );
-        }
-        catch ( NullPointerException e ) {
-            log.error( "Couldn't save Skill, Null repository..." );
-        }
-        return skillObject;
+        return new Skill( skill );
     }
 
     public static List<Skill> createSkills( String skills ) {

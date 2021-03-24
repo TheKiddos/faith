@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.thekiddos.faith.repositories.SkillRepository;
+import org.thekiddos.faith.services.SkillService;
 
 import java.util.HashSet;
 import java.util.List;
@@ -18,10 +19,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith( SpringExtension.class )
 class SkillTest {
     private final SkillRepository skillRepository;
+    private final SkillService skillService;
 
     @Autowired
-    SkillTest( SkillRepository skillRepository ) {
+    SkillTest( SkillRepository skillRepository, SkillService skillService ) {
         this.skillRepository = skillRepository;
+        this.skillService = skillService;
     }
 
     @BeforeEach
@@ -32,11 +35,6 @@ class SkillTest {
     @Test
     void createSkillWithOf() {
         assertEquals( "suck", Skill.of( "suck" ).getName() );
-
-        // TODO: for some reason this fails in maven but not intellij
-//        var skill = skillRepository.findById( "suck" ).orElse( null );
-//        assertNotNull( skill );
-//        assertEquals( "suck", skill.getName() );
     }
 
     @Test
@@ -64,8 +62,6 @@ class SkillTest {
             skillNames.remove( skillName );
         }
         assertTrue( skillNames.isEmpty() );
-        // TODO: for some reason this fails in maven but not intellij
-//        assertEquals( skills, skillRepository.findAll() );
     }
 
     @Test
@@ -77,4 +73,14 @@ class SkillTest {
     void createSkillsFromEmptyString() {
         assertTrue( Skill.createSkills( "" ).isEmpty() );
     }
+
+    @Test
+    void createSkill() {
+        skillService.createSkill( "Suck" );
+        var skill = skillRepository.findById( "Suck" ).orElse( null );
+        assertNotNull( skill );
+        assertEquals( "Suck", skill.getName() );
+    }
+
+    // TODO: skill that already exists
 }
