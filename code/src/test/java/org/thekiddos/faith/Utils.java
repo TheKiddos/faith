@@ -22,7 +22,7 @@ public final class Utils {
     public static final String STAKEHOLDER_ROOT = SITE_ROOT + "stakeholder";
     public static final String MY_PROJECTS_PAGE = STAKEHOLDER_ROOT + "/my-projects";
     public static final String ADD_PROJECT_PAGE = MY_PROJECTS_PAGE + "/add";
-    public static final String FREELANCER_ROOT = "freelancer";
+    public static final String FREELANCER_ROOT = SITE_ROOT + "freelancer";
     public static final String FREELANCER_PROFILE =  FREELANCER_ROOT + "/profile";
 
     public static String toJson( Object object ) throws JsonProcessingException {
