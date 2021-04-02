@@ -32,4 +32,22 @@ public class FreelancerMapperTest {
         assertEquals( "c++\nsuck", dto.getSkills() );
         assertEquals( Set.of( Skill.of( "c++" ), Skill.of( "suck" ) ), freelancer.getSkills() );
     }
+
+    @Test
+    void toDtoTest() {
+        Freelancer freelancer = new Freelancer();
+        freelancer.setSummary( "Hehhehe" );
+        freelancer.setAvailable( true );
+        freelancer.setSkills( Set.of( Skill.of( "c++" ), Skill.of( "suck" ) ) );
+
+        FreelancerDto dto = freelancerMapper.toDto( freelancer );
+        assertEquals( freelancer.getSummary(), dto.getSummary() );
+        assertEquals( freelancer.isAvailable(), dto.isAvailable() );
+        assertEquals( freelancer.getSkills(), Skill.createSkills( dto.getSkills() ) );
+    }
+
+    @Test
+    void nullFreelancerTest() {
+        assertNull( freelancerMapper.toDto( null ) );
+    }
 }

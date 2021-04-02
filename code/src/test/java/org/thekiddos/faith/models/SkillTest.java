@@ -10,7 +10,6 @@ import org.thekiddos.faith.repositories.SkillRepository;
 import org.thekiddos.faith.services.SkillService;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,7 +53,7 @@ class SkillTest {
     void createSkillsFromString() {
         Set<String> skillNames = new HashSet<>( Set.of( "c++", "test sleep" ) );
 
-        List<Skill> skills = Skill.createSkills( "c++\n\ntest sleep" );
+        Set<Skill> skills = Skill.createSkills( "c++\n\ntest sleep" );
         assertEquals( 2, skills.size() );
         for ( Skill skill : skills ) {
             var skillName = skill.getName();

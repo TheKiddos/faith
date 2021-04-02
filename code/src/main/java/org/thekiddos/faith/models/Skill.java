@@ -9,8 +9,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Slf4j
 @Entity
@@ -28,8 +29,8 @@ public class Skill {
         return new Skill( skill );
     }
 
-    public static List<Skill> createSkills( String skills ) {
-        List<Skill> createdSkills = new ArrayList<>();
+    public static Set<Skill> createSkills( String skills ) {
+        Set<Skill> createdSkills = new HashSet<>();
         if ( skills == null )
             return createdSkills;
 
@@ -40,5 +41,18 @@ public class Skill {
                 createdSkills.add( Skill.of( skill ) );
 
         return createdSkills;
+    }
+
+    @Override
+    public boolean equals( Object o ) {
+        if ( this == o ) return true;
+        if ( o == null || getClass() != o.getClass() ) return false;
+        Skill skill = (Skill) o;
+        return name.equals( skill.name );
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash( name );
     }
 }
