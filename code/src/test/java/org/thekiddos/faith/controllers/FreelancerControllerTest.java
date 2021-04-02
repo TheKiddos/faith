@@ -8,14 +8,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.thekiddos.faith.dtos.FreelancerDto;
 import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.mappers.UserMapper;
 import org.thekiddos.faith.models.User;
 import org.thekiddos.faith.repositories.UserRepository;
+import org.thekiddos.faith.services.FreelancerService;
 
 import java.util.Optional;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
@@ -25,6 +29,8 @@ class FreelancerControllerTest {
     private final UserMapper userMapper = UserMapper.INSTANCE;
     @MockBean
     private UserRepository userRepository;
+    @MockBean
+    private FreelancerService freelancerService;
 
     @Autowired
     FreelancerControllerTest( MockMvc mockMvc ) {
@@ -48,6 +54,52 @@ class FreelancerControllerTest {
     void profilePageRequiresFreelancer() throws Exception {
         mockMvc.perform( get(  "/freelancer/profile" ) )
                 .andExpect( status().isForbidden() );
+    }
+
+    @Test
+    @WithMockUser( authorities = {"USER", "FREELANCER"}, username = "freelancer@test.com")
+    void updateProfile() throws Exception {
+        FreelancerDto dto = FreelancerDto.builder()
+                .summary( "Hehhehe" )
+                .available( true )
+                .skills( "c++\nsuck" )
+                .build();
+
+        User user = getTestUser();
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findById( user.getEmail() );
+
+        mockMvc.perform(post( "/freelancer/profile" )
+                .with( csrf() )
+                .param( "summary", dto.getSummary() )
+                .param( "available", String.valueOf( dto.isAvailable() ) )
+                .param( "skills", dto.getSkills() ) )
+                .andExpect( status().is3xxRedirection() )
+                .andReturn();
+
+        Mockito.verify( freelancerService, Mockito.times( 1 ) ).updateProfile( user, dto );
+    }
+
+    @Test
+    @WithMockUser( authorities = {"USER", "FREELANCER"}, username = "freelancer@test.com")
+    void updateProfileInvalid() throws Exception {
+        FreelancerDto dto = FreelancerDto.builder()
+                .summary( null )
+                .available( true )
+                .skills( null )
+                .build();
+
+        User user = getTestUser();
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findById( user.getEmail() );
+
+        mockMvc.perform(post( "/freelancer/profile" )
+                .with( csrf() )
+                .param( "summary", dto.getSummary() )
+                .param( "available", String.valueOf( dto.isAvailable() ) )
+                .param( "skills", dto.getSkills() ) )
+                .andExpect( status().isOk() )
+                .andReturn();
+
+        Mockito.verify( freelancerService, Mockito.times( 0 ) ).updateProfile( user, dto );
     }
 
     private User getTestUser() {
