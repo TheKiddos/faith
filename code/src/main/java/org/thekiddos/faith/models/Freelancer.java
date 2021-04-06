@@ -17,6 +17,9 @@ public class Freelancer extends UserType {
             joinColumns={@JoinColumn(name="freelancer_id")},
             inverseJoinColumns={@JoinColumn(name="skill_name")})
     private Set<Skill> skills = new HashSet<>();
+    
+    @OneToMany( cascade = CascadeType.ALL, mappedBy = "bidder" )
+    private Set<Bid> bids = new HashSet<>();
 
     @Override
     public String toString() {

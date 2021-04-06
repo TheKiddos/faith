@@ -6,6 +6,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.Duration;
 import java.util.Objects;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -21,6 +23,9 @@ public class Project {
 
     @ManyToOne( optional = false ) @NotNull
     private Stakeholder owner;
+    
+    @OneToMany( cascade = CascadeType.ALL, mappedBy = "project" )
+    private Set<Bid> bids = new HashSet<>();
 
     @Override
     public String toString() {

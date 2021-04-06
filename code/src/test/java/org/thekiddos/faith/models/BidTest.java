@@ -4,16 +4,22 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.thekiddos.faith.services.*;
 import org.thekiddos.faith.dtos.*;
 import org.thekiddos.faith.mappers.*;
 import org.thekiddos.faith.repositories.*;
 import org.thekiddos.faith.models.*;
+import org.thekiddos.faith.utils.EmailSubjectConstants;
+import org.thekiddos.faith.utils.EmailTemplatesConstants;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 
 @SpringBootTest
 @ExtendWith( SpringExtension.class )
@@ -24,8 +30,11 @@ public class BidTest {
     private final UserService userService;
     private final ProjectService projectService;
     
+    @MockBean
+    private EmailService emailService;
+    
     private Project project;
-    private freelancerUser freelancerUser;
+    private User freelancerUser;
     
     @Autowired
     public BidTest( BidService bidService, 
@@ -78,18 +87,23 @@ public class BidTest {
     void addBid() {
         double amount = 10.0;
         
-        assertTrue( ((Freelancer)freelancerUser.getType()).getBids().isEmpty() );
+        assertTrue( ((Freelancer)this.freelancerUser.getType()).getBids().isEmpty() );
         
-        bidService.addBid( amount, this.project, this.freelancerUser );
+        bidService.addBid( amount, this.project, (Freelancer)this.freelancerUser.getType() );
         
         var user = userService.loadUserByUsername( this.freelancerUser.getEmail() );
         var bids = ((Freelancer)user.getType()).getBids();
         assertEquals( 1, bids.size() );
         
         Bid bid = bids.stream().findFirst().get();
+        assertNotNull( bid.getId() );
+        assertEquals( "Bid of " + amount, bid.toString() );
         assertEquals( amount, bid.getAmount() );
         assertEquals( this.project, amount.getProject() );
         assertEquals( (Freelancer)user.getType(), bid.getBidder() );
+        
+        Mockito.verify( emailService, Mockito.times( 1 ) )
+                .sendTemplateMail( eq( List.of( "bhbh@gmail.com" ) ), anyString(), eq( EmailSubjectConstants.NEW_BID ), eq( EmailTemplatesConstants.NEW_BID_TEMPLATE ), any() );
     }
     
     // Test to make sure only freelancer can bid
