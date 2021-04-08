@@ -3,8 +3,8 @@ package org.thekiddos.faith.models;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @Data
 @Entity
@@ -13,14 +13,27 @@ public class Bid {
     private Long id;
     private double amount;
 
-    @ManyToOne( optional = false ) @NotNull
+    @ManyToOne( optional = false, cascade = CascadeType.ALL ) @NotNull
     private Freelancer bidder;
     
-    @ManyToOne( optional = false ) @NotNull
+    @ManyToOne( optional = false, cascade = CascadeType.ALL ) @NotNull
     private Project project;
 
     @Override
     public String toString() {
         return "Bid of " + amount;
+    }
+
+    @Override
+    public boolean equals( Object o ) {
+        if ( this == o ) return true;
+        if ( o == null || getClass() != o.getClass() ) return false;
+        Bid bid = (Bid) o;
+        return Double.compare( bid.amount, amount ) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash( amount );
     }
 }

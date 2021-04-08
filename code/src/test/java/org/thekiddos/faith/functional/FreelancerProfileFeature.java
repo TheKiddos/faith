@@ -65,5 +65,6 @@ public class FreelancerProfileFeature {
 
         Set<Skill> skills = Set.of( Skill.of( "python" ), Skill.of( "c++ sleeping" ) );
         assertEquals( skills, freelancer.getSkills() );
+        webDriver.close();
     }
 }

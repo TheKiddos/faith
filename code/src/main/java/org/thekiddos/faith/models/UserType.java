@@ -10,6 +10,6 @@ import javax.persistence.*;
 public abstract class UserType {
     @Id @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
-    @OneToOne(mappedBy = "type")
+    @OneToOne(mappedBy = "type", optional = false)
     private User user;
 }

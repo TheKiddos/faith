@@ -5,18 +5,23 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.thekiddos.faith.services.*;
-import org.thekiddos.faith.dtos.*;
-import org.thekiddos.faith.mappers.*;
-import org.thekiddos.faith.repositories.*;
-import org.thekiddos.faith.models.*;
+import org.thekiddos.faith.dtos.ProjectDto;
+import org.thekiddos.faith.dtos.UserDto;
+import org.thekiddos.faith.mappers.UserMapper;
+import org.thekiddos.faith.repositories.ProjectRepository;
+import org.thekiddos.faith.repositories.UserRepository;
+import org.thekiddos.faith.services.BidService;
+import org.thekiddos.faith.services.EmailService;
+import org.thekiddos.faith.services.ProjectService;
+import org.thekiddos.faith.services.UserService;
 import org.thekiddos.faith.utils.EmailSubjectConstants;
 import org.thekiddos.faith.utils.EmailTemplatesConstants;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -29,7 +34,7 @@ public class BidTest {
     private final ProjectRepository projectRepository;
     private final UserService userService;
     private final ProjectService projectService;
-    
+    private final UserMapper userMapper = UserMapper.INSTANCE;
     @MockBean
     private EmailService emailService;
     
@@ -39,8 +44,8 @@ public class BidTest {
     @Autowired
     public BidTest( BidService bidService, 
                     UserRepository userRepository, 
-                    ProjectRepository projectRepository
-                    UserService userService
+                    ProjectRepository projectRepository,
+                    UserService userService,
                     ProjectService projectService ) {
         this.bidService = bidService;
         this.userRepository = userRepository;
@@ -54,7 +59,7 @@ public class BidTest {
         projectRepository.deleteAll();
         userRepository.deleteAll();
     }
-    
+
     @BeforeEach
     public void setUp() {
         ProjectDto projectDto = ProjectDto.builder()
@@ -77,35 +82,71 @@ public class BidTest {
         Stakeholder stakeholder = (Stakeholder) user.getType();
 
         this.project = projectService.createProjectFor( stakeholder, projectDto );
-        this.freelancerUser = getTestUser();
+        this.freelancerUser = userRepository.save( getTestUser() );
     }
-    
+
     /**
      * Test adding a bid without a comment
      */
     @Test
     void addBid() {
         double amount = 10.0;
-        
+
         assertTrue( ((Freelancer)this.freelancerUser.getType()).getBids().isEmpty() );
-        
+
         bidService.addBid( amount, this.project, (Freelancer)this.freelancerUser.getType() );
-        
-        var user = userService.loadUserByUsername( this.freelancerUser.getEmail() );
+
+        var user = (User)userService.loadUserByUsername( this.freelancerUser.getEmail() );
         var bids = ((Freelancer)user.getType()).getBids();
         assertEquals( 1, bids.size() );
-        
-        Bid bid = bids.stream().findFirst().get();
+
+        Bid bid = bids.stream().findFirst().orElse( null );
+        assertNotNull( bid );
         assertNotNull( bid.getId() );
         assertEquals( "Bid of " + amount, bid.toString() );
         assertEquals( amount, bid.getAmount() );
-        assertEquals( this.project, amount.getProject() );
-        assertEquals( (Freelancer)user.getType(), bid.getBidder() );
-        
+        assertEquals( this.project, bid.getProject() );
+        assertEquals( user.getType(), bid.getBidder() );
+
         Mockito.verify( emailService, Mockito.times( 1 ) )
                 .sendTemplateMail( eq( List.of( "bhbh@gmail.com" ) ), anyString(), eq( EmailSubjectConstants.NEW_BID ), eq( EmailTemplatesConstants.NEW_BID_TEMPLATE ), any() );
     }
-    
+
+    @Test
+    void equalsAndHashcode() {
+        Bid bid = new Bid();
+        bid.setAmount( 200 );
+
+        Bid bid2 = new Bid();
+        bid2.setAmount( 200 );
+
+        Bid biggerBid = new Bid();
+        biggerBid.setAmount( 300 );
+
+        assertEquals( bid, bid );
+        assertEquals( bid, bid2 );
+        assertNotEquals( bid, biggerBid );
+        assertNotEquals( bid, null );
+        assertNotEquals( null, bid );
+
+        assertEquals( bid.hashCode(), bid2.hashCode() );
+        assertNotEquals( bid.hashCode(), biggerBid.hashCode() );
+    }
+
+    @Test
+    void equalsAndHashCodeOnlyAffectedByAmount() {
+        Bid bid = new Bid();
+        bid.setAmount( 200 );
+        bid.setProject( this.project );
+        bid.setBidder( (Freelancer) this.freelancerUser.getType() );
+
+        Bid bid2 = new Bid();
+        bid2.setAmount( 200 );
+
+        assertEquals( bid, bid2 );
+        assertEquals( bid.hashCode(), bid2.hashCode() );
+    }
+
     // Test to make sure only freelancer can bid
     // Test bid with a comment (dto)
     // Test bid not allowed on private projects
