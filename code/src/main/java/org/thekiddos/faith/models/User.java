@@ -113,6 +113,18 @@ public class User implements UserDetails {
         this.nickname = nickname.toLowerCase();
     }
 
+    public void setType( UserType type ) {
+        if ( type == null ) {
+            if ( this.type != null )
+                this.type.setUser( null );
+            this.type = null;
+            return;
+        }
+
+        this.type = type;
+        type.setUser( this );
+    }
+
     @Override
     public String toString() {
         return "User(email=" + getEmail() + ")";

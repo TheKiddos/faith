@@ -12,6 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.thekiddos.faith.dtos.ProjectDto;
 import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.mappers.UserMapper;
+import org.thekiddos.faith.repositories.BidRepository;
 import org.thekiddos.faith.repositories.ProjectRepository;
 import org.thekiddos.faith.repositories.UserRepository;
 import org.thekiddos.faith.services.BidService;
@@ -30,6 +31,7 @@ import static org.mockito.ArgumentMatchers.*;
 @ExtendWith( SpringExtension.class )
 public class BidTest {
     private final BidService bidService;
+    private final BidRepository bidRepository;
     private final UserRepository userRepository;
     private final ProjectRepository projectRepository;
     private final UserService userService;
@@ -42,12 +44,13 @@ public class BidTest {
     private User freelancerUser;
     
     @Autowired
-    public BidTest( BidService bidService, 
-                    UserRepository userRepository, 
+    public BidTest( BidService bidService,
+                    BidRepository bidRepository, UserRepository userRepository,
                     ProjectRepository projectRepository,
                     UserService userService,
                     ProjectService projectService ) {
         this.bidService = bidService;
+        this.bidRepository = bidRepository;
         this.userRepository = userRepository;
         this.projectRepository = projectRepository;
         this.userService = userService;
@@ -56,12 +59,17 @@ public class BidTest {
     
     @AfterEach
     public void tearDown() {
+        bidRepository.deleteAll();
         projectRepository.deleteAll();
         userRepository.deleteAll();
     }
 
     @BeforeEach
     public void setUp() {
+        bidRepository.deleteAll();
+        projectRepository.deleteAll();
+        userRepository.deleteAll();
+
         ProjectDto projectDto = ProjectDto.builder()
                 .name( "new world order" )
                 .description( "Make all people slaves" )
@@ -91,13 +99,11 @@ public class BidTest {
     @Test
     void addBid() {
         double amount = 10.0;
-
-        assertTrue( ((Freelancer)this.freelancerUser.getType()).getBids().isEmpty() );
-
+        assertTrue( bidRepository.findAll().isEmpty() );
         bidService.addBid( amount, this.project, (Freelancer)this.freelancerUser.getType() );
 
         var user = (User)userService.loadUserByUsername( this.freelancerUser.getEmail() );
-        var bids = ((Freelancer)user.getType()).getBids();
+        var bids = bidRepository.findAll();
         assertEquals( 1, bids.size() );
 
         Bid bid = bids.stream().findFirst().orElse( null );

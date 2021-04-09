@@ -13,10 +13,10 @@ public class Bid {
     private Long id;
     private double amount;
 
-    @ManyToOne( optional = false, cascade = CascadeType.ALL ) @NotNull
+    @ManyToOne( optional = false, cascade = { CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE } ) @NotNull
     private Freelancer bidder;
     
-    @ManyToOne( optional = false, cascade = CascadeType.ALL ) @NotNull
+    @ManyToOne( optional = false, cascade = { CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE } ) @NotNull
     private Project project;
 
     @Override
