@@ -99,8 +99,14 @@ public class BidTest {
     @Test
     void addBid() {
         double amount = 10.0;
+        
+        BidDto dto = BidDto.builder()
+                           .amount( amount )
+                           .comment( "Pleeeeeeeeese" )
+                           .projectid( this.project.getid() )
+                           .build();
         assertTrue( bidRepository.findAll().isEmpty() );
-        bidService.addBid( amount, this.project, (Freelancer)this.freelancerUser.getType() );
+        bidService.addBid( dto, (Freelancer)this.freelancerUser.getType() );
 
         var user = (User)userService.loadUserByUsername( this.freelancerUser.getEmail() );
         var bids = bidRepository.findAll();
@@ -113,6 +119,14 @@ public class BidTest {
         assertEquals( amount, bid.getAmount() );
         assertEquals( this.project, bid.getProject() );
         assertEquals( user.getType(), bid.getBidder() );
+        
+        var comments = bidCommentRepository.findAll();
+        assertEquals( 1, comments.size() );
+        
+        Comment comment = commens.stream().findFirst().orElse( null );
+        assertNotNull( comment );
+        assertEquals( bid, comment.getBid() );
+        assertEquals( "Pleeeeeeeeese", comment.getText() );
 
         Mockito.verify( emailService, Mockito.times( 1 ) )
                 .sendTemplateMail( eq( List.of( "bhbh@gmail.com" ) ), anyString(), eq( EmailSubjectConstants.NEW_BID ), eq( EmailTemplatesConstants.NEW_BID_TEMPLATE ), any() );
@@ -152,9 +166,9 @@ public class BidTest {
         assertEquals( bid, bid2 );
         assertEquals( bid.hashCode(), bid2.hashCode() );
     }
-
-    // Test to make sure only freelancer can bid
-    // Test bid with a comment (dto)
+    
+    // TODO: Create mapper for bid
+    // Test bid with an empty comment won't create a comment
     // Test bid not allowed on private projects
     // Test freelancer can't bid on the same project
     
