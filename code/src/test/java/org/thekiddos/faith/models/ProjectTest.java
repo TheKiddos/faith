@@ -50,6 +50,7 @@ class ProjectTest {
     @AfterEach
     void tearDown() {
         try {
+            projectRepository.deleteAll();
             userRepository.deleteById( "bhbh@gmail.com" );
         }
         catch ( EmptyResultDataAccessException e ) {

@@ -37,6 +37,8 @@ public class User implements UserDetails {
     private String address;
     @OneToOne( cascade = CascadeType.ALL )
     private UserType type;
+
+    // TODO: since this is managed by the service no need for custom setter for now
     @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
     private PasswordResetToken passwordResetToken;
 
@@ -111,6 +113,18 @@ public class User implements UserDetails {
         if ( nickname == null )
             return;
         this.nickname = nickname.toLowerCase();
+    }
+
+    public void setType( UserType type ) {
+        if ( type == null ) {
+            if ( this.type != null )
+                this.type.setUser( null );
+            this.type = null;
+            return;
+        }
+
+        this.type = type;
+        type.setUser( this );
     }
 
     @Override

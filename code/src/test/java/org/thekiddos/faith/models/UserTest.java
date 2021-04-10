@@ -41,6 +41,22 @@ class UserTest {
     private final UserMapper userMapper = UserMapper.INSTANCE;
 
     @Test
+    void setType() {
+        User user = new User();
+        assertNull( user.getType() );
+
+        UserType userType = new Freelancer();
+        user.setType( userType );
+
+        assertEquals( userType, user.getType() );
+        assertEquals( user, userType.getUser() );
+
+        user.setType( null );
+        assertNull( user.getType() );
+        assertNull( userType.getUser() );
+    }
+
+    @Test
     void createUser() {
         UserDto userDTO = UserDto.builder().email( "test@test.com" ).password( "password" ).build();
         User user = userMapper.userDtoToUser( userDTO );

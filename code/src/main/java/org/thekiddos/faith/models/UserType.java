@@ -10,6 +10,8 @@ import javax.persistence.*;
 public abstract class UserType {
     @Id @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
-    @OneToOne(mappedBy = "type")
+    @OneToOne(mappedBy = "type", optional = false)
     private User user;
+
+    // TODO: since we never use the setter here except from User no need to fix bidirectional relation but in case in future we need to this comment is here
 }
