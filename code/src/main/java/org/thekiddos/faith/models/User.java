@@ -37,6 +37,8 @@ public class User implements UserDetails {
     private String address;
     @OneToOne( cascade = CascadeType.ALL )
     private UserType type;
+
+    // TODO: since this is managed by the service no need for custom setter for now
     @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
     private PasswordResetToken passwordResetToken;
 
