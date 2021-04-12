@@ -1,7 +1,8 @@
 package org.thekiddos.faith.services;
 
-import org.thekiddos.faith.models.*;
+import org.thekiddos.faith.dtos.BidDto;
+import org.thekiddos.faith.models.Freelancer;
 
 public interface BidService {
-    void addBid( double amount, Project project, Freelancer freelancer );
+    void addBid( BidDto bidDto, Freelancer freelancer );
 }

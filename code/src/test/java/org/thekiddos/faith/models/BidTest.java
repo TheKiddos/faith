@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.thekiddos.faith.dtos.BidDto;
 import org.thekiddos.faith.dtos.ProjectDto;
 import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.mappers.UserMapper;
+import org.thekiddos.faith.repositories.BidCommentRepository;
 import org.thekiddos.faith.repositories.BidRepository;
 import org.thekiddos.faith.repositories.ProjectRepository;
 import org.thekiddos.faith.repositories.UserRepository;
@@ -36,6 +38,7 @@ public class BidTest {
     private final ProjectRepository projectRepository;
     private final UserService userService;
     private final ProjectService projectService;
+    private final BidCommentRepository bidCommentRepository;
     private final UserMapper userMapper = UserMapper.INSTANCE;
     @MockBean
     private EmailService emailService;
@@ -48,17 +51,19 @@ public class BidTest {
                     BidRepository bidRepository, UserRepository userRepository,
                     ProjectRepository projectRepository,
                     UserService userService,
-                    ProjectService projectService ) {
+                    ProjectService projectService, BidCommentRepository bidCommentRepository ) {
         this.bidService = bidService;
         this.bidRepository = bidRepository;
         this.userRepository = userRepository;
         this.projectRepository = projectRepository;
         this.userService = userService;
         this.projectService = projectService;
+        this.bidCommentRepository = bidCommentRepository;
     }
     
     @AfterEach
     public void tearDown() {
+        bidCommentRepository.deleteAll();
         bidRepository.deleteAll();
         projectRepository.deleteAll();
         userRepository.deleteAll();
@@ -66,6 +71,7 @@ public class BidTest {
 
     @BeforeEach
     public void setUp() {
+        bidCommentRepository.deleteAll();
         bidRepository.deleteAll();
         projectRepository.deleteAll();
         userRepository.deleteAll();
@@ -103,7 +109,7 @@ public class BidTest {
         BidDto dto = BidDto.builder()
                            .amount( amount )
                            .comment( "Pleeeeeeeeese" )
-                           .projectid( this.project.getid() )
+                           .projectId( this.project.getId() )
                            .build();
         assertTrue( bidRepository.findAll().isEmpty() );
         bidService.addBid( dto, (Freelancer)this.freelancerUser.getType() );
@@ -123,7 +129,7 @@ public class BidTest {
         var comments = bidCommentRepository.findAll();
         assertEquals( 1, comments.size() );
         
-        Comment comment = commens.stream().findFirst().orElse( null );
+        BidComment comment = comments.stream().findFirst().orElse( null );
         assertNotNull( comment );
         assertEquals( bid, comment.getBid() );
         assertEquals( "Pleeeeeeeeese", comment.getText() );
