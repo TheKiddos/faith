@@ -1,0 +1,15 @@
+package org.thekiddos.faith.mappers;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.thekiddos.faith.dtos.BidDto;
+import org.thekiddos.faith.models.Bid;
+import org.thekiddos.faith.services.ProjectService;
+
+@Mapper(componentModel = "spring", uses = { ProjectService.class } )
+public interface BidMapper {
+    @Mapping( target = "bidder", ignore = true )
+    @Mapping( target = "id", ignore = true )
+    @Mapping( target = "project", source = "projectId" )
+    Bid toEntity( BidDto dto );
+}
