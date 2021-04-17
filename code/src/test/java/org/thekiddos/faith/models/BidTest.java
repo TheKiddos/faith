@@ -9,9 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.TransactionSystemException;
+import org.thekiddos.faith.dtos.BidDto;
 import org.thekiddos.faith.dtos.ProjectDto;
 import org.thekiddos.faith.dtos.UserDto;
+import org.thekiddos.faith.exceptions.BiddingNotAllowedException;
 import org.thekiddos.faith.mappers.UserMapper;
+import org.thekiddos.faith.repositories.BidCommentRepository;
 import org.thekiddos.faith.repositories.BidRepository;
 import org.thekiddos.faith.repositories.ProjectRepository;
 import org.thekiddos.faith.repositories.UserRepository;
@@ -36,6 +40,7 @@ public class BidTest {
     private final ProjectRepository projectRepository;
     private final UserService userService;
     private final ProjectService projectService;
+    private final BidCommentRepository bidCommentRepository;
     private final UserMapper userMapper = UserMapper.INSTANCE;
     @MockBean
     private EmailService emailService;
@@ -48,17 +53,19 @@ public class BidTest {
                     BidRepository bidRepository, UserRepository userRepository,
                     ProjectRepository projectRepository,
                     UserService userService,
-                    ProjectService projectService ) {
+                    ProjectService projectService, BidCommentRepository bidCommentRepository ) {
         this.bidService = bidService;
         this.bidRepository = bidRepository;
         this.userRepository = userRepository;
         this.projectRepository = projectRepository;
         this.userService = userService;
         this.projectService = projectService;
+        this.bidCommentRepository = bidCommentRepository;
     }
     
     @AfterEach
     public void tearDown() {
+        bidCommentRepository.deleteAll();
         bidRepository.deleteAll();
         projectRepository.deleteAll();
         userRepository.deleteAll();
@@ -66,6 +73,7 @@ public class BidTest {
 
     @BeforeEach
     public void setUp() {
+        bidCommentRepository.deleteAll();
         bidRepository.deleteAll();
         projectRepository.deleteAll();
         userRepository.deleteAll();
@@ -94,13 +102,57 @@ public class BidTest {
     }
 
     /**
-     * Test adding a bid without a comment
+     * Test adding a bid with a comment
      */
     @Test
     void addBid() {
         double amount = 10.0;
+        
+        BidDto dto = BidDto.builder()
+                           .amount( amount )
+                           .comment( "Pleeeeeeeeese" )
+                           .projectId( this.project.getId() )
+                           .build();
         assertTrue( bidRepository.findAll().isEmpty() );
-        bidService.addBid( amount, this.project, (Freelancer)this.freelancerUser.getType() );
+        bidService.addBid( dto, (Freelancer)this.freelancerUser.getType() );
+
+        var user = (User)userService.loadUserByUsername( this.freelancerUser.getEmail() );
+        var bids = bidRepository.findAll();
+        assertEquals( 1, bids.size() );
+
+        Bid bid = bids.stream().findFirst().orElse( null );
+        assertNotNull( bid );
+        assertNotNull( bid.getId() );
+        assertEquals( "Bid of " + amount, bid.toString() );
+        assertEquals( amount, bid.getAmount() );
+        assertEquals( this.project, bid.getProject() );
+        assertEquals( user.getType(), bid.getBidder() );
+        
+        var comments = bidCommentRepository.findAll();
+        assertEquals( 1, comments.size() );
+        
+        BidComment comment = comments.stream().findFirst().orElse( null );
+        assertNotNull( comment );
+        assertEquals( bid, comment.getBid() );
+        assertEquals( "Pleeeeeeeeese", comment.getText() );
+
+        Mockito.verify( emailService, Mockito.times( 1 ) )
+                .sendTemplateMail( eq( List.of( "bhbh@gmail.com" ) ), anyString(), eq( EmailSubjectConstants.NEW_BID ), eq( EmailTemplatesConstants.NEW_BID_TEMPLATE ), any() );
+    }
+
+    /**
+     * Test adding a bid without a comment
+     */
+    @Test
+    void addBidWithoutComment() {
+        double amount = 10.0;
+
+        BidDto dto = BidDto.builder()
+                .amount( amount )
+                .projectId( this.project.getId() )
+                .build();
+        assertTrue( bidRepository.findAll().isEmpty() );
+        bidService.addBid( dto, (Freelancer)this.freelancerUser.getType() );
 
         var user = (User)userService.loadUserByUsername( this.freelancerUser.getEmail() );
         var bids = bidRepository.findAll();
@@ -114,7 +166,110 @@ public class BidTest {
         assertEquals( this.project, bid.getProject() );
         assertEquals( user.getType(), bid.getBidder() );
 
+        var comments = bidCommentRepository.findAll();
+        assertTrue( comments.isEmpty() );
+
         Mockito.verify( emailService, Mockito.times( 1 ) )
+                .sendTemplateMail( eq( List.of( "bhbh@gmail.com" ) ), anyString(), eq( EmailSubjectConstants.NEW_BID ), eq( EmailTemplatesConstants.NEW_BID_TEMPLATE ), any() );
+    }
+
+    @Test
+    void addBidOnPrivateProjectIsInvalid() {
+        this.project.setAllowBidding( false );
+        this.project = this.projectRepository.save( this.project );
+
+        double amount = 10.0;
+
+        BidDto dto = BidDto.builder()
+                .amount( amount )
+                .comment( "bhbh" )
+                .projectId( this.project.getId() )
+                .build();
+        assertTrue( bidRepository.findAll().isEmpty() );
+        assertThrows( BiddingNotAllowedException.class, () -> bidService.addBid( dto, (Freelancer)this.freelancerUser.getType() ) );
+
+        var bids = bidRepository.findAll();
+        assertTrue( bids.isEmpty() );
+
+        var comments = bidCommentRepository.findAll();
+        assertTrue( comments.isEmpty() );
+
+        Mockito.verify( emailService, Mockito.times( 0 ) )
+                .sendTemplateMail( any(), any(), any(), any(), any() );
+    }
+
+    @Test
+    void addAnotherBidIsInvalid() {
+        double amount = 10.0;
+
+        BidDto dto = BidDto.builder()
+                .amount( amount )
+                .comment( "Pleeeeeeeeese" )
+                .projectId( this.project.getId() )
+                .build();
+        assertTrue( bidRepository.findAll().isEmpty() );
+        bidService.addBid( dto, (Freelancer)this.freelancerUser.getType() );
+
+        // adding another bid
+        assertThrows( BiddingNotAllowedException.class, () -> bidService.addBid( dto, (Freelancer)this.freelancerUser.getType() ) );
+
+        var bids = bidRepository.findAll();
+        assertEquals( 1, bids.size() );
+
+        var comments = bidCommentRepository.findAll();
+        assertEquals( 1, comments.size() );
+
+        Mockito.verify( emailService, Mockito.times( 1 ) )
+                .sendTemplateMail( eq( List.of( "bhbh@gmail.com" ) ), anyString(), eq( EmailSubjectConstants.NEW_BID ), eq( EmailTemplatesConstants.NEW_BID_TEMPLATE ), any() );
+    }
+
+    @Test
+    void addBidWithNoProjectIsInvalid() {
+        double amount = 10.0;
+
+        BidDto dto = BidDto.builder()
+                .amount( amount )
+                .comment( "Pleeeeeeeeese" )
+                .projectId( -1 )
+                .build();
+        assertTrue( bidRepository.findAll().isEmpty() );
+
+        // adding another bid
+        // For Some reason maven is treating ProjectNotFoundException as RunTimeException
+        assertThrows( RuntimeException.class, () -> bidService.addBid( dto, (Freelancer)this.freelancerUser.getType() ) );
+
+        var bids = bidRepository.findAll();
+        assertEquals( 0, bids.size() );
+
+        var comments = bidCommentRepository.findAll();
+        assertEquals( 0, comments.size() );
+
+        Mockito.verify( emailService, Mockito.times( 0 ) )
+                .sendTemplateMail( eq( List.of( "bhbh@gmail.com" ) ), anyString(), eq( EmailSubjectConstants.NEW_BID ), eq( EmailTemplatesConstants.NEW_BID_TEMPLATE ), any() );
+    }
+
+    @Test
+    void addBidWithInvalidAmount() {
+        double amount = 5;
+
+        BidDto dto = BidDto.builder()
+                .amount( amount )
+                .comment( "Pleeeeeeeeese" )
+                .projectId( this.project.getId() )
+                .build();
+        assertTrue( bidRepository.findAll().isEmpty() );
+
+        // adding another bid
+        assertThrows( TransactionSystemException.class, () -> bidService.addBid( dto, (Freelancer)this.freelancerUser.getType() ) );
+//        bidService.addBid( dto, (Freelancer)this.freelancerUser.getType() );
+
+        var bids = bidRepository.findAll();
+        assertEquals( 0, bids.size() );
+
+        var comments = bidCommentRepository.findAll();
+        assertEquals( 0, comments.size() );
+
+        Mockito.verify( emailService, Mockito.times( 0 ) )
                 .sendTemplateMail( eq( List.of( "bhbh@gmail.com" ) ), anyString(), eq( EmailSubjectConstants.NEW_BID ), eq( EmailTemplatesConstants.NEW_BID_TEMPLATE ), any() );
     }
 
@@ -153,11 +308,6 @@ public class BidTest {
         assertEquals( bid.hashCode(), bid2.hashCode() );
     }
 
-    // Test to make sure only freelancer can bid
-    // Test bid with a comment (dto)
-    // Test bid not allowed on private projects
-    // Test freelancer can't bid on the same project
-    
     // TODD: move to utils and use in all other test with defaults and option to override them
     private User getTestUser() {
         UserDto userDto = UserDto.builder().email( "freelancer@test.com" )

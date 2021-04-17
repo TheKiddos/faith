@@ -2,6 +2,7 @@ package org.thekiddos.faith.services;
 
 import org.springframework.stereotype.Service;
 import org.thekiddos.faith.dtos.ProjectDto;
+import org.thekiddos.faith.exceptions.ProjectNotFoundException;
 import org.thekiddos.faith.mappers.ProjectMapper;
 import org.thekiddos.faith.models.Project;
 import org.thekiddos.faith.models.Stakeholder;
@@ -21,5 +22,10 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectMapper.projectDtoToProject( projectDto );
         project.setOwner( owner );
         return projectRepository.save( project );
+    }
+
+    @Override
+    public Project findById( Long id ) throws ProjectNotFoundException {
+        return projectRepository.findById( id ).orElseThrow( ProjectNotFoundException::new );
     }
 }

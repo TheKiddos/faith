@@ -27,6 +27,8 @@ public class BootstrapTest {
 
     @Test
     void defaultAdminAccountExists() {
+        bootstrap.run(); // Needed because other test are deleting the user
+
         User user = (User) userService.loadUserByUsername( "admin@faith.com" );
         assertTrue( user.isAdmin() );
         assertTrue( user.checkPassword( "Admin@Fa1ith" ) );

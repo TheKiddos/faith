@@ -3,6 +3,7 @@ package org.thekiddos.faith.models;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
@@ -11,6 +12,7 @@ import java.util.Objects;
 public class Bid {
     @Id @GeneratedValue( strategy = GenerationType.AUTO )
     private Long id;
+    @NotNull @Min(10)
     private double amount;
 
     @ManyToOne( optional = false, cascade = { CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE } ) @NotNull

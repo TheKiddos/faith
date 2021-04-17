@@ -1,6 +1,7 @@
 package org.thekiddos.faith.services;
 
 import org.thekiddos.faith.dtos.ProjectDto;
+import org.thekiddos.faith.exceptions.ProjectNotFoundException;
 import org.thekiddos.faith.models.Project;
 import org.thekiddos.faith.models.Stakeholder;
 
@@ -12,4 +13,6 @@ public interface ProjectService {
      * @return The created project
      */
     Project createProjectFor( Stakeholder owner, ProjectDto projectDto );
+
+    Project findById( Long id ) throws ProjectNotFoundException;
 }
