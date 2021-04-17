@@ -261,7 +261,6 @@ public class BidTest {
 
         // adding another bid
         assertThrows( TransactionSystemException.class, () -> bidService.addBid( dto, (Freelancer)this.freelancerUser.getType() ) );
-//        bidService.addBid( dto, (Freelancer)this.freelancerUser.getType() );
 
         var bids = bidRepository.findAll();
         assertEquals( 0, bids.size() );
@@ -308,7 +307,7 @@ public class BidTest {
         assertEquals( bid.hashCode(), bid2.hashCode() );
     }
 
-    // TODD: move to utils and use in all other test with defaults and option to override them
+    // TODO: move to utils and use in all other test with defaults and option to override them
     private User getTestUser() {
         UserDto userDto = UserDto.builder().email( "freelancer@test.com" )
                 .password( "password" )
