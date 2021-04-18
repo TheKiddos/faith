@@ -8,6 +8,8 @@ import org.thekiddos.faith.models.Project;
 import org.thekiddos.faith.models.Stakeholder;
 import org.thekiddos.faith.repositories.ProjectRepository;
 
+import java.util.List;
+
 @Service
 public class ProjectServiceImpl implements ProjectService {
     private final ProjectMapper projectMapper = ProjectMapper.INSTANCE;
@@ -27,5 +29,10 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Project findById( Long id ) throws ProjectNotFoundException {
         return projectRepository.findById( id ).orElseThrow( ProjectNotFoundException::new );
+    }
+    
+    @Override
+    public List<Project> findAll() {
+        return projectRepository.findAll();
     }
 }
