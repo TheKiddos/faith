@@ -130,4 +130,54 @@ class ProjectTest {
         assertTrue( projects.contains( project ) );
         assertTrue( projects.contains( project2 ) );
     }
+    
+    @Test
+    void findAllDto() {
+        ProjectDto projectDto = ProjectDto.builder()
+                .name( "new world order" )
+                .description( "Make all people slaves" )
+                .preferredBid( 200.0 )
+                .duration( 31 )
+                .minimumQualification( 100 )
+                .allowBidding( true )
+                .build();
+
+        User user = userService.createUser( UserDto.builder()
+                .email( "bhbh@gmail.com" )
+                .password( "password" )
+                .nickname( "bhbhbh" )
+                .type( "Stakeholder" )
+                .firstName( "Test" )
+                .lastName( "aaa" )
+                .build() );
+        Stakeholder stakeholder = (Stakeholder) user.getType();
+
+        projectService.createProjectFor( stakeholder, projectDto );
+        
+        ProjectDto projectDto2 = ProjectDto.builder()
+                .name( "new world order2" )
+                .description( "Make all people slaves" )
+                .preferredBid( 200.0 )
+                .duration( 31 )
+                .minimumQualification( 100 )
+                .allowBidding( true )
+                .build();
+        
+        user = userService.createUser( UserDto.builder()
+                .email( "ahah@gmail.com" )
+                .password( "password" )
+                .nickname( "ahahah" )
+                .type( "Stakeholder" )
+                .firstName( "Test" )
+                .lastName( "aaa" )
+                .build() );
+        stakeholder = (Stakeholder) user.getType();
+
+        projectService.createProjectFor( stakeholder, projectDto );
+        
+        var projects = projectService.findAllDto();
+        assertEquals( 2, projects.size() );
+        assertTrue( projects.contains( projectDto ) );
+        assertTrue( projects.contains( projectDto2 ) );
+    }
 }

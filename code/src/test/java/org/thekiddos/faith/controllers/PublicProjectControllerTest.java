@@ -30,6 +30,6 @@ class PublicProjectControllerTest {
     public void projectList() throws Exception {
         mockMvc.perform( get( "/projects" ) )
                 .andExpect( status().isOk() );
-        Mockito.verify( projectService, Mockito.times( 1 ) ).findAll();
+        Mockito.verify( projectService, Mockito.times( 1 ) ).findAllDto();
     }
 }

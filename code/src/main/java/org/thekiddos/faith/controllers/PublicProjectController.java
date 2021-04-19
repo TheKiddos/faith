@@ -18,8 +18,8 @@ public class StakeholderController {
     }
 
     @GetMapping
-    public String proejctList( Model model ) {
-        model.addAttribute( "projects", projectService.findAll() );
+    public String projectList( Model model ) {
+        model.addAttribute( "projects", projectService.findAllDto() );
         return "projects/list";
     }
 }

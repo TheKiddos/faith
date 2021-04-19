@@ -9,6 +9,7 @@ import org.thekiddos.faith.models.Stakeholder;
 import org.thekiddos.faith.repositories.ProjectRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -34,5 +35,10 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<Project> findAll() {
         return projectRepository.findAll();
+    }
+    
+    @Override
+    public List<ProjectDto> findAllDto() {
+        return findAll().stream.map( projectMapper::projectToProjectDto ).collect( Collectors.toList() );
     }
 }

@@ -3,6 +3,7 @@ package org.thekiddos.faith.services;
 import org.thekiddos.faith.dtos.ProjectDto;
 import org.thekiddos.faith.exceptions.ProjectNotFoundException;
 import org.thekiddos.faith.models.Project;
+import org.thekiddos.faith.dtos.ProjectDto;
 import org.thekiddos.faith.models.Stakeholder;
 
 import java.util.List;
@@ -19,4 +20,6 @@ public interface ProjectService {
     Project findById( Long id ) throws ProjectNotFoundException;
     
     List<Project> findAll();
+    
+    List<ProjectDto> findAllDto();
 }
