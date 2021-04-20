@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.thekiddos.faith.dtos.ProjectDto;
 import org.thekiddos.faith.dtos.UserDto;
@@ -17,8 +16,7 @@ import org.thekiddos.faith.services.UserService;
 
 import java.time.Duration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ExtendWith( SpringExtension.class )
@@ -39,23 +37,13 @@ class ProjectTest {
     @BeforeEach
     public void setUp() {
         projectRepository.deleteAll();
-        try {
-            userRepository.deleteById( "bhbh@gmail.com" );
-        }
-        catch ( EmptyResultDataAccessException e ) {
-            // ignore
-        }
+        userRepository.deleteAll();
     }
 
     @AfterEach
     void tearDown() {
-        try {
-            projectRepository.deleteAll();
-            userRepository.deleteById( "bhbh@gmail.com" );
-        }
-        catch ( EmptyResultDataAccessException e ) {
-            // ignore
-        }
+        projectRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -98,5 +86,97 @@ class ProjectTest {
         assertEquals( Duration.ofDays( projectDto.getDuration() ), project.getDuration() );
         assertEquals( projectDto.getMinimumQualification(), project.getMinimumQualification() );
         assertEquals( projectDto.isAllowBidding(), project.isAllowBidding() );
+    }
+    
+    @Test
+    void findAll() {
+        ProjectDto projectDto = ProjectDto.builder()
+                .name( "new world order" )
+                .description( "Make all people slaves" )
+                .preferredBid( 200.0 )
+                .duration( 31 )
+                .minimumQualification( 100 )
+                .allowBidding( true )
+                .build();
+
+        User user = userService.createUser( UserDto.builder()
+                .email( "bhbh@gmail.com" )
+                .password( "password" )
+                .nickname( "bhbhbh" )
+                .type( "Stakeholder" )
+                .firstName( "Test" )
+                .lastName( "aaa" )
+                .build() );
+        Stakeholder stakeholder = (Stakeholder) user.getType();
+
+        Project project = projectService.createProjectFor( stakeholder, projectDto );
+        
+        projectDto.setName( "Project2" );
+        user = userService.createUser( UserDto.builder()
+                .email( "ahah@gmail.com" )
+                .password( "password" )
+                .nickname( "ahahah" )
+                .type( "Stakeholder" )
+                .firstName( "Test" )
+                .lastName( "aaa" )
+                .build() );
+        stakeholder = (Stakeholder) user.getType();
+
+        Project project2 = projectService.createProjectFor( stakeholder, projectDto );
+        
+        var projects = projectService.findAll();
+        assertEquals( 2, projects.size() );
+        assertTrue( projects.contains( project ) );
+        assertTrue( projects.contains( project2 ) );
+    }
+    
+    @Test
+    void findAllDto() {
+        ProjectDto projectDto = ProjectDto.builder()
+                .name( "new world order" )
+                .description( "Make all people slaves" )
+                .preferredBid( 200.0 )
+                .duration( 31 )
+                .minimumQualification( 100 )
+                .allowBidding( true )
+                .build();
+
+        User user = userService.createUser( UserDto.builder()
+                .email( "bhbh@gmail.com" )
+                .password( "password" )
+                .nickname( "bhbhbh" )
+                .type( "Stakeholder" )
+                .firstName( "Test" )
+                .lastName( "aaa" )
+                .build() );
+        Stakeholder stakeholder = (Stakeholder) user.getType();
+
+        projectService.createProjectFor( stakeholder, projectDto );
+        
+        ProjectDto projectDto2 = ProjectDto.builder()
+                .name( "new world order2" )
+                .description( "Make all people slaves" )
+                .preferredBid( 200.0 )
+                .duration( 31 )
+                .minimumQualification( 100 )
+                .allowBidding( true )
+                .build();
+        
+        user = userService.createUser( UserDto.builder()
+                .email( "ahah@gmail.com" )
+                .password( "password" )
+                .nickname( "ahahah" )
+                .type( "Stakeholder" )
+                .firstName( "Test" )
+                .lastName( "aaa" )
+                .build() );
+        stakeholder = (Stakeholder) user.getType();
+
+        projectService.createProjectFor( stakeholder, projectDto2 );
+        
+        var projects = projectService.findAllDto();
+        assertEquals( 2, projects.size() );
+        assertTrue( projects.contains( projectDto ) );
+        assertTrue( projects.contains( projectDto2 ) );
     }
 }

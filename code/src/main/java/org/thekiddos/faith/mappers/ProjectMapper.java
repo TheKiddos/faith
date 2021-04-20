@@ -14,4 +14,7 @@ public interface ProjectMapper {
     @Mapping( target = "id", ignore = true )
     @Mapping( target = "duration", expression = "java( java.time.Duration.ofDays( projectDto.getDuration() ) )" )
     Project projectDtoToProject( ProjectDto projectDto );
+    
+    @Mapping( target = "duration", expression = "java( (int)project.getDuration().toDays() )" )
+    ProjectDto projectToProjectDto( Project project );
 }
