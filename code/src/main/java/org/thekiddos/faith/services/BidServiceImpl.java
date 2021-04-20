@@ -78,4 +78,9 @@ public class BidServiceImpl implements BidService {
         bidComment.setText( commentText );
         bidCommentRepository.save( bidComment );
     }
+
+    @Override
+    public List<Bid> findByProject( Project project ) {
+        return bidRepository.findByProject( project );
+    }
 }

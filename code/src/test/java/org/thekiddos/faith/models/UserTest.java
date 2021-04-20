@@ -167,6 +167,37 @@ class UserTest {
     }
 
     @Test
+    void equalsAndHashCodeForUserType() {
+        User user = new User();
+        user.setEmail( "abc@gmail.com" );
+
+        User otherUser = new User();
+        otherUser.setEmail( "abc@gmail2.com" );
+
+        UserType stakeholder = new Stakeholder();
+        stakeholder.setUser( user );
+        UserType stakeholder2 = new Stakeholder();
+        stakeholder2.setUser( user );
+
+        assertEquals( stakeholder, stakeholder2 );
+        assertEquals( stakeholder.hashCode(), stakeholder2.hashCode() );
+        stakeholder2.setUser( otherUser );
+        assertNotEquals( stakeholder, stakeholder2 );
+        assertNotEquals( stakeholder.hashCode(), stakeholder2.hashCode() );
+
+        UserType freelancer = new Freelancer();
+        freelancer.setUser( user );
+        UserType freelancer2 = new Freelancer();
+        freelancer2.setUser( user );
+
+        assertEquals( freelancer, freelancer2 );
+        assertEquals( freelancer.hashCode(), freelancer2.hashCode() );
+        freelancer2.setUser( otherUser );
+        assertNotEquals( freelancer, freelancer2 );
+        assertNotEquals( freelancer.hashCode(), freelancer2.hashCode() );
+    }
+
+    @Test
     void activateUser() {
         String nickname = "someidiot";
         UserDto userDTO = UserDto.builder().email( "test@test.com" ).password( "password" ).nickname( nickname ).build();
