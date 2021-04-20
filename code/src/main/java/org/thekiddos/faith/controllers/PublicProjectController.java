@@ -9,11 +9,11 @@ import org.thekiddos.faith.services.ProjectService;
 
 @Controller
 @RequestMapping( value = "projects" )
-public class StakeholderController {
+public class PublicProjectController {
     private final ProjectService projectService;
 
     @Autowired
-    public StakeholderController( ProjectService projectService ) {
+    public PublicProjectController( ProjectService projectService ) {
         this.projectService = projectService;
     }
 

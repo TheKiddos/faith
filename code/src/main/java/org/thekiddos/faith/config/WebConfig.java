@@ -31,8 +31,8 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers( "/admin", "/admin/**" ).hasAuthority( "ADMIN" )
                 .antMatchers( "/stakeholder", "/stakeholder/**" ).hasAuthority( "STAKEHOLDER" )
                 .antMatchers( "/freelancer", "/freelancer/**" ).hasAuthority( "FREELANCER" )
-                .antMatchers( "/register", "/register/**", "/forgot-password", "/reset-password", "/reset-password/**" ).permitAll()
-                .anyRequest().authenticated()
+//                .antMatchers( "/register", "/register/**", "/forgot-password", "/reset-password", "/reset-password/**" ).permitAll()
+                .anyRequest().permitAll()
                 .and()
                 .formLogin().loginPage( "/login" ).usernameParameter("email").successHandler( myAuthenticationSuccessHandler() ).permitAll();
     }
