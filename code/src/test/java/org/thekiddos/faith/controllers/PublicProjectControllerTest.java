@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.thekiddos.faith.services.BidService;
 import org.thekiddos.faith.services.ProjectService;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -20,6 +21,8 @@ class PublicProjectControllerTest {
 
     @MockBean
     private ProjectService projectService;
+    @MockBean
+    private BidService bidService;
 
     @Autowired
     PublicProjectControllerTest( MockMvc mockMvc ) {
@@ -32,4 +35,14 @@ class PublicProjectControllerTest {
                 .andExpect( status().isOk() );
         Mockito.verify( projectService, Mockito.times( 1 ) ).findAllDto();
     }
+
+    @Test
+    public void projectDetails() throws Exception {
+        mockMvc.perform( get( "/projects/1" ) )
+                .andExpect( status().isOk() );
+        Mockito.verify( projectService, Mockito.times( 1 ) ).findById( 1L );
+        Mockito.verify( bidService, Mockito.times( 1 ) ).findByProject( any() );
+        // TODO: get comments
+    }
+
 }
