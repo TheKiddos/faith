@@ -3,6 +3,7 @@ package org.thekiddos.faith.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thekiddos.faith.dtos.BidDto;
+import org.thekiddos.faith.exceptions.BidNotFoundException;
 import org.thekiddos.faith.exceptions.BiddingNotAllowedException;
 import org.thekiddos.faith.exceptions.ProjectNotFoundException;
 import org.thekiddos.faith.mappers.BidMapper;
@@ -82,5 +83,10 @@ public class BidServiceImpl implements BidService {
     @Override
     public List<Bid> findByProject( Project project ) {
         return bidRepository.findByProject( project );
+    }
+
+    @Override
+    public Bid findById( Long id ) throws BidNotFoundException {
+        return bidRepository.findById( id ).orElseThrow( BidNotFoundException::new );
     }
 }
