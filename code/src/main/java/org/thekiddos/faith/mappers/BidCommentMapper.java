@@ -11,4 +11,7 @@ public interface BidCommentMapper {
     @Mapping( target = "id", ignore = true )
     @Mapping( target = "bid", source = "bidId" )
     BidComment toEntity( BidCommentDto dto );
+
+    @Mapping( target = "bidId", source = "bid.id" )
+    BidCommentDto toDto( BidComment entity );
 }

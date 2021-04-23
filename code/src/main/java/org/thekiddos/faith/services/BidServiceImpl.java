@@ -18,6 +18,7 @@ import org.thekiddos.faith.utils.EmailTemplatesConstants;
 import org.thymeleaf.context.Context;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BidServiceImpl implements BidService {
@@ -25,7 +26,9 @@ public class BidServiceImpl implements BidService {
     private final BidCommentRepository bidCommentRepository;
     private final BidMapper bidMapper;
     private final EmailService emailService;
-    
+
+    private BidCommentService bidCommentService;
+
     @Autowired
     public BidServiceImpl( EmailService emailService, BidRepository bidRepository, BidCommentRepository bidCommentRepository, BidMapper bidMapper ) {
         this.emailService = emailService;
@@ -86,7 +89,19 @@ public class BidServiceImpl implements BidService {
     }
 
     @Override
+    public List<BidDto> findByProjectDto( Project project ) {
+        var bids = findByProject( project ).stream().map( bidMapper::toDto ).collect( Collectors.toList() );
+        bids.forEach( bidDto -> bidDto.setBidComments( bidCommentService.findByBidDto( findById( bidDto.getId() ) ) ) );
+        return bids;
+    }
+
+    @Override
     public Bid findById( Long id ) throws BidNotFoundException {
         return bidRepository.findById( id ).orElseThrow( BidNotFoundException::new );
+    }
+
+    @Autowired
+    public void setBidCommentService( BidCommentService bidCommentService ) {
+        this.bidCommentService = bidCommentService;
     }
 }

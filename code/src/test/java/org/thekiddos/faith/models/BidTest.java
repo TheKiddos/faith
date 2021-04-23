@@ -290,6 +290,31 @@ public class BidTest {
     }
 
     @Test
+    void findByProjectDto() {
+        BidDto dto = BidDto.builder()
+                .amount( 20.0 )
+                .comment( "Pleeeeeeeeese" )
+                .projectId( project.getId() )
+                .build();
+        bidService.addBid( dto, (Freelancer)freelancerUser.getType() );
+
+        var freelancer2 = getTestUser();
+        freelancer2.setEmail( "freelancer2@test.com" );
+        freelancer2.setNickname( "freelancer2" );
+        freelancer2 = userRepository.save( freelancer2 );
+        bidService.addBid( dto, (Freelancer)freelancer2.getType() );
+
+        var project2 = projectService.createProjectFor( this.project.getOwner(), getTestProjectDto() );
+        dto.setProjectId( project2.getId() );
+        bidService.addBid( dto, (Freelancer)freelancerUser.getType() );
+
+        var bids = bidService.findByProjectDto( this.project );
+        assertEquals( 2, bids.size() );
+        assertTrue( bids.stream().allMatch( bid -> this.project.getId().equals( bid.getProjectId() ) ) );
+        assertTrue( bids.stream().allMatch( bid -> bid.getBidComments().size() == 1 ) );
+    }
+
+    @Test
     void equalsAndHashcode() {
         Bid bid = new Bid();
         bid.setAmount( 200 );

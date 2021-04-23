@@ -10,6 +10,7 @@ import org.thekiddos.faith.models.BidComment;
 import org.thekiddos.faith.repositories.BidCommentRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BidCommentServiceImpl implements BidCommentService {
@@ -31,5 +32,10 @@ public class BidCommentServiceImpl implements BidCommentService {
     @Override
     public List<BidComment> findByBid( Bid bid ) {
         return bidCommentRepository.findByBid( bid );
+    }
+
+    @Override
+    public List<BidCommentDto> findByBidDto( Bid bid ) {
+        return findByBid( bid ).stream().map( bidCommentMapper::toDto ).collect( Collectors.toList() );
     }
 }

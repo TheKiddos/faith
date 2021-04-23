@@ -14,6 +14,7 @@ public interface BidService {
     void addBid( BidDto bidDto, Freelancer freelancer ) throws ProjectNotFoundException, BiddingNotAllowedException;
 
     List<Bid> findByProject( Project project );
+    List<BidDto> findByProjectDto( Project project );
 
     Bid findById( Long id ) throws BidNotFoundException;
 }

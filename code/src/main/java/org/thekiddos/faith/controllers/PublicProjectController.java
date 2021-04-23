@@ -33,8 +33,8 @@ public class PublicProjectController {
         // TODO: there is too much inconsistency between what's passed to a context (Dto vs Entity) do we need to worry about this?
         Project project = projectService.findById( id );
         model.addAttribute( "project", project );
-        model.addAttribute( "bids", bidService.findByProject( project ) );
-        // TODO: Can I access current user in thymleaf without passing it
+        model.addAttribute( "bids", bidService.findByProjectDto( project ) );
+        // TODO: Can I access current user in thymeleaf without passing it
         return "projects/details";
     }
 }

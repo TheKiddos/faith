@@ -155,6 +155,31 @@ public class BidCommentTest {
     }
 
     @Test
+    void findByBidDto() {
+        BidDto dto = BidDto.builder()
+                .amount( 20.0 )
+                .comment( "Dieeeeeeee" )
+                .projectId( project.getId() )
+                .build();
+        var user = getTestUser();
+        user.setEmail( "newuser@user.com" );
+        user.setNickname( "newuser" );
+        user = userRepository.save( user );
+        bidService.addBid( dto, (Freelancer)user.getType() );
+
+        var commentDto = BidCommentDto.builder()
+                .text( "New Comment" )
+                .bidId( this.bid.getId() )
+                .build();
+        bidCommentService.addComment( commentDto );
+
+        var expectedComments = bidCommentRepository.findAll().stream().map( bidCommentMapper::toDto )
+                .filter( comment -> comment.getBidId().equals( this.bid.getId() ) )
+                .collect( Collectors.toList() );
+        assertEquals( expectedComments, bidCommentService.findByBidDto( this.bid ) );
+    }
+
+    @Test
     void string() {
         BidComment comment = new BidComment();
         comment.setText( "Die" );

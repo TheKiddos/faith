@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.thekiddos.faith.services.BidCommentService;
 import org.thekiddos.faith.services.BidService;
 import org.thekiddos.faith.services.ProjectService;
 
@@ -23,6 +24,8 @@ class PublicProjectControllerTest {
     private ProjectService projectService;
     @MockBean
     private BidService bidService;
+    @MockBean
+    private BidCommentService bidCommentService;
 
     @Autowired
     PublicProjectControllerTest( MockMvc mockMvc ) {
@@ -41,8 +44,7 @@ class PublicProjectControllerTest {
         mockMvc.perform( get( "/projects/1" ) )
                 .andExpect( status().isOk() );
         Mockito.verify( projectService, Mockito.times( 1 ) ).findById( 1L );
-        Mockito.verify( bidService, Mockito.times( 1 ) ).findByProject( any() );
-        // TODO: get comments
+        Mockito.verify( bidService, Mockito.times( 1 ) ).findByProjectDto( any() );
     }
 
 }

@@ -102,6 +102,20 @@ public class BidMapperTest {
     }
 
     @Test
+    void toDto() {
+        Bid bid = new Bid();
+        bid.setId( 1L );
+        bid.setProject( project );
+        bid.setAmount( 20.0 );
+
+        BidDto dto = bidMapper.toDto( bid );
+
+        assertEquals( bid.getId(), dto.getId() );
+        assertEquals( bid.getAmount(), dto.getAmount() );
+        assertEquals( bid.getProject().getId(), dto.getProjectId() );
+    }
+
+    @Test
     void nullTest() {
         assertNull( bidMapper.toEntity( null ) );
     }

@@ -61,6 +61,17 @@ public class BidCommentMapperTest {
     }
 
     @Test
+    void toDto() {
+        BidComment comment = new BidComment();
+        comment.setText( "hh" );
+        comment.setBid( this.bid );
+
+        BidCommentDto dto = bidCommentMapper.toDto( comment );
+        assertEquals( comment.getText(), dto.getText() );
+        assertEquals( comment.getBid().getId(), dto.getBidId() );
+    }
+
+    @Test
     void nullTest() {
         assertNull( bidCommentMapper.toEntity( null ) );
     }

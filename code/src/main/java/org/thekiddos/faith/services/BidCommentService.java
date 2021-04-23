@@ -11,4 +11,6 @@ public interface BidCommentService {
     void addComment( BidCommentDto dto ) throws BidNotFoundException;
 
     List<BidComment> findByBid( Bid bid );
+
+    List<BidCommentDto> findByBidDto( Bid bid );
 }
