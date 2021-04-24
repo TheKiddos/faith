@@ -1,0 +1,26 @@
+@keyframes slide-down {
+    from {transform: translate(0, -100%);}
+    to {transform: translate(0, 0);}
+}
+
+@keyframes slide-right {
+    from {transform: translate(-100%, 0);}
+    to {transform: translate(0, 0);}
+}
+
+@keyframes slide-left {
+    from {transform: translate(100%, 0);}
+    to {transform: translate(0, 0);}
+}
+
+.slide-down {
+    animation: slide-down 0.3s;
+}
+
+.slide-right {
+    animation: slide-right 0.5s;
+}
+
+.slide-left {
+    animation: slide-left 0.5s;
+}
