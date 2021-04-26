@@ -23,4 +23,5 @@ public class BidDto {
     private long projectId;
     @Builder.Default
     private List<BidCommentDto> bidComments = new ArrayList<>();
+    private FreelancerDto bidder;
 }

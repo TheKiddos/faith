@@ -10,10 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.thekiddos.faith.dtos.BidDto;
 import org.thekiddos.faith.dtos.ProjectDto;
 import org.thekiddos.faith.dtos.UserDto;
-import org.thekiddos.faith.models.Bid;
-import org.thekiddos.faith.models.Project;
-import org.thekiddos.faith.models.Stakeholder;
-import org.thekiddos.faith.models.User;
+import org.thekiddos.faith.models.*;
 import org.thekiddos.faith.repositories.ProjectRepository;
 import org.thekiddos.faith.repositories.UserRepository;
 import org.thekiddos.faith.services.ProjectService;
@@ -108,11 +105,20 @@ public class BidMapperTest {
         bid.setProject( project );
         bid.setAmount( 20.0 );
 
+        Freelancer freelancer = new Freelancer();
+        freelancer.setSummary( "bhbhbh" );
+        User user = new User();
+        user.setEmail( "hello@gmail.com" );
+        freelancer.setUser( user );
+        bid.setBidder( freelancer );
+
         BidDto dto = bidMapper.toDto( bid );
 
         assertEquals( bid.getId(), dto.getId() );
         assertEquals( bid.getAmount(), dto.getAmount() );
         assertEquals( bid.getProject().getId(), dto.getProjectId() );
+        assertEquals( bid.getBidder().getUser().getEmail(), dto.getBidder().getUser().getEmail() );
+        assertEquals( bid.getBidder().getSummary(), dto.getBidder().getSummary() );
     }
 
     @Test

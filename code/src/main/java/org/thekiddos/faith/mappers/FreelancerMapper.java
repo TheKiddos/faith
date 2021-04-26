@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import org.thekiddos.faith.dtos.FreelancerDto;
+import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.models.Freelancer;
 
 @Mapper
@@ -22,11 +23,13 @@ public interface FreelancerMapper {
         StringBuilder skillsBuffer = new StringBuilder();
         freelancer.getSkills().forEach( skill -> skillsBuffer.append( skill.getName() ).append( "\n" ) );
         String skills = skillsBuffer.length() > 0 ? skillsBuffer.substring( 0, skillsBuffer.length() - 1 ) : "";
+        UserDto user = UserMapper.INSTANCE.userToUserDto( freelancer.getUser() );
 
         return FreelancerDto.builder()
                 .summary( freelancer.getSummary() )
                 .available( freelancer.isAvailable() )
                 .skills( skills )
+                .user( user )
                 .build();
     }
 }
