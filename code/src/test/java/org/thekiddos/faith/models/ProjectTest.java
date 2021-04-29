@@ -176,7 +176,7 @@ class ProjectTest {
         
         var projects = projectService.findAllDto();
         assertEquals( 2, projects.size() );
-        assertTrue( projects.contains( projectDto ) );
-        assertTrue( projects.contains( projectDto2 ) );
+        assertTrue( projects.stream().anyMatch( element -> element.getName().equals( projectDto.getName() ) ) );
+        assertTrue( projects.stream().anyMatch( element -> element.getName().equals( projectDto2.getName() ) ) );
     }
 }

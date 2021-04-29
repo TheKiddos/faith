@@ -21,13 +21,13 @@ public interface UserMapper {
     @Mapping( target = "type", ignore = true )
     UserDto userToUserDto( User user );
 
-    default UserType UserTypeDtoToUserType( String userType ) {
+    default UserType userTypeDtoToUserType( String userType ) {
         if ( userType == null )
             return null;
 
-        return switch ( userType ) {
-            case "Stakeholder" -> new Stakeholder();
-            case "Freelancer" -> new Freelancer();
+        return switch ( userType.toLowerCase() ) {
+            case "stakeholder" -> new Stakeholder();
+            case "freelancer" -> new Freelancer();
             default -> null;
         };
     }

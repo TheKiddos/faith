@@ -51,15 +51,17 @@ class ProjectMapperTest {
 
         // TODO: is this good?
         Project project = projectMapper.projectDtoToProject( projectDto );
-        
+        project.setId( 1L );
+
         projectDto = projectMapper.projectToProjectDto( project );
         assertNotNull( projectDto );
-        assertEquals( projectDto.getName(), project.getName() );
-        assertEquals( projectDto.getDescription(), project.getDescription() );
-        assertEquals( projectDto.getPreferredBid(), project.getPreferredBid() );
-        assertEquals( Duration.ofDays( projectDto.getDuration() ), project.getDuration() );
-        assertEquals( projectDto.getMinimumQualification(), project.getMinimumQualification() );
-        assertEquals( projectDto.isAllowBidding(), project.isAllowBidding() );
+        assertEquals( project.getId(), projectDto.getId() );
+        assertEquals( project.getName(), projectDto.getName() );
+        assertEquals( project.getDescription(), projectDto.getDescription() );
+        assertEquals( project.getPreferredBid(), projectDto.getPreferredBid() );
+        assertEquals( project.getDuration(), Duration.ofDays( projectDto.getDuration() ) );
+        assertEquals( project.getMinimumQualification(), projectDto.getMinimumQualification() );
+        assertEquals( project.isAllowBidding(), projectDto.isAllowBidding() );
     }
 
     @Test

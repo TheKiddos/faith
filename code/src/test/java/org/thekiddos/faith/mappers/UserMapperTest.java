@@ -104,6 +104,17 @@ class UserMapperTest {
     }
 
     @Test
+    void userTypeDtoToUserTypeIgnoresCase() {
+        assertTrue( userMapper.userTypeDtoToUserType( "FreElanceR" ) instanceof Freelancer );
+        assertTrue( userMapper.userTypeDtoToUserType( "stakEHolder" ) instanceof Stakeholder );
+    }
+
+    @Test
+    void nullUserType() {
+        assertNull( userMapper.userTypeDtoToUserType( null ) );
+    }
+
+    @Test
     void nullTest() {
         assertNull( userMapper.userDtoToUser( null ) );
     }

@@ -20,7 +20,6 @@ import org.thekiddos.faith.services.UserService;
 import org.thekiddos.faith.utils.EmailSubjectConstants;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -76,7 +75,7 @@ public class UserRegistrationFeature {
         User user = (User) userService.loadUserByUsername( "testuser@test.com" );
         assertFalse( user.isEnabled() );
         assertFalse( user.isAdmin() );
-        assertEquals( Collections.singletonList( new SimpleGrantedAuthority( "USER" ) ), user.getAuthorities() );
+        assertEquals( List.of( new SimpleGrantedAuthority( "USER" ), new SimpleGrantedAuthority( "FREELANCER" ) ), user.getAuthorities() );
     }
 
     @io.cucumber.java.en.And( "Admin receives an email" )
