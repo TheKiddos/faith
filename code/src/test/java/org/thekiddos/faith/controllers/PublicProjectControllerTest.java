@@ -7,11 +7,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.thekiddos.faith.models.Project;
+import org.thekiddos.faith.models.Stakeholder;
 import org.thekiddos.faith.services.BidCommentService;
 import org.thekiddos.faith.services.BidService;
 import org.thekiddos.faith.services.ProjectService;
 
-import static org.mockito.ArgumentMatchers.any;
+import java.time.Duration;
+import java.util.List;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -26,6 +30,7 @@ class PublicProjectControllerTest {
     private BidService bidService;
     @MockBean
     private BidCommentService bidCommentService;
+    private Project project;
 
     @Autowired
     PublicProjectControllerTest( MockMvc mockMvc ) {
@@ -41,10 +46,24 @@ class PublicProjectControllerTest {
 
     @Test
     public void projectDetails() throws Exception {
-        mockMvc.perform( get( "/projects/1" ) )
+        project = getTestProject();
+
+        Mockito.doReturn( project ).when( projectService ).findById( project.getId() );
+        Mockito.doReturn( List.of() ).when( bidService ).findByProjectDto( project );
+        mockMvc.perform( get( "/projects/" + project.getId() ) )
                 .andExpect( status().isOk() );
-        Mockito.verify( projectService, Mockito.times( 1 ) ).findById( 1L );
-        Mockito.verify( bidService, Mockito.times( 1 ) ).findByProjectDto( any() );
     }
 
+    private Project getTestProject() {
+        Project project = new Project();
+        project.setId( 1L );
+        project.setName( "Hello" );
+        project.setAllowBidding( true );
+        project.setOwner( new Stakeholder() );
+        project.setDescription( "hhhhhhhhh" );
+        project.setDuration( Duration.ofDays( 2L ) );
+        project.setPreferredBid( 200 );
+        project.setMinimumQualification( 200 );
+        return project;
+    }
 }

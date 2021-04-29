@@ -21,7 +21,7 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link
             href="../../static/css/main.css"
-            th:href="@{static/css/main.css}"
+            th:href="@{/css/main.css}"
             rel="stylesheet"
     />
 </head>
@@ -57,15 +57,15 @@
     <div class="details">
         <div class="card">
             <div class="card-header">
-                <div><i class="fas fa-clock mx-2"></i>${project.duration} Day(s)</div>
-                <div><i class="fas fa-money-bill mx-2"></i>${project.preferredBid}</div>
+                <div th:inline="text"><i class="fas fa-clock mx-2"></i>[[${project.duration.toDays()} + ' Day(s)']]</div>
+                <div th:inline="text"><i class="fas fa-money-bill mx-2"></i>[[${project.preferredBid}]]</div>
             </div>
             <div class="card-body text-center">
-                <h5 class="card-title">${project.name}</h5>
-                <p class="card-text">
-                    ${project.description}
+                <h5 class="card-title" th:text="${project.name}">Name</h5>
+                <p class="card-text" th:text="${project.description}">
+                    This is my project
                 </p>
-                <div>Minimum Qualification: ${project.minimumQualification}</div>
+                <div th:text="'Minimum Qualification: ' + ${project.minimumQualification}">Minimum Qualification: 200</div>
             </div>
             <div class="card-footer text-muted">
                 <!--TODO: Project Skills/Tags Here-->
@@ -108,13 +108,13 @@
 <script
         type="text/javascript"
         src="../../static/js/noframework.waypoints.min.js"
-        th:src="@{static/js/noframework.waypoints.min.js}"
+        th:src="@{/js/noframework.waypoints.min.js}"
 ></script>
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script
         type="text/javascript"
         src="../../static/js/main.js"
-        th:src="@{static/js/main.js}"
+        th:src="@{/js/main.js}"
 ></script>
 <script>
     const commentsModal = document.getElementById('comments');
