@@ -7,6 +7,7 @@ import org.thekiddos.faith.exceptions.ProjectNotFoundException;
 import org.thekiddos.faith.models.Bid;
 import org.thekiddos.faith.models.Freelancer;
 import org.thekiddos.faith.models.Project;
+import org.thekiddos.faith.models.User;
 
 import java.util.List;
 
@@ -17,4 +18,6 @@ public interface BidService {
     List<BidDto> findByProjectDto( Project project );
 
     Bid findById( Long id ) throws BidNotFoundException;
+
+    boolean canBidOnProject( User user, Project project );
 }

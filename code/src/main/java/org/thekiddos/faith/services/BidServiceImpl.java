@@ -1,16 +1,14 @@
 package org.thekiddos.faith.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.thekiddos.faith.dtos.BidDto;
 import org.thekiddos.faith.exceptions.BidNotFoundException;
 import org.thekiddos.faith.exceptions.BiddingNotAllowedException;
 import org.thekiddos.faith.exceptions.ProjectNotFoundException;
 import org.thekiddos.faith.mappers.BidMapper;
-import org.thekiddos.faith.models.Bid;
-import org.thekiddos.faith.models.BidComment;
-import org.thekiddos.faith.models.Freelancer;
-import org.thekiddos.faith.models.Project;
+import org.thekiddos.faith.models.*;
 import org.thekiddos.faith.repositories.BidCommentRepository;
 import org.thekiddos.faith.repositories.BidRepository;
 import org.thekiddos.faith.utils.EmailSubjectConstants;
@@ -61,17 +59,12 @@ public class BidServiceImpl implements BidService {
         if ( !project.isAllowBidding() )
             throw new BiddingNotAllowedException( "Bidding on this project is not allowed" );
 
-        if ( hasBidding( freelancer, project ) )
+        if ( !canBidOnProject( freelancer.getUser(), project ) )
             throw new BiddingNotAllowedException( "You already submitted a bid on this project" );
 
         bid.setBidder( freelancer );
         bidRepository.save( bid );
         return bid;
-    }
-
-    private boolean hasBidding( Freelancer freelancer, Project project ) {
-        return bidRepository.findAll().stream().filter( bid -> bid.getBidder().equals( freelancer ) )
-                .anyMatch( bid -> bid.getProject().equals( project ) );
     }
 
     private void createCommentForBid( Bid bid, String commentText ) {
@@ -98,6 +91,15 @@ public class BidServiceImpl implements BidService {
     @Override
     public Bid findById( Long id ) throws BidNotFoundException {
         return bidRepository.findById( id ).orElseThrow( BidNotFoundException::new );
+    }
+
+    @Override
+    public boolean canBidOnProject( User user, Project project ) {
+        if ( !user.getAuthorities().contains( new SimpleGrantedAuthority( "FREELANCER" ) ) || !( user.getType() instanceof Freelancer ) )
+            return false;
+
+        Freelancer freelancer = (Freelancer) user.getType();
+        return bidRepository.findByBidderAndProject( freelancer, project ).isEmpty();
     }
 
     @Autowired

@@ -349,6 +349,29 @@ public class BidTest {
         assertEquals( bid.hashCode(), bid2.hashCode() );
     }
 
+    @Test
+    void canBidOnProjectTrue() {
+        assertTrue( bidService.canBidOnProject( freelancerUser, project ) );
+    }
+
+    @Test
+    void canBidOnProjectFalse() {
+        BidDto dto = BidDto.builder()
+                .amount( 20.0 )
+                .comment( "Pleeeeeeeeese" )
+                .projectId( this.project.getId() )
+                .build();
+        assertTrue( bidRepository.findAll().isEmpty() );
+        bidService.addBid( dto, (Freelancer)this.freelancerUser.getType() );
+
+        assertFalse( bidService.canBidOnProject( freelancerUser, project ) );
+    }
+
+    @Test
+    void canBidOnProjectNotFreelancer() {
+        assertFalse( bidService.canBidOnProject( project.getOwner().getUser(), project ) );
+    }
+
     // TODO: move to utils and use in all other test with defaults and option to override them
     private User getTestUser() {
         UserDto userDto = UserDto.builder().email( "freelancer@test.com" )
