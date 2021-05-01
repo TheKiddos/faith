@@ -49,7 +49,7 @@
                     <p class="card-text" th:text="${project.description}">
                         This is my project
                     </p>
-                    <a href="#" th:href="@{'/projects/' + ${project.id}}" class="btn btn-primary">Button</a>
+                    <a href="#" th:href="@{'/projects/' + ${project.id}}" class="btn btn-primary">Details</a>
                 </div>
                 <div class="card-footer text-muted">
                     <div th:text="'Minimum Qualification: ' + ${project.minimumQualification}">Minimum Qualification: 200</div>

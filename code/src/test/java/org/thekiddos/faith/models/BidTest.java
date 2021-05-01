@@ -167,6 +167,37 @@ public class BidTest {
     }
 
     @Test
+    void addBidWithoutCommentBlank() {
+        double amount = 10.0;
+
+        BidDto dto = BidDto.builder()
+                .amount( amount )
+                .projectId( this.project.getId() )
+                .comment( "" )
+                .build();
+        assertTrue( bidRepository.findAll().isEmpty() );
+        bidService.addBid( dto, (Freelancer)this.freelancerUser.getType() );
+
+        var user = (User)userService.loadUserByUsername( this.freelancerUser.getEmail() );
+        var bids = bidRepository.findAll();
+        assertEquals( 1, bids.size() );
+
+        Bid bid = bids.stream().findFirst().orElse( null );
+        assertNotNull( bid );
+        assertNotNull( bid.getId() );
+        assertEquals( "Bid of " + amount, bid.toString() );
+        assertEquals( amount, bid.getAmount() );
+        assertEquals( this.project, bid.getProject() );
+        assertEquals( user.getType(), bid.getBidder() );
+
+        var comments = bidCommentRepository.findAll();
+        assertTrue( comments.isEmpty() );
+
+        Mockito.verify( emailService, Mockito.times( 1 ) )
+                .sendTemplateMail( eq( List.of( "bhbh@gmail.com" ) ), anyString(), eq( EmailSubjectConstants.NEW_BID ), eq( EmailTemplatesConstants.NEW_BID_TEMPLATE ), any() );
+    }
+
+    @Test
     void addBidOnPrivateProjectIsInvalid() {
         this.project.setAllowBidding( false );
         this.project = this.projectRepository.save( this.project );

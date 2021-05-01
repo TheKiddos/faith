@@ -68,7 +68,7 @@ public class BidServiceImpl implements BidService {
     }
 
     private void createCommentForBid( Bid bid, String commentText ) {
-        if ( commentText == null )
+        if ( commentText == null || commentText.strip().isEmpty() )
             return;
         BidComment bidComment = new BidComment();
         bidComment.setBid( bid );

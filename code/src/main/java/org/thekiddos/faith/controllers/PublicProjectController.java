@@ -49,7 +49,7 @@ public class PublicProjectController {
         model.addAttribute( "project", project );
         model.addAttribute( "bids", bidService.findByProjectDto( project ) );
         model.addAttribute( "canBid", canBid );
-        model.addAttribute( "newBid", new BidDto() );
+        model.addAttribute( "newBid", BidDto.builder().projectId( project.getId() ).build() );
 
         return "projects/details";
     }

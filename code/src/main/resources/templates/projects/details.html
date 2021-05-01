@@ -19,6 +19,7 @@
             rel="stylesheet"
     />
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     <link
             href="../../static/css/main.css"
             th:href="@{/css/main.css}"
@@ -73,12 +74,35 @@
         </div>
     </div>
 
-    <div class="bidding mt-3">
-        <div th:each="bid, iStat : ${bids}" class="card text-white bg-success mb-3 text-center" style="max-width: 18rem" data-aos="fade-up-right" th:data-aos="${iStat.even}? 'fade-up-right' : 'fade-up-left'">
+    <div th:if="${canBid}" class="add-bid mt-3">
+        <div class="card text-dark bg-white mb-3 text-center" data-aos="fade-up-down">
+            <div class="card-body">
+                <h5 class="card-title">Add Your Bid</h5>
+                <form role="form" class="form" id="add-bid-form" method="post" th:object="${newBid}" th:action="@{/freelancer/bid}" th:method="post">
+                    <div class="form-outline mb-4 mx-auto" style="max-width: 18rem">
+                        <i class="fas fa-money-bill trailing"></i>
+                        <input class="form-control pe-5" min="10" value="10.0" type="number" name="amount" th:field="*{amount}" id="amount">
+                        <label class="form-label" for="amount">Amount</label>
+                    </div>
+
+                    <div class="form-outline mb-4">
+                        <textarea class="form-control" id="comment" rows="4" th:field="*{comment}"></textarea>
+                        <label class="form-label" for="comment">Comment</label>
+                    </div>
+
+                    <label for="project-id"></label><input hidden type="number" name="projectId" th:field="*{projectId}" id="project-id">
+
+                    <button id="add-bid-btn" class="btn btn-success" type="submit">Add Bid</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="bidding row mt-3">
+        <div th:each="bid, iStat : ${bids}" class="card col-md-5 mx-auto text-white bg-success mb-3 text-center" data-aos="fade-up-right" th:data-aos="${iStat.even}? 'fade-up-right' : 'fade-up-left'">
             <div class="card-header"><span class="badge bg-light text-dark rounded-pill" th:text="${bid.amount}">200</span></div>
             <div class="card-body">
-                <!--TODO: Freelancer Info here-->
-                <h5 class="card-title" th:text="${bid.bidder.user.firstName} ${bid.bidder.user.lastName}">Freelancer Name</h5>
+                <h5 class="card-title" th:text="${bid.bidder.user.firstName} + ${bid.bidder.user.lastName}">Freelancer Name</h5>
                 <ul class="card-text">
                     <li th:text="${bid.bidder.user.email}">email</li>
                     <li th:text="${bid.bidder.user.phoneNumber}">phone</li>
@@ -91,9 +115,10 @@
                     data-mdb-ripple-color="dark"
                     data-mdb-toggle="modal"
                     data-mdb-target="#comments"
-                    data-mdb-bid-id="${bid.id}"
+                    data-mdb-bid-id="0"
+                    th:data-mdb-bid-id="${bid.id}"
             >
-                Comments <span class="badge bg-danger ms-2">8</span>
+                Comments <span class="badge bg-danger ms-2" th:text="${bid.bidComments.size()}">8</span>
             </button></div>
         </div>
     </div>
@@ -111,6 +136,7 @@
         th:src="@{/js/noframework.waypoints.min.js}"
 ></script>
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script
         type="text/javascript"
         src="../../static/js/main.js"
@@ -129,5 +155,6 @@
         $("#comments-body").load(bidCommentsUrl);
     })
 </script>
+<script src="../../static/js/add-bid-form.js" th:src="@{/js/add-bid-form.js}"></script>
 </body>
 </html>
