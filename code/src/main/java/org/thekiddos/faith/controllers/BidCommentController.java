@@ -24,6 +24,6 @@ public class BidCommentController {
     public String getBidComments( @PathVariable Long id, Model model ) {
         Bid bid = bidService.findById( id );
         model.addAttribute( "comments", bidCommentService.findByBidDto( bid ) );
-        return "bids/list-ajax";
+        return "bids/partials/list-ajax";
     }
 }

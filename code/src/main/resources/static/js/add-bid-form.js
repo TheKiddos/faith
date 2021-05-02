@@ -1,8 +1,10 @@
 $(_ => {
     const addBidForm = $("#add-bid-form")
     const addBidUrl = addBidForm.attr("action");
+    const addBidSpinner = $("#add-bid-spinner");
 
     addBidForm.submit((event) => {
+        addBidSpinner.removeClass("visually-hidden");
         let formData = {
             amount: $("#amount").val(),
             comment: $("#comment").val(),
@@ -20,6 +22,8 @@ $(_ => {
             }, 1000)
         }).fail((data) => {
             toastr.error(data.responseText);
+        }).always(_ => {
+            addBidSpinner.addClass("visually-hidden");
         });
 
         event.preventDefault();

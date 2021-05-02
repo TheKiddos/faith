@@ -43,7 +43,7 @@
                         aria-label="Close"
                 ></button>
             </div>
-            <div class="modal-body" id="comments-body"></div>
+            <div class="modal-body row row-cols-1" id="comments-body"></div>
             <div class="modal-footer text-center">
                 <form method="post"> <!--TODO-->
                     <textarea name="text" id="new-comment-text" class="form-control" rows="10" placeholder="Your Comment here"></textarea>
@@ -92,7 +92,14 @@
 
                     <label for="project-id"></label><input hidden type="number" name="projectId" th:field="*{projectId}" id="project-id">
 
-                    <button id="add-bid-btn" class="btn btn-success" type="submit">Add Bid</button>
+                    <button id="add-bid-btn" class="btn btn-success" type="submit">Add Bid
+                        <span
+                                class="spinner-border spinner-border-sm visually-hidden"
+                                role="status"
+                                aria-hidden="true"
+                                id="add-bid-spinner"
+                        />
+                    </button>
                 </form>
             </div>
         </div>
@@ -151,7 +158,7 @@
         const bidId = button.getAttribute('data-mdb-bid-id');
 
         // TODO: finish this
-        const bidCommentsUrl = null
+        const bidCommentsUrl = window.location.protocol + "//" + window.location.host + "/bids/" + bidId + "/comments"; // Is this good?
         $("#comments-body").load(bidCommentsUrl);
     })
 </script>
