@@ -2,29 +2,20 @@ $(_ => {
     const addBidForm = $("#add-bid-form")
     const addBidUrl = addBidForm.attr("action");
     const addBidSpinner = $("#add-bid-spinner");
+    const addBidBtn = $("#add-bid-btn")
 
     addBidForm.submit((event) => {
         addBidSpinner.removeClass("visually-hidden");
+        addBidBtn.prop('disabled', true);
+
         let formData = {
             amount: $("#amount").val(),
             comment: $("#comment").val(),
             projectId: $("#project-id").val(),
-            _csrf: $("input[name=_csrf]").val()
+            _csrf: $("#add-bid-form input[name=_csrf]").val()
         };
 
-        $.post({
-            url: addBidUrl,
-            data: formData,
-        }).done((data) => {
-            toastr.success(data);
-            setTimeout(_ => {
-                this.window.location.reload();
-            }, 1000)
-        }).fail((data) => {
-            toastr.error(data.responseText);
-        }).always(_ => {
-            addBidSpinner.addClass("visually-hidden");
-        });
+        postFormData(addBidUrl, formData, addBidSpinner, addBidBtn)
 
         event.preventDefault();
     });

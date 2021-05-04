@@ -44,12 +44,22 @@
                 ></button>
             </div>
             <div class="modal-body row row-cols-1" id="comments-body"></div>
-            <div class="modal-footer text-center">
-                <form method="post"> <!--TODO-->
-                    <textarea name="text" id="new-comment-text" class="form-control" rows="10" placeholder="Your Comment here"></textarea>
+            <div class="modal-footer justify-content-center">
+                <form id="add-comment-form" style="width: 100%" method="post" th:action="@{/bids/comments/add}">
+                    <div class="form-outline mb-4">
+                        <textarea name="text" id="new-comment-text" class="form-control" rows="5"></textarea>
+                        <label class="form-label" for="new-comment-text">Your Comment Here</label>
+                    </div>
                     <input hidden type="number" name="bidId" id="new-comment-bid-id">
+                    <button class="btn btn-success" id="add-comment-btn" type="submit">Comment
+                        <span
+                            class="spinner-border spinner-border-sm visually-hidden"
+                            role="status"
+                            aria-hidden="true"
+                            id="add-comment-spinner"
+                        />
+                    </button>
                 </form>
-
             </div>
         </div>
     </div>
@@ -157,11 +167,12 @@
         // Extract info from data-mdb-* attributes
         const bidId = button.getAttribute('data-mdb-bid-id');
 
-        // TODO: finish this
-        const bidCommentsUrl = window.location.protocol + "//" + window.location.host + "/bids/" + bidId + "/comments"; // Is this good?
+        const bidCommentsUrl = window.location.protocol + "//" + window.location.host + "/bids/" + bidId + "/comments"; // Is this good? Replace with th:action on a tag?
         $("#comments-body").load(bidCommentsUrl);
+        $("#new-comment-bid-id").val(bidId)
     })
 </script>
+<script src="../../static/js/add-comment-form.js" th:src="@{/js/add-comment-form.js}"></script>
 <script src="../../static/js/add-bid-form.js" th:src="@{/js/add-bid-form.js}"></script>
 </body>
 </html>

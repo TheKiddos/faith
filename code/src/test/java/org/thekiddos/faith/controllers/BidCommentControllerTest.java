@@ -62,7 +62,7 @@ class BidCommentControllerTest {
 
         Mockito.doReturn( bid ).when( bidService ).findById( bid.getId() );
 
-        mockMvc.perform( post( "/bids/" + bid.getId() + "/comments/add" )
+        mockMvc.perform( post( "/bids/comments/add" )
                 .with( csrf() )
                 .param( "text", dto.getText() )
                 .param( "bidId", String.valueOf( dto.getBidId() ) ) )
@@ -85,7 +85,7 @@ class BidCommentControllerTest {
 
         Mockito.doReturn( bid ).when( bidService ).findById( bid.getId() );
 
-        mockMvc.perform( post( "/bids/" + bid.getId() + "/comments/add" )
+        mockMvc.perform( post( "/bids/comments/add" )
                 .with( csrf() )
                 .param( "text", dto.getText() )
                 .param( "bidId", String.valueOf( dto.getBidId() ) ) )
@@ -105,7 +105,7 @@ class BidCommentControllerTest {
 
         Mockito.doThrow( BidNotFoundException.class ).when( bidService ).findById( -1L );
 
-        mockMvc.perform( post( "/bids/" + -1L + "/comments/add" )
+        mockMvc.perform( post( "/bids/comments/add" )
                 .with( csrf() )
                 .param( "text", dto.getText() )
                 .param( "bidId", String.valueOf( dto.getBidId() ) ) )
@@ -129,7 +129,7 @@ class BidCommentControllerTest {
 
         Mockito.doReturn( bid ).when( bidService ).findById( bid.getId() );
 
-        mockMvc.perform( post( "/bids/" + bid.getId() + "/comments/add" )
+        mockMvc.perform( post( "/bids/comments/add" )
                 .with( csrf() )
                 .param( "text", dto.getText() )
                 .param( "bidId", String.valueOf( dto.getBidId() ) ) )

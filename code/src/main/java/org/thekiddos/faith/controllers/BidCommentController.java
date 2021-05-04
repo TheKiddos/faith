@@ -36,12 +36,13 @@ public class BidCommentController {
         return "bids/partials/list-ajax";
     }
 
-    @PostMapping( value = "{id}/comments/add" )
-    public ResponseEntity<String> addBidComment( @PathVariable Long id, Principal principal, @Valid BidCommentDto comment, BindingResult binding ) {
+    @PostMapping( value = "comments/add" )
+    public ResponseEntity<String> addBidComment( Principal principal, @Valid BidCommentDto comment, BindingResult binding ) {
         if ( principal == null ) {
             return new ResponseEntity<>( "Please Log In", HttpStatus.UNAUTHORIZED );
         }
 
+        var id = comment.getBidId();
         try {
             bidService.findById( id );
         }
