@@ -17,5 +17,5 @@ public class BidCommentDto {
     private String text;
     @NotNull
     private Long bidId;
-    private String byEmail;
+    private UserDto user;
 }

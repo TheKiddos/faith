@@ -128,6 +128,7 @@ public class BidTest {
         assertNotNull( comment );
         assertEquals( bid, comment.getBid() );
         assertEquals( "Pleeeeeeeeese", comment.getText() );
+        assertEquals( this.freelancerUser, comment.getUser() );
 
         Mockito.verify( emailService, Mockito.times( 1 ) )
                 .sendTemplateMail( eq( List.of( "bhbh@gmail.com" ) ), anyString(), eq( EmailSubjectConstants.NEW_BID ), eq( EmailTemplatesConstants.NEW_BID_TEMPLATE ), any() );
@@ -167,7 +168,7 @@ public class BidTest {
     }
 
     @Test
-    void addBidWithoutCommentBlank() {
+    void addBidWithCommentBlank() {
         double amount = 10.0;
 
         BidDto dto = BidDto.builder()

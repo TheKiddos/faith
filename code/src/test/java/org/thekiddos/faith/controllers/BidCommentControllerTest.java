@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.thekiddos.faith.dtos.BidCommentDto;
+import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.exceptions.BidNotFoundException;
 import org.thekiddos.faith.models.Bid;
 import org.thekiddos.faith.services.BidCommentService;
@@ -124,7 +125,7 @@ class BidCommentControllerTest {
         BidCommentDto dto = BidCommentDto.builder()
                 .bidId( bid.getId() )
                 .text( "Hello" )
-                .byEmail( "freelancer@test.com" )
+                .user( UserDto.builder().email( "freelancer@test.com" ).build() )
                 .build();
 
         Mockito.doReturn( bid ).when( bidService ).findById( bid.getId() );

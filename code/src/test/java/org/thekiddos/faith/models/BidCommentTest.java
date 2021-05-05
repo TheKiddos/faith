@@ -115,6 +115,7 @@ public class BidCommentTest {
         var dto = BidCommentDto.builder()
                 .text( "New Comment" )
                 .bidId( this.bid.getId() )
+                .user( UserDto.builder().email( freelancerUser.getEmail() ).build() )
                 .build();
 
         assertEquals( 1, bidCommentRepository.findAll().size() );
@@ -127,6 +128,7 @@ public class BidCommentTest {
         var newComment = comments.get( 0 );
         assertEquals( "New Comment", newComment.getText() );
         assertEquals( this.bid, newComment.getBid() );
+        assertEquals( this.freelancerUser, newComment.getUser() );
     }
 
     @Test
@@ -145,6 +147,7 @@ public class BidCommentTest {
         var commentDto = BidCommentDto.builder()
                 .text( "New Comment" )
                 .bidId( this.bid.getId() )
+                .user( UserDto.builder().email( freelancerUser.getEmail() ).build() )
                 .build();
         bidCommentService.addComment( commentDto );
 
@@ -170,6 +173,7 @@ public class BidCommentTest {
         var commentDto = BidCommentDto.builder()
                 .text( "New Comment" )
                 .bidId( this.bid.getId() )
+                .user( UserDto.builder().email( freelancerUser.getEmail() ).build() )
                 .build();
         bidCommentService.addComment( commentDto );
 

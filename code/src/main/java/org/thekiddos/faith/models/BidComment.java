@@ -21,6 +21,9 @@ public class BidComment {
     @ManyToOne( optional = false, cascade = { CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE } ) @NotNull
     private Bid bid;
 
+    @ManyToOne( optional = false, cascade = { CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE } ) @NotNull
+    private User user;
+
     @Override
     public String toString() {
         return "BidComment(" +

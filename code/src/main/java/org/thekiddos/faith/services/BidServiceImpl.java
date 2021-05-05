@@ -3,12 +3,17 @@ package org.thekiddos.faith.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.thekiddos.faith.dtos.BidCommentDto;
 import org.thekiddos.faith.dtos.BidDto;
+import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.exceptions.BidNotFoundException;
 import org.thekiddos.faith.exceptions.BiddingNotAllowedException;
 import org.thekiddos.faith.exceptions.ProjectNotFoundException;
 import org.thekiddos.faith.mappers.BidMapper;
-import org.thekiddos.faith.models.*;
+import org.thekiddos.faith.models.Bid;
+import org.thekiddos.faith.models.Freelancer;
+import org.thekiddos.faith.models.Project;
+import org.thekiddos.faith.models.User;
 import org.thekiddos.faith.repositories.BidCommentRepository;
 import org.thekiddos.faith.repositories.BidRepository;
 import org.thekiddos.faith.utils.EmailSubjectConstants;
@@ -40,9 +45,8 @@ public class BidServiceImpl implements BidService {
         Bid bid = createBid( bidDto, freelancer );
         sendNewBidEmail( bid );
 
-        // TODO: replace with BidCommentService
         String commentText = bidDto.getComment();
-        createCommentForBid( bid, commentText );
+        createCommentForBid( bid, commentText, freelancer.getUser() );
     }
 
     private void sendNewBidEmail( Bid bid ) {
@@ -67,13 +71,17 @@ public class BidServiceImpl implements BidService {
         return bid;
     }
 
-    private void createCommentForBid( Bid bid, String commentText ) {
+    private void createCommentForBid( Bid bid, String commentText, User user ) {
         if ( commentText == null || commentText.strip().isEmpty() )
             return;
-        BidComment bidComment = new BidComment();
-        bidComment.setBid( bid );
-        bidComment.setText( commentText );
-        bidCommentRepository.save( bidComment );
+
+        var commentDto = BidCommentDto.builder()
+                .bidId( bid.getId() )
+                .text( commentText )
+                .user( UserDto.builder().email( user.getEmail() ).build() )
+                .build();
+
+        bidCommentService.addComment( commentDto );
     }
 
     @Override

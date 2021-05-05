@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.thekiddos.faith.dtos.BidCommentDto;
+import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.exceptions.BidNotFoundException;
 import org.thekiddos.faith.models.Bid;
 import org.thekiddos.faith.services.BidCommentService;
@@ -50,7 +51,7 @@ public class BidCommentController {
             return new ResponseEntity<>( "No Such Bid", HttpStatus.NOT_FOUND );
         }
 
-        comment.setByEmail( principal.getName() );
+        comment.setUser( UserDto.builder().email( principal.getName() ).build() );
         comment.setBidId( id );
 
         if ( binding.hasErrors() ) {
