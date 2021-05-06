@@ -68,4 +68,8 @@ public final class Utils {
         }
         return user;
     }
+
+    public static String getProjectDetailsPage( Long projectId ) {
+        return PUBLIC_PROJECT_DETAILS_PAGE_PREFIX + projectId;
+    }
 }

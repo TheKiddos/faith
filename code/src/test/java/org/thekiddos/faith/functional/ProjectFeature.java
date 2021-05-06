@@ -9,6 +9,8 @@ import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.thekiddos.faith.Utils;
 import org.thekiddos.faith.models.User;
+import org.thekiddos.faith.repositories.BidCommentRepository;
+import org.thekiddos.faith.repositories.BidRepository;
 import org.thekiddos.faith.repositories.ProjectRepository;
 import org.thekiddos.faith.services.UserService;
 
@@ -18,14 +20,26 @@ public class ProjectFeature {
     private final UserService userService;
     private final WebDriver webDriver;
     private final ProjectRepository projectRepository;
+    private final BidCommentRepository bidCommentRepository;
+    private final BidRepository bidRepository;
     private final User user;
     
     @Autowired
-    public ProjectFeature( UserService userService, WebDriver webDriver, ProjectRepository projectRepository ) {
+    public ProjectFeature( UserService userService, WebDriver webDriver, ProjectRepository projectRepository, BidCommentRepository bidCommentRepository, BidRepository bidRepository ) {
         this.userService = userService;
         this.webDriver = webDriver;
         this.projectRepository = projectRepository;
         this.user = Utils.getOrCreateTestUser( userService, "stakeholder@test.com", "Stakeholder" );
+        this.bidCommentRepository = bidCommentRepository;
+        this.bidRepository = bidRepository;
+
+        setup();
+    }
+
+    private void setup() {
+        bidCommentRepository.deleteAll();
+        bidRepository.deleteAll();
+        projectRepository.deleteAll();
     }
 
     @Given( "Stakeholder logins" )

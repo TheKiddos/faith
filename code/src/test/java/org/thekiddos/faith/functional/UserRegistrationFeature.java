@@ -13,8 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.thekiddos.faith.Utils;
 import org.thekiddos.faith.models.Email;
 import org.thekiddos.faith.models.User;
-import org.thekiddos.faith.repositories.EmailRepository;
-import org.thekiddos.faith.repositories.UserRepository;
+import org.thekiddos.faith.repositories.*;
 import org.thekiddos.faith.services.EmailService;
 import org.thekiddos.faith.services.UserService;
 import org.thekiddos.faith.utils.EmailSubjectConstants;
@@ -30,24 +29,37 @@ public class UserRegistrationFeature {
     private final EmailService emailService;
     private final UserRepository userRepository;
     private final EmailRepository emailRepository;
+    private final ProjectRepository projectRepository;
+    private final BidCommentRepository bidCommentRepository;
+    private final BidRepository bidRepository;
 
     @Autowired
-    public UserRegistrationFeature( WebDriver webDriver, UserService userService, EmailService emailService, UserRepository userRepository, EmailRepository emailRepository ) {
+    public UserRegistrationFeature( WebDriver webDriver, UserService userService, EmailService emailService, UserRepository userRepository, EmailRepository emailRepository, ProjectRepository projectRepository, BidCommentRepository bidCommentRepository, BidRepository bidRepository ) {
         this.webDriver = webDriver;
         this.userService = userService;
         this.emailService = emailService;
         this.userRepository = userRepository;
         this.emailRepository = emailRepository;
+        this.projectRepository = projectRepository;
+        this.bidCommentRepository = bidCommentRepository;
+        this.bidRepository = bidRepository;
+
+        setUp();
     }
 
     @io.cucumber.java.en.Given( "A new user visits registration page" )
     public void userIsNotLoggedIn() {
-        userRepository.deleteById( "testuser@test.com" );
-        emailRepository.deleteAll();
-
         webDriver.manage().window().maximize();
         webDriver.get( Utils.SITE_ROOT + "register" );
         assertEquals( Utils.SITE_ROOT + "register", webDriver.getCurrentUrl() );
+    }
+
+    private void setUp() {
+        bidCommentRepository.deleteAll();
+        bidRepository.deleteAll();
+        projectRepository.deleteAll();
+        userRepository.findAll().stream().filter( user -> !user.isAdmin() ).forEach( userRepository::delete );
+        emailRepository.deleteAll();
     }
 
     @io.cucumber.java.en.And( "User fills required info" )
