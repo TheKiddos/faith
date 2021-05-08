@@ -3,7 +3,6 @@ package org.thekiddos.faith.services;
 import org.thekiddos.faith.dtos.ProjectDto;
 import org.thekiddos.faith.exceptions.ProjectNotFoundException;
 import org.thekiddos.faith.models.Project;
-import org.thekiddos.faith.dtos.ProjectDto;
 import org.thekiddos.faith.models.Stakeholder;
 
 import java.util.List;
@@ -22,4 +21,11 @@ public interface ProjectService {
     List<Project> findAll();
     
     List<ProjectDto> findAllDto();
+
+    /**
+     * Fetch a list of projects that are considered featured
+     * What project is considered featured is up to the implementation
+     * @return List Of Featured Projects
+     */
+    List<ProjectDto> findFeaturedProjectsDto();
 }
