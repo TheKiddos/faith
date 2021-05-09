@@ -28,4 +28,6 @@ public interface ProjectService {
      * @return List Of Featured Projects
      */
     List<ProjectDto> findFeaturedProjectsDto();
+
+    List<ProjectDto> findByOwnerDto( Stakeholder owner );
 }

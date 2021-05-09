@@ -49,4 +49,9 @@ public class ProjectServiceImpl implements ProjectService {
         int numberOfProjects = projects.size();
         return projects.subList( 0, Math.min( numberOfProjects, NUMBER_OF_FEATURED_PROJECTS ) );
     }
+
+    @Override
+    public List<ProjectDto> findByOwnerDto( Stakeholder owner ) {
+        return projectRepository.findByOwner( owner ).stream().map( projectMapper::projectToProjectDto ).collect( Collectors.toList() );
+    }
 }
