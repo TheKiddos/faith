@@ -24,3 +24,8 @@
 .slide-left {
     animation: slide-left 0.5s;
 }
+
+.bg-image {
+    background-image: url('../images/faith-with-us.png');
+    height: 600px;
+}
