@@ -16,3 +16,12 @@ function postFormData(url, data, spinner, btn) {
         spinner.addClass("visually-hidden");
     });
 }
+
+$(window).scroll(_ => {
+    if ($(this).scrollTop() > 250) {
+        $(".navbar").addClass("sticky-top");
+        return;
+    }
+    $(".navbar").removeClass("sticky-top");
+    $(".navbar").removeClass("sticky-top");
+})

@@ -27,17 +27,17 @@
     <link rel="stylesheet" type="text/css" href="../../static/slick/slick.css"/>
     <link rel="stylesheet" type="text/css" href="../../static/slick/slick-theme.css"/>
 </head>
-<body>
+<body data-aos="fade-down">
 <header>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-transparent">
+    <nav class="navbar navbar-expand-lg bg-light text-light fixed-top navbar-transparent">
       <!-- Container wrapper -->
       <div class="container-fluid">
         <!-- Navbar brand -->
         <a class="navbar-brand" href="#">
           <img
-            src="https://mdbootstrap.com/img/logo/mdb-transaprent-noshadows.png"
-            height="30"
+            src="../../static/images/logo.svg"
+            th:src="@{/static/images/logo.svg}"
             alt=""
             loading="lazy"
           />
@@ -60,7 +60,7 @@
         <!-- Collapsible wrapper -->
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <!-- Left links -->
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="#">Home</a>
             </li>
@@ -139,7 +139,7 @@
 </header>
 <main class="container mt-3">
     <!-- Projects -->
-    <section class="slide-down">
+    <section>
 
         <div th:each="project, iStat : ${projects}" class="projects" th:data-aos="fade-up-left">
             <div class="card">

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap');
+
 @keyframes slide-down {
     from {transform: translate(0, -100%);}
     to {transform: translate(0, 0);}
@@ -28,4 +30,35 @@
 .bg-image {
     background-image: url('../images/faith-with-us.png');
     height: 600px;
+}
+
+.navbar-brand img {
+    max-height: 40px;
+}
+
+.navbar {
+    background-color: transparent !important;
+    transition: all 0s;
+}
+
+.navbar a {
+    color: white;
+    font-family: 'Orbitron', serif;
+}
+
+.navbar.sticky-top {
+    background-color: white !important;
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    transition: all 0.5s;
+    max-height: 50px;
+}
+
+.navbar.sticky-top .navbar-brand img {
+    max-height: 30px;
+}
+
+.navbar.sticky-top a {
+    color: black;
 }
