@@ -46,6 +46,10 @@
     font-family: 'Orbitron', serif;
 }
 
+.navbar .fa-bars {
+    color: white;
+}
+
 .navbar.sticky-top {
     background-color: white !important;
     position: sticky;
@@ -59,6 +63,18 @@
     max-height: 30px;
 }
 
-.navbar.sticky-top a {
+.navbar.sticky-top a, .navbar.sticky-top .fa-bars {
     color: black;
+}
+
+.navbar a:hover, .navbar .fa-bars:hover {
+    color: gold;
+}
+
+.navbar a.active {
+    text-decoration: underline;
+}
+
+.navbar .dropdown-menu a {
+    color: black !important;
 }

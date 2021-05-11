@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
 <head>
     <title>Projects</title>
     <!-- Font Awesome -->
@@ -56,63 +56,42 @@
         >
           <i class="fas fa-bars"></i>
         </button>
-    
+        <!-- TODO: Active Links -->
         <!-- Collapsible wrapper -->
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <!-- Left links -->
+          <!-- Right links -->
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Link</a>
-            </li>
-            <!-- Navbar dropdown -->
+              <!-- Navbar dropdown -->
             <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle"
-                href="#"
-                id="navbarDropdown"
-                role="button"
-                data-mdb-toggle="dropdown"
-                aria-expanded="false"
-              >
-                <i class="fas fa-user"></i>
-              </a>
-              <!-- Dropdown menu -->
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><hr class="dropdown-divider" /></li>
-                <li>
-                  <a class="dropdown-item" href="#">Something else here</a>
-                </li>
-              </ul>
+                  <a
+                          class="nav-link dropdown-toggle"
+                          href="#"
+                          id="navbarDropdown"
+                          role="button"
+                          data-mdb-toggle="dropdown"
+                          aria-expanded="false"
+                  >
+                      <i class="fas fa-user"></i>
+                  </a>
+                  <!-- Dropdown menu -->
+                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <li sec:authorize="!isAuthenticated()"><a class="dropdown-item" href="#" th:href="@{/login}">Login</a></li>
+                      <li sec:authorize="!isAuthenticated()"><a class="dropdown-item" href="#" th:href="@{/register}">Register</a></li>
+                      <li sec:authorize="isAuthenticated()"><a class="dropdown-item" href="#" th:href="@{/logout}">Logout</a></li>
+                      <li><hr class="dropdown-divider" /></li>
+                      <li sec:authorize="hasRole('FREELANCER')"><a class="dropdown-item" href="#" th:href="@{/freelancer/profile}">Profile</a></li>
+                      <li sec:authorize="hasRole('STAKEHOLDER')"><a class="dropdown-item" href="#" th:href="@{/stakeholder/my-projects}">My Projects</a></li>
+                  </ul>
+              </li>
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="#" th:href="@{/}">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"
-                >Disabled</a
-              >
+              <a class="nav-link" href="/projects" th:href="@{/projects}">Projects</a>
             </li>
+
           </ul>
-          <!-- Left links -->
-    
-          <!-- Search form -->
-          <form class="d-flex input-group w-auto">
-            <input
-              type="search"
-              class="form-control"
-              placeholder="Type query"
-              aria-label="Search"
-            />
-            <button
-              class="btn btn-outline-primary"
-              type="button"
-              data-mdb-ripple-color="dark"
-            >
-              Search
-            </button>
-          </form>
+          <!-- Right links -->
         </div>
         <!-- Collapsible wrapper -->
       </div>
@@ -167,73 +146,12 @@
     </section>
 </main>
 <!-- Footer -->
-<footer class="bg-light text-center text-lg-start">
-  <!-- Grid container -->
-  <div class="container p-4">
-    <!--Grid row-->
-    <div class="row">
-      <!--Grid column-->
-      <div class="col-lg-6 col-md-12 mb-4 mb-md-0">
-        <h5 class="text-uppercase">Footer Content</h5>
-
-        <p>
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Iste atque ea quis
-          molestias. Fugiat pariatur maxime quis culpa corporis vitae repudiandae aliquam
-          voluptatem veniam, est atque cumque eum delectus sint!
-        </p>
-      </div>
-      <!--Grid column-->
-
-      <!--Grid column-->
-      <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-        <h5 class="text-uppercase">Links</h5>
-
-        <ul class="list-unstyled mb-0">
-          <li>
-            <a href="#!" class="text-dark">Link 1</a>
-          </li>
-          <li>
-            <a href="#!" class="text-dark">Link 2</a>
-          </li>
-          <li>
-            <a href="#!" class="text-dark">Link 3</a>
-          </li>
-          <li>
-            <a href="#!" class="text-dark">Link 4</a>
-          </li>
-        </ul>
-      </div>
-      <!--Grid column-->
-
-      <!--Grid column-->
-      <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-        <h5 class="text-uppercase mb-0">Links</h5>
-
-        <ul class="list-unstyled">
-          <li>
-            <a href="#!" class="text-dark">Link 1</a>
-          </li>
-          <li>
-            <a href="#!" class="text-dark">Link 2</a>
-          </li>
-          <li>
-            <a href="#!" class="text-dark">Link 3</a>
-          </li>
-          <li>
-            <a href="#!" class="text-dark">Link 4</a>
-          </li>
-        </ul>
-      </div>
-      <!--Grid column-->
-    </div>
-    <!--Grid row-->
-  </div>
-  <!-- Grid container -->
+<footer class="bg-light text-center text-lg-start mt-3">
 
   <!-- Copyright -->
   <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
-    © 2020 Copyright:
-    <a class="text-dark" href="https://mdbootstrap.com/">MDBootstrap.com</a>
+      &copy; <span th:text="${#dates.year(#dates.createNow())}">2021</span> Copyright:
+    <a class="text-dark" href="#">F.A.I.T.H.</a>
   </div>
   <!-- Copyright -->
 </footer>
