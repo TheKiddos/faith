@@ -78,3 +78,7 @@
 .navbar .dropdown-menu a {
     color: black !important;
 }
+
+.slick-next:before, .slick-prev:before {
+    color: black;
+}
