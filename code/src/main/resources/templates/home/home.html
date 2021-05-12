@@ -21,8 +21,8 @@
             rel="stylesheet"
     />
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="../../static/slick/slick.css" th:href="@{/static/slick/slick.css}"/>
-    <link rel="stylesheet" type="text/css" href="../../static/slick/slick-theme.css" th:href="@{/static/slick/slick-theme.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../static/slick/slick.css" th:href="@{/slick/slick.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../static/slick/slick-theme.css" th:href="@{/slick/slick-theme.css}"/>
     <link
             href="../../static/css/main.css"
             th:href="@{/css/main.css}"
@@ -38,7 +38,7 @@
         <a class="navbar-brand" href="#">
             <img
                     src="../../static/images/logo.svg"
-                    th:src="@{/static/images/logo.svg}"
+                    th:src="@{/images/logo.svg}"
                     alt=""
                     loading="lazy"
             />
@@ -125,7 +125,7 @@
             <div class="card">
                 <img
                         src="../../static/images/projects.png"
-                        th:src="@{/static/images/projects.png}"
+                        th:src="@{/images/projects.png}"
                         class="card-img-top"
                         alt="Projects"
                         height="350"
@@ -143,7 +143,7 @@
             <div class="card">
                 <img
                         src="../../static/images/bid.png"
-                        th:src="@{/static/images/bid.png}"
+                        th:src="@{/images/bid.png}"
                         class="card-img-top"
                         alt="Bid"
                         height="350"
@@ -161,7 +161,7 @@
             <div class="card">
                 <img
                         src="../../static/images/skills.jpg"
-                        th:src="@{/static/images/skills.jpg}"
+                        th:src="@{/images/skills.jpg}"
                         class="card-img-top"
                         alt="Skills"
                         height="350"
@@ -179,7 +179,7 @@
             <div class="card">
                 <img
                         src="../../static/images/agree.jpg"
-                        th:src="@{/static/images/agree.jpg}"
+                        th:src="@{/images/agree.jpg}"
                         class="card-img-top"
                         alt="Haggle"
                         height="350"
@@ -197,7 +197,7 @@
     <!-- Projects -->
     <section class="my-3">
 
-        <div class="lead text-center" th:if="projects.isEmpty()">No Projects Yet!!!</div>
+        <div class="lead text-center" th:if="${projects.isEmpty()}">No Projects Yet!!!</div>
         <div th:each="project, iStat : ${projects}" class="projects" th:data-aos="fade-up-left">
             <div class="card">
                 <div class="card-header">
@@ -219,13 +219,14 @@
         </div>
 
     </section>
+    <hr />
     <section>
         <!-- TODO: top freelancers -->
     </section>
 </main>
 <!-- Footer -->
 <footer class="bg-light text-center text-lg-start mt-3">
-
+    <img class="img-fluid" src="../../static/images/faith-banner.png" th:src="@{/images/faith-banner.png}" alt="banner">
   <!-- Copyright -->
   <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
       &copy; <span th:text="${#dates.year(#dates.createNow())}">2021</span> Copyright:
@@ -250,7 +251,7 @@
         th:src="@{/js/noframework.waypoints.min.js}"
 ></script>
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script type="text/javascript" src="../../static/slick/slick.min.js" th:src="@{/static/slick/slick.min.js}"></script>
+<script type="text/javascript" src="../../static/slick/slick.min.js" th:src="@{/slick/slick.min.js}"></script>
 <script
         type="text/javascript"
         src="../../static/js/main.js"
