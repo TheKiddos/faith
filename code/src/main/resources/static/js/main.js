@@ -17,11 +17,14 @@ function postFormData(url, data, spinner, btn) {
     });
 }
 
+const isNavTransparent = $("nav").hasClass("navbar-transparent");
 $(window).scroll(_ => {
-    if ($(this).scrollTop() > 250) {
+    if ( $(this).scrollTop() > 250 ) {
         $(".navbar").addClass("sticky-top");
+        $(".navbar").removeClass("navbar-transparent");
         return;
     }
     $(".navbar").removeClass("sticky-top");
-    $(".navbar").removeClass("sticky-top");
+    if ( isNavTransparent )
+        $(".navbar").addClass("navbar-transparent");
 })

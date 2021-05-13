@@ -36,17 +36,16 @@
     max-height: 40px;
 }
 
-.navbar {
+.navbar.navbar-transparent {
     background-color: transparent !important;
     transition: all 0s;
 }
 
 .navbar a {
-    color: white;
     font-family: 'Orbitron', serif;
 }
 
-.navbar .fa-bars {
+.navbar.navbar-transparent .fa-bars {
     color: white;
 }
 
@@ -81,4 +80,8 @@
 
 .slick-next:before, .slick-prev:before {
     color: black;
+}
+
+.jumbotron {
+    width: 50%;
 }

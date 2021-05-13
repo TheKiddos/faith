@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en" th:fragment="layout (template, title, menu)">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en" th:fragment="layout (template, title, menu, navbarclasses)">
 <head>
     <title th:text="${title}">F.A.I.T.H.</title>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -31,7 +31,7 @@
 </head>
 <body data-aos="fade-down">
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg bg-light text-light fixed-top navbar-transparent">
+<nav th:class="'navbar navbar-expand-lg bg-light text-light ' + ${navbarclasses}">
     <!-- Container wrapper -->
     <div class="container-fluid">
         <!-- Navbar brand -->
