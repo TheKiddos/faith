@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en" th:replace="~{fragments/layout :: layout (~{::main},'Login', '', '')}">
+<html xmlns:th="http://www.thymeleaf.org" lang="en" th:replace="~{fragments/layout :: layout (~{::main},'Login', '', '', ~{fragments/emptyjs :: #extrajs})}">
 <body>
     <main class="container">
         <div class="jumbotron mx-auto mt-3 p-3 bg-light border border-1 border-info rounded">

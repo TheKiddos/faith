@@ -35,7 +35,7 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().permitAll()
                 .and()
                 .formLogin().loginPage( "/login" ).usernameParameter("email").successHandler( myAuthenticationSuccessHandler() ).permitAll()
-                .and().logout().logoutSuccessUrl( "/" );
+                .and().logout().logoutUrl( "/logout" ).logoutSuccessUrl( "/" );
     }
 
     @Override

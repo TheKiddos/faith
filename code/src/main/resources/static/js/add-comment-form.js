@@ -7,6 +7,8 @@ $(_ => {
     const addCommentBtn = $("#add-comment-btn")
 
     addCommentForm.submit((event) => {
+        event.preventDefault();
+
         addCommentSpinner.removeClass("visually-hidden");
         addCommentBtn.prop('disabled', true);
 
@@ -17,7 +19,5 @@ $(_ => {
         };
 
         postFormData(addCommentUrl, formData, addCommentSpinner, addCommentBtn);
-
-        event.preventDefault();
     });
 });
