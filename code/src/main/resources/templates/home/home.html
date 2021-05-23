@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en" th:replace="~{fragments/layout :: layout (~{::main},'F.A.I.T.H.', 'home', 'fixed-top navbar-transparent', ~{fragments/emptyjs :: #extrajs})}">
+<html xmlns:th="http://www.thymeleaf.org" lang="en" th:replace="~{fragments/layout :: layout (~{::main},'F.A.I.T.H.', 'home', 'fixed-top navbar-transparent', ~{::#extrajs})}">
 <body>
 <main>
     <header>
@@ -128,5 +128,16 @@
         </section>
     </div>
 </main>
+<div id="extrajs">
+    <script>
+        $('.projects').slick({
+            infinite: true,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            arrows: true,
+            dots: true,
+        });
+    </script>
+</div>
 </body>
 </html>
