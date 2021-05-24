@@ -101,8 +101,8 @@
         <section class="my-3">
 
             <div class="lead text-center" th:if="${projects.isEmpty()}">No Projects Yet!!!</div>
-            <div th:each="project, iStat : ${projects}" class="projects" th:data-aos="fade-up-left">
-                <div class="card">
+            <div class="projects" th:data-aos="fade-up-left">
+                <div class="card" th:each="project, iStat : ${projects}">
                     <div class="card-header">
                         <div th:inline="text"><i class="fas fa-clock mx-2"></i>[[${project.duration} + ' Day(s)']]</div>
                         <div th:inline="text"><i class="fas fa-money-bill mx-2"></i>[[${project.preferredBid}]]</div>
