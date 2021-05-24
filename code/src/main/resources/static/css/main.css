@@ -85,3 +85,19 @@
 .jumbotron {
     width: 50%;
 }
+
+.title-letter {
+    font-size: calc(1.375rem + 1.5vw);
+    transition: font-size 0.5s;
+}
+
+.title-letter:hover {
+    font-size: calc((1.375rem + 1.5vw) * 1.5);
+    color: gold;
+}
+
+.tooltip-inner {
+    background-color: transparent !important;
+    color: gold !important;
+    font-size: calc((1.375rem + 1.5vw) * 0.5);
+}
