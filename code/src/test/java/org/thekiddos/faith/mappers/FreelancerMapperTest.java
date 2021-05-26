@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.thekiddos.faith.dtos.FreelancerDto;
 import org.thekiddos.faith.models.Freelancer;
 import org.thekiddos.faith.models.Skill;
+import org.thekiddos.faith.models.User;
 
 import java.util.Set;
 
@@ -40,10 +41,15 @@ public class FreelancerMapperTest {
         freelancer.setAvailable( true );
         freelancer.setSkills( Set.of( Skill.of( "c++" ), Skill.of( "suck" ) ) );
 
+        User user = new User();
+        user.setEmail( "hello@gmail.com" );
+        freelancer.setUser( user );
+
         FreelancerDto dto = freelancerMapper.toDto( freelancer );
         assertEquals( freelancer.getSummary(), dto.getSummary() );
         assertEquals( freelancer.isAvailable(), dto.isAvailable() );
         assertEquals( freelancer.getSkills(), Skill.createSkills( dto.getSkills() ) );
+        assertEquals( freelancer.getUser().getEmail(), dto.getUser().getEmail() );
     }
 
     @Test

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en" th:replace="~{fragments/layout :: layout (~{::main},'F.A.I.T.H.', 'home', 'fixed-top navbar-transparent', ~{::#extrajs})}">
+<body>
+<main>
+    <header>
+        <!-- Background image -->
+        <div
+                class="p-5 text-center bg-image hover-overlay"
+        >
+            <div class="mask" style="background-color: rgba(0, 0, 0, 0.6);">
+                <div class="d-flex justify-content-center align-items-center h-100">
+                    <div class="text-white">
+                        <h1 class="mb-3">Have <span class="title-letter" data-mdb-placement="top" data-mdb-toggle="tooltip" title="Freelancers">F</span>.<span class="title-letter" data-mdb-placement="top" data-mdb-toggle="tooltip" title="Association">A</span>.<span class="title-letter" data-mdb-placement="top" data-mdb-toggle="tooltip" title="Information">I</span>.<span class="title-letter" data-mdb-placement="top" data-mdb-toggle="tooltip" title="Technology">T</span>.<span class="title-letter" data-mdb-placement="top" data-mdb-toggle="tooltip" title="Hub">H</span>. With Us!</h1>
+                        <h4 class="mb-3">Freelancing Services</h4>
+                        <a class="btn btn-outline-light btn-lg" href="#!" th:href="@{/register}" role="button"
+                        >Join Now!</a
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Background image -->
+    </header>
+    <div class="container mt-3">
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <img
+                            src="../../static/images/projects.png"
+                            th:src="@{/images/projects.png}"
+                            class="card-img-top"
+                            alt="Projects"
+                            height="350"
+                    />
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Post Projects</h5>
+                        <p class="card-text">
+                            Got a project that needs to be done, just fill the project info and hire someone!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <img
+                            src="../../static/images/bid.png"
+                            th:src="@{/images/bid.png}"
+                            class="card-img-top"
+                            alt="Bid"
+                            height="350"
+                    />
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Not Sure How Much it Will Cost?</h5>
+                        <p class="card-text">
+                            Open your project for bidding and let freelancers set their price!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <img
+                            src="../../static/images/skills.jpg"
+                            th:src="@{/images/skills.jpg}"
+                            class="card-img-top"
+                            alt="Skills"
+                            height="350"
+                    />
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Show your skills!</h5>
+                        <p class="card-text">
+                            Open your profile and show the world your skills!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <img
+                            src="../../static/images/agree.jpg"
+                            th:src="@{/images/agree.jpg}"
+                            class="card-img-top"
+                            alt="Haggle"
+                            height="350"
+                    />
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Haggle!</h5>
+                        <p class="card-text">
+                            Haggle With the project owner on the price in the comment section!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <!-- Projects -->
+        <section class="my-3">
+
+            <div class="lead text-center" th:if="${projects.isEmpty()}">No Projects Yet!!!</div>
+            <div class="projects" th:data-aos="fade-up-left">
+                <div class="card" th:each="project, iStat : ${projects}">
+                    <div class="card-header">
+                        <div th:inline="text"><i class="fas fa-clock mx-2"></i>[[${project.duration} + ' Day(s)']]</div>
+                        <div th:inline="text"><i class="fas fa-money-bill mx-2"></i>[[${project.preferredBid}]]</div>
+                    </div>
+                    <div class="card-body text-center">
+                        <h5 class="card-title" th:text="${project.name}">Name</h5>
+                        <p class="card-text" th:text="${project.description}">
+                            This is my project
+                        </p>
+                        <a href="#" th:href="@{'/projects/' + ${project.id}}" class="btn btn-primary">Details</a>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <div th:text="'Minimum Qualification: ' + ${project.minimumQualification}">Minimum Qualification: 200</div>
+                        <!--TODO: Project Skills/Tags Here-->
+                    </div>
+                </div>
+            </div>
+
+        </section>
+        <hr />
+        <section>
+            <!-- TODO: top freelancers -->
+        </section>
+    </div>
+</main>
+<div id="extrajs">
+    <script>
+        $('.projects').slick({
+            infinite: true,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            arrows: true,
+            dots: true,
+        });
+    </script>
+</div>
+</body>
+</html>

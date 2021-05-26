@@ -137,6 +137,11 @@ public class UserServiceImpl implements UserService {
         userRepository.save( user );
     }
 
+    @Override
+    public User findByEmail( String email ) {
+        return (User) loadUserByUsername( email );
+    }
+
     private PasswordResetToken getTokenForUser( User user ) {
         String tokenValue = UUID.randomUUID().toString();
 

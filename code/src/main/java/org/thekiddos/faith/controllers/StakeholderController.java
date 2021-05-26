@@ -29,7 +29,9 @@ public class StakeholderController {
     }
 
     @GetMapping( value = "/my-projects" )
-    public String getMyProjectsPage() {
+    public String getMyProjectsPage( Model model, Principal principal ) {
+        User user = (User) userService.loadUserByUsername( principal.getName() );
+        model.addAttribute( "projects", projectService.findByOwnerDto( (Stakeholder) user.getType() ) );
         return "stakeholder/projects/my-projects";
     }
 

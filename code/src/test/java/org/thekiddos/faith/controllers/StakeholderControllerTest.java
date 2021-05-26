@@ -16,6 +16,7 @@ import org.thekiddos.faith.models.User;
 import org.thekiddos.faith.repositories.UserRepository;
 import org.thekiddos.faith.services.ProjectService;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -40,10 +41,16 @@ class StakeholderControllerTest {
     }
 
     @Test
-    @WithMockUser( authorities = {"USER", "STAKEHOLDER"} )
+    @WithMockUser( authorities = {"USER", "STAKEHOLDER"}, username = "stakeholder@test.com")
     void myProjectsPageLoadsOk() throws Exception {
+        User user = getTestUser();
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findById( user.getEmail() );
+        Mockito.doReturn( List.of() ).when( projectService ).findByOwnerDto( (Stakeholder) user.getType() );
+
         mockMvc.perform( get(  "/stakeholder/my-projects" ) )
                 .andExpect( status().isOk() );
+
+        Mockito.verify( projectService, Mockito.times( 1 ) ).findByOwnerDto( (Stakeholder) user.getType() );
     }
 
     @Test
@@ -51,6 +58,7 @@ class StakeholderControllerTest {
     void myProjectsPageRequiresStakeholder() throws Exception {
         mockMvc.perform( get(  "/stakeholder/my-projects" ) )
                 .andExpect( status().isForbidden() );
+        Mockito.verify( projectService, Mockito.times( 0 ) ).findByOwnerDto( any() );
     }
 
     @Test

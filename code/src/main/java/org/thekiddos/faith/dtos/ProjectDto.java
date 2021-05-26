@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProjectDto {
+    private Long id;
     @NotNull @NotEmpty
     private String name;
     @NotNull

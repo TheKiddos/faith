@@ -17,4 +17,5 @@ public class FreelancerDto {
     private boolean available;
     @NotNull
     private String skills;
+    private UserDto user;
 }

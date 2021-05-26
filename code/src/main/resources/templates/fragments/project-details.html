@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<div class="card" th:fragment="project_details (project)">
+    <div class="card-header">
+        <div th:inline="text"><i class="fas fa-clock mx-2"></i>[[${project.duration.toDays()} + ' Day(s)']]</div>
+        <div th:inline="text"><i class="fas fa-money-bill mx-2"></i>[[${project.preferredBid}]]</div>
+    </div>
+    <div class="card-body text-center">
+        <h5 class="card-title" th:text="${project.name}">Name</h5>
+        <p class="card-text" th:text="${project.description}">
+            This is my project
+        </p>
+        <div th:text="'Minimum Qualification: ' + ${project.minimumQualification}">Minimum Qualification: 200</div>
+    </div>
+    <div class="card-footer text-muted">
+        <!--TODO: Project Skills/Tags Here-->
+    </div>
+</div>

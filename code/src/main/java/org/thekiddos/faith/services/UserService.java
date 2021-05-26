@@ -1,6 +1,7 @@
 package org.thekiddos.faith.services;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.exceptions.UserAlreadyExistException;
 import org.thekiddos.faith.models.PasswordResetToken;
@@ -57,4 +58,6 @@ public interface UserService extends UserDetailsService {
      * @param newPassword The new password to use
      */
     void resetUserPassword( String token, String newPassword );
+
+    User findByEmail( String email ) throws UsernameNotFoundException;
 }

@@ -24,6 +24,8 @@ public final class Utils {
     public static final String ADD_PROJECT_PAGE = MY_PROJECTS_PAGE + "/add";
     public static final String FREELANCER_ROOT = SITE_ROOT + "freelancer";
     public static final String FREELANCER_PROFILE =  FREELANCER_ROOT + "/profile";
+    public static final String PUBLIC_PROJECTS_PAGE = SITE_ROOT + "projects";
+    public static final String PUBLIC_PROJECT_DETAILS_PAGE_PREFIX = PUBLIC_PROJECTS_PAGE + "/";
 
     public static String toJson( Object object ) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -65,5 +67,9 @@ public final class Utils {
             user = userService.createUser( userDto );
         }
         return user;
+    }
+
+    public static String getProjectDetailsPage( Long projectId ) {
+        return PUBLIC_PROJECT_DETAILS_PAGE_PREFIX + projectId;
     }
 }

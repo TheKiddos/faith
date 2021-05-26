@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
+    private static final int NUMBER_OF_FEATURED_PROJECTS = 10;
     private final ProjectMapper projectMapper = ProjectMapper.INSTANCE;
     private final ProjectRepository projectRepository;
 
@@ -40,5 +41,17 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<ProjectDto> findAllDto() {
         return findAll().stream().map( projectMapper::projectToProjectDto ).collect( Collectors.toList() );
+    }
+
+    @Override
+    public List<ProjectDto> findFeaturedProjectsDto() {
+        var projects = findAllDto();
+        int numberOfProjects = projects.size();
+        return projects.subList( 0, Math.min( numberOfProjects, NUMBER_OF_FEATURED_PROJECTS ) );
+    }
+
+    @Override
+    public List<ProjectDto> findByOwnerDto( Stakeholder owner ) {
+        return projectRepository.findByOwner( owner ).stream().map( projectMapper::projectToProjectDto ).collect( Collectors.toList() );
     }
 }

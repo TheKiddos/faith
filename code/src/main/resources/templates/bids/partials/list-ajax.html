@@ -1,0 +1,2 @@
+<div th:if="${comments.isEmpty()}">No comments</div>
+<div th:else><div th:each="comment, iStat : ${comments}"><span th:text="${comment.user.nickname}">Freelancer</span><textarea readonly class="form-control my-2" th:text="${comment.text}"></textarea></div></div>

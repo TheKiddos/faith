@@ -12,4 +12,10 @@ public interface BidMapper {
     @Mapping( target = "id", ignore = true )
     @Mapping( target = "project", source = "projectId" )
     Bid toEntity( BidDto dto );
+
+    @Mapping( target = "projectId", source = "project.id" )
+    @Mapping( target = "comment", ignore = true )
+    @Mapping( target = "bidComments", ignore = true )
+    @Mapping( target = "bidder", expression = "java( FreelancerMapper.INSTANCE.toDto( bid.getBidder() ) )")
+    BidDto toDto( Bid bid );
 }

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en" th:replace="~{fragments/layout :: layout (~{::main},'Project', '', '', ~{::#extrajs})}">
+<body>
+<main>
+    <div
+            class="modal fade"
+            id="comments"
+            tabindex="-1"
+    >
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h5 class="modal-title" id="comments-header">Bid Comments</h5>
+                    <button
+                            type="button"
+                            class="btn-close"
+                            data-mdb-dismiss="modal"
+                            aria-label="Close"
+                    ></button>
+                </div>
+                <div class="modal-body" id="comments-body"></div>
+                <div class="modal-footer justify-content-center">
+                    <form id="add-comment-form" style="width: 100%" method="post" th:action="@{/bids/comments/add}">
+                        <div class="form-outline mb-4">
+                            <textarea name="text" id="new-comment-text" class="form-control" rows="5"></textarea>
+                            <label class="form-label" for="new-comment-text">Your Comment Here</label>
+                        </div>
+                        <input hidden type="number" name="bidId" id="new-comment-bid-id">
+                        <button class="btn btn-success" id="add-comment-btn" type="submit">Comment
+                            <span
+                                    class="spinner-border spinner-border-sm visually-hidden"
+                                    role="status"
+                                    aria-hidden="true"
+                                    id="add-comment-spinner"
+                            />
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container mt-3" data-aos="fade-down">
+        <div class="details">
+            <div class="card">
+                <div class="card-header">
+                    <div th:inline="text"><i class="fas fa-clock mx-2"></i>[[${project.duration.toDays()} + ' Day(s)']]</div>
+                    <div th:inline="text"><i class="fas fa-money-bill mx-2"></i>[[${project.preferredBid}]]</div>
+                </div>
+                <div class="card-body text-center">
+                    <h5 class="card-title" th:text="${project.name}">Name</h5>
+                    <p class="card-text" th:text="${project.description}">
+                        This is my project
+                    </p>
+                    <div th:text="'Minimum Qualification: ' + ${project.minimumQualification}">Minimum Qualification: 200</div>
+                </div>
+                <div class="card-footer text-muted">
+                    <!--TODO: Project Skills/Tags Here-->
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${canBid}" class="add-bid mt-3">
+            <div class="card text-dark bg-white mb-3 text-center" data-aos="fade-up-down">
+                <div class="card-body">
+                    <h5 class="card-title">Add Your Bid</h5>
+                    <form role="form" class="form" id="add-bid-form" method="post" th:object="${newBid}" th:action="@{/freelancer/bid}" th:method="post">
+                        <div class="form-outline mb-4 mx-auto" style="max-width: 18rem">
+                            <i class="fas fa-money-bill trailing"></i>
+                            <input class="form-control pe-5" min="10" value="10.0" type="number" name="amount" th:field="*{amount}" id="amount">
+                            <label class="form-label" for="amount">Amount</label>
+                        </div>
+
+                        <div class="form-outline mb-4">
+                            <textarea class="form-control" id="comment" rows="4" th:field="*{comment}"></textarea>
+                            <label class="form-label" for="comment">Comment</label>
+                        </div>
+
+                        <label for="project-id"></label><input hidden type="number" name="projectId" th:field="*{projectId}" id="project-id">
+
+                        <button id="add-bid-btn" class="btn btn-success" type="submit">Add Bid
+                            <span
+                                    class="spinner-border spinner-border-sm visually-hidden"
+                                    role="status"
+                                    aria-hidden="true"
+                                    id="add-bid-spinner"
+                            />
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="bidding row mt-3">
+            <div th:each="bid, iStat : ${bids}" class="card col-md-5 mx-auto text-white bg-success mb-3 text-center" data-aos="fade-up-right" th:data-aos="${iStat.even}? 'fade-up-right' : 'fade-up-left'">
+                <div class="card-header"><span class="badge bg-light text-dark rounded-pill" th:text="${bid.amount}">200</span></div>
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${bid.bidder.user.firstName} + ${bid.bidder.user.lastName}">Freelancer Name</h5>
+                    <ul class="card-text">
+                        <li th:text="${bid.bidder.user.email}">email</li>
+                        <li th:text="${bid.bidder.user.phoneNumber}">phone</li>
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <button
+                            type="button"
+                            class="btn btn-outline-light btn-rounded show-comments-btn"
+                            data-mdb-ripple-color="dark"
+                            data-mdb-toggle="modal"
+                            data-mdb-target="#comments"
+                            data-mdb-bid-id="0"
+                            th:data-mdb-bid-id="${bid.id}"
+                    >
+                        Comments <span class="badge bg-danger ms-2" th:text="${bid.bidComments.size()}">8</span>
+                    </button></div>
+            </div>
+        </div>
+    </div>
+</main>
+<!--Extra JS-->
+<div id="extrajs">
+    <script>
+        const commentsModal = document.getElementById('comments');
+        commentsModal.addEventListener('show.mdb.modal', (event) => {
+            // Button that triggered the modal
+            const button = event.relatedTarget;
+            // Extract info from data-mdb-* attributes
+            const bidId = button.getAttribute('data-mdb-bid-id');
+
+            const bidCommentsUrl = window.location.protocol + "//" + window.location.host + "/bids/" + bidId + "/comments"; // Is this good? Replace with th:action on a tag?
+            $("#comments-body").load(bidCommentsUrl);
+            $("#new-comment-bid-id").val(bidId)
+        })
+    </script>
+    <script src="../../static/js/add-comment-form.js" th:src="@{/js/add-comment-form.js}"></script>
+    <script src="../../static/js/add-bid-form.js" th:src="@{/js/add-bid-form.js}"></script>
+</div>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en" th:replace="~{fragments/layout :: layout (~{::main},'Projects', 'projects', '', ~{fragments/emptyjs :: #extrajs})}">
+<body>
+<main>
+    <header>
+        <!-- Jumbotron -->
+        <div class="p-5 text-center bg-light slide-down">
+            <h1 class="mb-3">Public Projects!</h1>
+            <h4 class="mb-3">Here you'll see a list of all available projects that you can bid on</h4>
+            <hr>
+        </div>
+        <!-- Jumbotron -->
+    </header>
+    <div class="container mt-3">
+        <div class="row row-cols-1 row-cols-md-2 slide-down">
+
+            <div th:each="project, iStat : ${projects}" class="col my-3" data-aos="fade-up-right" th:data-aos="${iStat.even}? 'fade-up-right' : 'fade-up-left'">
+                <div class="card">
+                    <div class="card-header">
+                        <div th:inline="text"><i class="fas fa-clock mx-2"></i>[[${project.duration} + ' Day(s)']]</div>
+                        <div th:inline="text"><i class="fas fa-money-bill mx-2"></i>[[${project.preferredBid}]]</div>
+                    </div>
+                    <div class="card-body text-center">
+                        <h5 class="card-title" th:text="${project.name}">Name</h5>
+                        <p class="card-text" th:text="${project.description}">
+                            This is my project
+                        </p>
+                        <a href="#" th:href="@{'/projects/' + ${project.id}}" class="btn btn-primary">Details</a>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <div th:text="'Minimum Qualification: ' + ${project.minimumQualification}">Minimum Qualification: 200</div>
+                        <!--TODO: Project Skills/Tags Here-->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+</body>
+</html>

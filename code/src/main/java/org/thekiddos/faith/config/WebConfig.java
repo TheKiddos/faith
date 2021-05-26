@@ -34,7 +34,8 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
 //                .antMatchers( "/register", "/register/**", "/forgot-password", "/reset-password", "/reset-password/**" ).permitAll()
                 .anyRequest().permitAll()
                 .and()
-                .formLogin().loginPage( "/login" ).usernameParameter("email").successHandler( myAuthenticationSuccessHandler() ).permitAll();
+                .formLogin().loginPage( "/login" ).usernameParameter("email").successHandler( myAuthenticationSuccessHandler() ).permitAll()
+                .and().logout().logoutUrl( "/logout" ).logoutSuccessUrl( "/" );
     }
 
     @Override

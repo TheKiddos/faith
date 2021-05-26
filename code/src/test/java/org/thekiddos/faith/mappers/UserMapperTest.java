@@ -104,7 +104,43 @@ class UserMapperTest {
     }
 
     @Test
+    void userTypeDtoToUserTypeIgnoresCase() {
+        assertTrue( userMapper.userTypeDtoToUserType( "FreElanceR" ) instanceof Freelancer );
+        assertTrue( userMapper.userTypeDtoToUserType( "stakEHolder" ) instanceof Stakeholder );
+    }
+
+    @Test
+    void nullUserType() {
+        assertNull( userMapper.userTypeDtoToUserType( null ) );
+    }
+
+    @Test
     void nullTest() {
         assertNull( userMapper.userDtoToUser( null ) );
+    }
+
+    @Test
+    void nullTestToDto() {
+        assertNull( userMapper.userToUserDto( null ) );
+    }
+
+    @Test
+    void userToUserDto() {
+        User user = new User();
+        user.setNickname( "death" );
+        user.setEmail( "hello@gmail.com" );
+        user.setFirstName( "Death" );
+        user.setLastName( "RIP" );
+        user.setPhoneNumber( "+963912345678" );
+        user.setAddress( "hellstreet" );
+
+        UserDto userDto = userMapper.userToUserDto( user );
+
+        assertEquals( user.getEmail(), userDto.getEmail() );
+        assertEquals( user.getNickname(), userDto.getNickname() );
+        assertEquals( user.getFirstName(), userDto.getFirstName() );
+        assertEquals( user.getLastName(), userDto.getLastName() );
+        assertEquals( user.getAddress(), userDto.getAddress() );
+        assertEquals( user.getPhoneNumber(), userDto.getPhoneNumber() );
     }
 }

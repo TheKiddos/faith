@@ -78,14 +78,7 @@ public class BidTest {
         projectRepository.deleteAll();
         userRepository.deleteAll();
 
-        ProjectDto projectDto = ProjectDto.builder()
-                .name( "new world order" )
-                .description( "Make all people slaves" )
-                .preferredBid( 200.0 )
-                .duration( 31 )
-                .minimumQualification( 100 )
-                .allowBidding( true )
-                .build();
+        ProjectDto projectDto = getTestProjectDto();
 
         User user = userService.createUser( UserDto.builder()
                 .email( "bhbh@gmail.com" )
@@ -135,6 +128,7 @@ public class BidTest {
         assertNotNull( comment );
         assertEquals( bid, comment.getBid() );
         assertEquals( "Pleeeeeeeeese", comment.getText() );
+        assertEquals( this.freelancerUser, comment.getUser() );
 
         Mockito.verify( emailService, Mockito.times( 1 ) )
                 .sendTemplateMail( eq( List.of( "bhbh@gmail.com" ) ), anyString(), eq( EmailSubjectConstants.NEW_BID ), eq( EmailTemplatesConstants.NEW_BID_TEMPLATE ), any() );
@@ -150,6 +144,37 @@ public class BidTest {
         BidDto dto = BidDto.builder()
                 .amount( amount )
                 .projectId( this.project.getId() )
+                .build();
+        assertTrue( bidRepository.findAll().isEmpty() );
+        bidService.addBid( dto, (Freelancer)this.freelancerUser.getType() );
+
+        var user = (User)userService.loadUserByUsername( this.freelancerUser.getEmail() );
+        var bids = bidRepository.findAll();
+        assertEquals( 1, bids.size() );
+
+        Bid bid = bids.stream().findFirst().orElse( null );
+        assertNotNull( bid );
+        assertNotNull( bid.getId() );
+        assertEquals( "Bid of " + amount, bid.toString() );
+        assertEquals( amount, bid.getAmount() );
+        assertEquals( this.project, bid.getProject() );
+        assertEquals( user.getType(), bid.getBidder() );
+
+        var comments = bidCommentRepository.findAll();
+        assertTrue( comments.isEmpty() );
+
+        Mockito.verify( emailService, Mockito.times( 1 ) )
+                .sendTemplateMail( eq( List.of( "bhbh@gmail.com" ) ), anyString(), eq( EmailSubjectConstants.NEW_BID ), eq( EmailTemplatesConstants.NEW_BID_TEMPLATE ), any() );
+    }
+
+    @Test
+    void addBidWithCommentBlank() {
+        double amount = 10.0;
+
+        BidDto dto = BidDto.builder()
+                .amount( amount )
+                .projectId( this.project.getId() )
+                .comment( "" )
                 .build();
         assertTrue( bidRepository.findAll().isEmpty() );
         bidService.addBid( dto, (Freelancer)this.freelancerUser.getType() );
@@ -273,6 +298,55 @@ public class BidTest {
     }
 
     @Test
+    void findByProject() {
+        BidDto dto = BidDto.builder()
+                .amount( 20.0 )
+                .comment( "Pleeeeeeeeese" )
+                .projectId( project.getId() )
+                .build();
+        bidService.addBid( dto, (Freelancer)freelancerUser.getType() );
+
+        var freelancer2 = getTestUser();
+        freelancer2.setEmail( "freelancer2@test.com" );
+        freelancer2.setNickname( "freelancer2" );
+        freelancer2 = userRepository.save( freelancer2 );
+        bidService.addBid( dto, (Freelancer)freelancer2.getType() );
+
+        var project2 = projectService.createProjectFor( this.project.getOwner(), getTestProjectDto() );
+        dto.setProjectId( project2.getId() );
+        bidService.addBid( dto, (Freelancer)freelancerUser.getType() );
+
+        var bids = bidService.findByProject( this.project );
+        assertEquals( 2, bids.size() );
+        assertTrue( bids.stream().allMatch( bid -> bid.getProject().equals( this.project ) ) );
+    }
+
+    @Test
+    void findByProjectDto() {
+        BidDto dto = BidDto.builder()
+                .amount( 20.0 )
+                .comment( "Pleeeeeeeeese" )
+                .projectId( project.getId() )
+                .build();
+        bidService.addBid( dto, (Freelancer)freelancerUser.getType() );
+
+        var freelancer2 = getTestUser();
+        freelancer2.setEmail( "freelancer2@test.com" );
+        freelancer2.setNickname( "freelancer2" );
+        freelancer2 = userRepository.save( freelancer2 );
+        bidService.addBid( dto, (Freelancer)freelancer2.getType() );
+
+        var project2 = projectService.createProjectFor( this.project.getOwner(), getTestProjectDto() );
+        dto.setProjectId( project2.getId() );
+        bidService.addBid( dto, (Freelancer)freelancerUser.getType() );
+
+        var bids = bidService.findByProjectDto( this.project );
+        assertEquals( 2, bids.size() );
+        assertTrue( bids.stream().allMatch( bid -> this.project.getId().equals( bid.getProjectId() ) ) );
+        assertTrue( bids.stream().allMatch( bid -> bid.getBidComments().size() == 1 ) );
+    }
+
+    @Test
     void equalsAndHashcode() {
         Bid bid = new Bid();
         bid.setAmount( 200 );
@@ -307,6 +381,29 @@ public class BidTest {
         assertEquals( bid.hashCode(), bid2.hashCode() );
     }
 
+    @Test
+    void canBidOnProjectTrue() {
+        assertTrue( bidService.canBidOnProject( freelancerUser, project ) );
+    }
+
+    @Test
+    void canBidOnProjectFalse() {
+        BidDto dto = BidDto.builder()
+                .amount( 20.0 )
+                .comment( "Pleeeeeeeeese" )
+                .projectId( this.project.getId() )
+                .build();
+        assertTrue( bidRepository.findAll().isEmpty() );
+        bidService.addBid( dto, (Freelancer)this.freelancerUser.getType() );
+
+        assertFalse( bidService.canBidOnProject( freelancerUser, project ) );
+    }
+
+    @Test
+    void canBidOnProjectNotFreelancer() {
+        assertFalse( bidService.canBidOnProject( project.getOwner().getUser(), project ) );
+    }
+
     // TODO: move to utils and use in all other test with defaults and option to override them
     private User getTestUser() {
         UserDto userDto = UserDto.builder().email( "freelancer@test.com" )
@@ -322,5 +419,16 @@ public class BidTest {
                 .build();
 
         return userMapper.userDtoToUser( userDto );
+    }
+
+    private ProjectDto getTestProjectDto() {
+        return ProjectDto.builder()
+                .name( "new world order" )
+                .description( "Make all people slaves" )
+                .preferredBid( 200.0 )
+                .duration( 31 )
+                .minimumQualification( 100 )
+                .allowBidding( true )
+                .build();
     }
 }
