@@ -21,12 +21,13 @@ import java.security.Principal;
 @RequestMapping( value = "freelancer" )
 public class FreelancerController {
     private final UserService userService;
-    private final FreelancerMapper freelancerMapper = FreelancerMapper.INSTANCE;
+    private final FreelancerMapper freelancerMapper;
     private final FreelancerService freelancerService;
 
     @Autowired
-    public FreelancerController( UserService userService, FreelancerService freelancerService ) {
+    public FreelancerController( UserService userService, FreelancerMapper freelancerMapper, FreelancerService freelancerService ) {
         this.userService = userService;
+        this.freelancerMapper = freelancerMapper;
         this.freelancerService = freelancerService;
     }
 

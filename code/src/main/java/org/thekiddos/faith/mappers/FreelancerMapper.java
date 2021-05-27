@@ -2,21 +2,25 @@ package org.thekiddos.faith.mappers;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.thekiddos.faith.dtos.FreelancerDto;
 import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.models.Freelancer;
+import org.thekiddos.faith.models.Project;
+import org.thekiddos.faith.repositories.BidRepository;
 
-@Mapper
-public interface FreelancerMapper {
-    FreelancerMapper INSTANCE = Mappers.getMapper( FreelancerMapper.class );
+@Mapper(componentModel = "spring")
+public abstract class FreelancerMapper {
+    @Autowired
+    protected BidRepository bidRepository;
+
 
     @Mapping( target = "user", ignore = true )
     @Mapping( target = "id", ignore = true )
     @Mapping( target = "skills", expression = "java( org.thekiddos.faith.models.Skill.createSkills( dto.getSkills() ) )" )
-    Freelancer toEntity( FreelancerDto dto );
+    public abstract Freelancer toEntity( FreelancerDto dto );
 
-    default FreelancerDto toDto( Freelancer freelancer ) {
+    public FreelancerDto toDto( Freelancer freelancer ) {
         if ( freelancer == null )
             return null;
 
@@ -31,5 +35,16 @@ public interface FreelancerMapper {
                 .skills( skills )
                 .user( user )
                 .build();
+    }
+
+    public FreelancerDto toDtoWithProject( Freelancer freelancer, Project projectToFindFreelancersFor ) {
+        FreelancerDto dto = toDto( freelancer );
+
+        if ( projectToFindFreelancersFor != null ) {
+            var bid = bidRepository.findByBidderAndProject( freelancer, projectToFindFreelancersFor );
+            bid.ifPresent( value -> dto.setProjectBidAmount( value.getAmount() ) );
+        }
+
+        return dto;
     }
 }

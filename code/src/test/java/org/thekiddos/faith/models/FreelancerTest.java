@@ -7,16 +7,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.thekiddos.faith.dtos.BidDto;
 import org.thekiddos.faith.dtos.FreelancerDto;
 import org.thekiddos.faith.dtos.ProjectDto;
 import org.thekiddos.faith.dtos.UserDto;
+import org.thekiddos.faith.repositories.BidRepository;
 import org.thekiddos.faith.repositories.ProjectRepository;
 import org.thekiddos.faith.repositories.SkillRepository;
 import org.thekiddos.faith.repositories.UserRepository;
+import org.thekiddos.faith.services.BidService;
 import org.thekiddos.faith.services.FreelancerService;
 import org.thekiddos.faith.services.ProjectService;
 import org.thekiddos.faith.services.UserService;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,25 +34,31 @@ public class FreelancerTest {
     private final UserRepository userRepository;
     private final ProjectService projectService;
     private final ProjectRepository projectRepository;
+    private final BidService bidService;
+    private final BidRepository bidRepository;
 
     @Autowired
-    public FreelancerTest( FreelancerService freelancerService, SkillRepository skillRepository, UserService userService, UserRepository userRepository, ProjectService projectService, ProjectRepository projectRepository ) {
+    public FreelancerTest( FreelancerService freelancerService, SkillRepository skillRepository, UserService userService, UserRepository userRepository, ProjectService projectService, ProjectRepository projectRepository, BidService bidService, BidRepository bidRepository ) {
         this.freelancerService = freelancerService;
         this.skillRepository = skillRepository;
         this.userService = userService;
         this.userRepository = userRepository;
         this.projectService = projectService;
         this.projectRepository = projectRepository;
+        this.bidService = bidService;
+        this.bidRepository = bidRepository;
     }
 
     @BeforeEach
     void setUp() {
+        bidRepository.deleteAll();
         projectRepository.deleteAll();
         userRepository.deleteAll();
     }
 
     @AfterEach
     void tearDown() {
+        bidRepository.deleteAll();
         projectRepository.deleteAll();
         userRepository.deleteAll();
     }
@@ -137,6 +147,8 @@ public class FreelancerTest {
                 .firstName( "Test" )
                 .lastName( "aaa" )
                 .build() );
+        FreelancerDto freelancerUpdateDto = FreelancerDto.builder().available( true ).build();
+        freelancerService.updateProfile( freelancerNoBid, freelancerUpdateDto );
 
         User freelancerWithBid = userService.createUser( UserDto.builder()
                 .email( "freelancerWithBid@gmail.com" )
@@ -164,16 +176,19 @@ public class FreelancerTest {
                 .firstName( "Test" )
                 .lastName( "aaa" )
                 .build() );
-        FreelancerDto freelancerUpdateDto = FreelancerDto.builder()
-                .summary( "Hehhehe" )
-                .available( false )
-                .skills( "c++\nsuck" )
+
+        BidDto bidDto = BidDto.builder()
+                .amount( 100 )
+                .projectId( projectToFindFreelancersFor.getId() )
                 .build();
-        freelancerService.updateProfile( freelancerNotAvailable, freelancerUpdateDto );
+        bidService.addBid( bidDto, (Freelancer) freelancerWithBid.getType() );
 
+        bidDto.setProjectId( otherProject.getId() );
+        bidService.addBid( bidDto, (Freelancer) freelancerBidOtherProject.getType() );
 
-        // Create Four Freelancers One With Bid One Without and one not available and one with bid to other project
-        // Call method
-        // Assert It returns list with two freelancers, and one with bidding amount
+        List<FreelancerDto> freelancers = freelancerService.getAvailableFreelancersDto( projectToFindFreelancersFor );
+        assertEquals( 2, freelancers.size() );
+        assertTrue( freelancers.stream().anyMatch( freelancerDto -> freelancerDto.getProjectBidAmount() == 100 ) );
+        assertTrue( freelancers.stream().anyMatch( freelancerDto -> freelancerDto.getProjectBidAmount() == 0  ) );
     }
 }
