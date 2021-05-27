@@ -107,6 +107,7 @@ public class BidServiceImpl implements BidService {
             return false;
 
         Freelancer freelancer = (Freelancer) user.getType();
+        // TODO: add public method for findByBidderAndProject
         return bidRepository.findByBidderAndProject( freelancer, project ).isEmpty();
     }
 

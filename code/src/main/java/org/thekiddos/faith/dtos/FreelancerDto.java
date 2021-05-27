@@ -18,4 +18,5 @@ public class FreelancerDto {
     @NotNull
     private String skills;
     private UserDto user;
+    private double projectBidAmount;
 }

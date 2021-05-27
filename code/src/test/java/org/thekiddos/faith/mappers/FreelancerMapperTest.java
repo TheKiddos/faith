@@ -1,19 +1,36 @@
 package org.thekiddos.faith.mappers;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.thekiddos.faith.dtos.FreelancerDto;
-import org.thekiddos.faith.models.Freelancer;
-import org.thekiddos.faith.models.Skill;
-import org.thekiddos.faith.models.User;
+import org.thekiddos.faith.models.*;
+import org.thekiddos.faith.repositories.BidRepository;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+@SpringBootTest
+@ExtendWith( SpringExtension.class )
 public class FreelancerMapperTest {
-    private final FreelancerMapper freelancerMapper = FreelancerMapper.INSTANCE;
-    
+    private final FreelancerMapper freelancerMapper;
+
+    // TODO: Implement with service instead of repo
+    @MockBean
+    private BidRepository bidRepository;
+
+    @Autowired
+    public FreelancerMapperTest( FreelancerMapper freelancerMapper ) {
+        this.freelancerMapper = freelancerMapper;
+    }
+
     @Test
     void nullTest() {
         assertNull( freelancerMapper.toEntity( null ) );
@@ -55,5 +72,56 @@ public class FreelancerMapperTest {
     @Test
     void nullFreelancerTest() {
         assertNull( freelancerMapper.toDto( null ) );
+    }
+
+    @Test
+    void toDtoWithProject() {
+        Freelancer freelancer = new Freelancer();
+        freelancer.setSummary( "Hehhehe" );
+        freelancer.setAvailable( true );
+        freelancer.setSkills( Set.of( Skill.of( "c++" ), Skill.of( "suck" ) ) );
+
+        User user = new User();
+        user.setEmail( "hello@gmail.com" );
+        freelancer.setUser( user );
+
+        Project project = new Project();
+        project.setId( 1L );
+
+        Bid bid = new Bid();
+        bid.setAmount( 200 );
+
+
+        Mockito.doReturn( Optional.of( bid ) ).when( bidRepository ).findByBidderAndProject( freelancer, project );
+
+        FreelancerDto dto = freelancerMapper.toDtoWithProject( freelancer, project );
+        assertEquals( freelancer.getSummary(), dto.getSummary() );
+        assertEquals( freelancer.isAvailable(), dto.isAvailable() );
+        assertEquals( freelancer.getSkills(), Skill.createSkills( dto.getSkills() ) );
+        assertEquals( freelancer.getUser().getEmail(), dto.getUser().getEmail() );
+        assertEquals( bid.getAmount(), dto.getProjectBidAmount() );
+
+        Mockito.verify( bidRepository, Mockito.times( 1 ) ).findByBidderAndProject( freelancer, project );
+    }
+
+    @Test
+    void toDtoWithProjectNull() {
+        Freelancer freelancer = new Freelancer();
+        freelancer.setSummary( "Hehhehe" );
+        freelancer.setAvailable( true );
+        freelancer.setSkills( Set.of( Skill.of( "c++" ), Skill.of( "suck" ) ) );
+
+        User user = new User();
+        user.setEmail( "hello@gmail.com" );
+        freelancer.setUser( user );
+
+        FreelancerDto dto = freelancerMapper.toDtoWithProject( freelancer, null );
+        assertEquals( freelancer.getSummary(), dto.getSummary() );
+        assertEquals( freelancer.isAvailable(), dto.isAvailable() );
+        assertEquals( freelancer.getSkills(), Skill.createSkills( dto.getSkills() ) );
+        assertEquals( freelancer.getUser().getEmail(), dto.getUser().getEmail() );
+        assertEquals( 0, dto.getProjectBidAmount() );
+
+        Mockito.verify( bidRepository, Mockito.times( 0 ) ).findByBidderAndProject( freelancer, null );
     }
 }
