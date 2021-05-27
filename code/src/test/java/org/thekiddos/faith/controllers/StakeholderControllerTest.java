@@ -10,16 +10,20 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.thekiddos.faith.dtos.ProjectDto;
 import org.thekiddos.faith.dtos.UserDto;
+import org.thekiddos.faith.exceptions.ProjectNotFoundException;
 import org.thekiddos.faith.mappers.UserMapper;
+import org.thekiddos.faith.models.Project;
 import org.thekiddos.faith.models.Stakeholder;
 import org.thekiddos.faith.models.User;
 import org.thekiddos.faith.repositories.UserRepository;
+import org.thekiddos.faith.services.FreelancerService;
 import org.thekiddos.faith.services.ProjectService;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -31,6 +35,8 @@ class StakeholderControllerTest {
     private final MockMvc mockMvc;
     @MockBean
     private ProjectService projectService;
+    @MockBean
+    private FreelancerService freelancerService;
     @MockBean
     private UserRepository userRepository;
     private final UserMapper userMapper = UserMapper.INSTANCE;
@@ -121,6 +127,44 @@ class StakeholderControllerTest {
                 .andReturn();
 
         Mockito.verify( projectService, Mockito.times( 0 ) ).createProjectFor( any(), any() );
+    }
+
+    @Test
+    @WithMockUser( authorities = {"USER", "STAKEHOLDER"}, username = "stakeholder@test.com")
+    void projectDashboardOk() throws Exception {
+        User user = getTestUser();
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findById( user.getEmail() );
+
+        long id = 1L;
+        Project project = new Project();
+        project.setId( id );
+
+        ProjectDto projectDto = new ProjectDto();
+        projectDto.setId( id );
+
+        Mockito.doReturn( projectDto ).when( projectService ).findByIdForOwnerDto( (Stakeholder) user.getType(), id );
+        Mockito.doReturn( project ).when( projectService ).findById( id );
+        Mockito.doReturn( List.of() ).when( freelancerService ).getAvailableFreelancersDto( project );
+
+        mockMvc.perform( get(  "/stakeholder/my-projects/" + id ) )
+                .andExpect( status().isOk() );
+
+        Mockito.verify( projectService, Mockito.times( 1 ) ).findByIdForOwnerDto( (Stakeholder) user.getType(), id );
+        Mockito.verify( freelancerService, Mockito.times( 1 ) ).getAvailableFreelancersDto( project );
+    }
+
+    @Test
+    @WithMockUser( authorities = {"USER", "STAKEHOLDER"}, username = "stakeholder@test.com")
+    void projectDashboardNotFound() throws Exception {
+        User user = getTestUser();
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findById( user.getEmail() );
+
+        Mockito.doThrow( ProjectNotFoundException.class ).when( projectService ).findByIdForOwnerDto( any(), anyLong() );
+
+        mockMvc.perform( get(  "/stakeholder/my-projects/" + -1 ) )
+                .andExpect( status().isNotFound() );
+
+        Mockito.verify( freelancerService, Mockito.times( 0 ) ).getAvailableFreelancersDto( any() );
     }
 
     private User getTestUser() {

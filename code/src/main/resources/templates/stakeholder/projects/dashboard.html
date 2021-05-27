@@ -1,112 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en" th:fragment="layout (template, title, menu, navbarclasses, extrajs)">
-<head>
-    <title th:text="${title}">F.A.I.T.H.</title>
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Font Awesome -->
-    <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
-            rel="stylesheet"
-    />
-    <!-- Google Fonts -->
-    <link
-            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-            rel="stylesheet"
-    />
-    <!-- MDB -->
-    <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.3.0/mdb.min.css"
-            rel="stylesheet"
-    />
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="../../../static/slick/slick.css" th:href="@{/slick/slick.css}"/>
-    <link rel="stylesheet" type="text/css" href="../../../static/slick/slick-theme.css" th:href="@{/slick/slick-theme.css}"/>
-    <link
-            href="../../../static/css/main.css"
-            th:href="@{/css/main.css}"
-            rel="stylesheet"
-    />
-</head>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::main},'Dashboard', '', '', ~{::#extrajs})}" lang="en">
 <body>
-<!-- Navbar -->
-<nav th:class="'navbar navbar-expand-lg bg-light text-light ' + ${navbarclasses}" data-aos="fade-down">
-    <!-- Container wrapper -->
-    <div class="container-fluid">
-        <!-- Navbar brand -->
-        <a class="navbar-brand" href="#">
-            <img
-                    src="../../../static/images/logo.svg"
-                    th:src="@{/images/logo.svg}"
-                    alt=""
-                    loading="lazy"
-            />
-            F.A.I.T.H.
-        </a>
-
-        <!-- Toggle button -->
-        <button
-                class="navbar-toggler"
-                type="button"
-                data-mdb-toggle="collapse"
-                data-mdb-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-        >
-            <i class="fas fa-bars"></i>
-        </button>
-        <!-- TODO: Active Links -->
-        <!-- Collapsible wrapper -->
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <!-- Right links -->
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <!-- Navbar dropdown -->
-                <li class="nav-item dropdown">
-                    <a
-                            class="nav-link dropdown-toggle"
-                            href="#"
-                            id="navbarDropdown"
-                            role="button"
-                            data-mdb-toggle="dropdown"
-                            aria-expanded="false"
-                    >
-                        <i class="fas fa-user"></i>
-                    </a>
-                    <!-- Dropdown menu -->
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li sec:authorize="isAuthenticated()"><div class="text-center mt-2" th:text="'Hello, ' + ${#authentication.name}">Hello Man!</div></li>
-                        <li sec:authorize="!isAuthenticated()"><a class="dropdown-item" href="#" th:href="@{/login}">Login</a></li>
-                        <li sec:authorize="!isAuthenticated()"><a class="dropdown-item" href="#" th:href="@{/register}">Register</a></li>
-                        <li sec:authorize="isAuthenticated()"><a class="dropdown-item" href="#" onclick="document.getElementById('logout-form').submit();">Logout</a></li>
-                        <li sec:authorize="isAuthenticated()">
-                            <form id="logout-form" th:action="@{/logout}" method="post">
-                            </form>
-                        </li>
-                        <li><hr class="dropdown-divider" /></li>
-                        <li sec:authorize="hasAuthority('FREELANCER')"><a class="dropdown-item" href="#" th:href="@{/freelancer/profile}">Profile</a></li>
-                        <li sec:authorize="hasAuthority('STAKEHOLDER')"><a class="dropdown-item" href="#" th:href="@{/stakeholder/my-projects}">My Projects</a></li>
-                    </ul>
-                </li>
-                <!-- TODO: Consider making navlink a reusable fragment-->
-                <li class="nav-item">
-                    <a class="nav-link" th:class="'nav-link' +  ${'home' == menu ? ' active' : ''}" aria-current="page" href="#" th:href="@{/}">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:class="'nav-link' +  ${'projects' == menu ? ' active' : ''}" href="/projects" th:href="@{/projects}">Projects</a>
-                </li>
-
-            </ul>
-            <!-- Right links -->
-        </div>
-        <!-- Collapsible wrapper -->
-    </div>
-    <!-- Container wrapper -->
-</nav>
-<!-- Navbar -->
 <!-- TODO: Apply Layout -->
-<main th:replace="${template}">
+<main>
     <header data-aos="fade-up">
         <!-- Jumbotron -->
         <div class="p-5 text-center bg-light slide-down">
@@ -120,10 +16,10 @@
        <div><canvas id="bids-stats"></canvas></div>
        <div><canvas id="bids-histogram"></canvas></div>
     </section>
-    <section data-aos="fade-up" th:include="~{fragments/project-details :: project_details (project=${project})}">
+    <section data-aos="fade-up">
         <div class="card">
             <div class="card-header">
-                <div th:inline="text"><i class="fas fa-clock mx-2"></i>[[${project.duration.toDays()} + ' Day(s)']]</div>
+                <div th:inline="text"><i class="fas fa-clock mx-2"></i>[[${project.duration} + ' Day(s)']]</div>
                 <div th:inline="text"><i class="fas fa-money-bill mx-2"></i>[[${project.preferredBid}]]</div>
             </div>
             <div class="card-body text-center">
@@ -139,17 +35,17 @@
         </div>
     </section>
     <!-- TODO: only if unassigned, if it's assigned show that freelancer details -->
-    <section th:if="project.assignedFreelancer">
-        <div class="card mx-auto text-white bg-success mb-3 text-center" data-aos="fade-up-right">
-            <div class="card-body">
-                <h5 class="card-title" th:text="${project.assignedFreelancer.user.firstName} + ${project.assignedFreelancer.user.lastName}">Freelancer Name</h5>
-                <div class="card-text">
-                    <div th:text="${project.assignedFreelancer.user.email}">email</div>
-                    <div th:text="${project.assignedFreelancer.user.phoneNumber}">phone</div>
-                </div>
-            </div>
-        </div>
-    </section>
+<!--    <section th:if="project.assignedFreelancer">-->
+<!--        <div class="card mx-auto text-white bg-success mb-3 text-center" data-aos="fade-up-right">-->
+<!--            <div class="card-body">-->
+<!--                <h5 class="card-title" th:text="${project.assignedFreelancer.user.firstName} + ${project.assignedFreelancer.user.lastName}">Freelancer Name</h5>-->
+<!--                <div class="card-text">-->
+<!--                    <div th:text="${project.assignedFreelancer.user.email}">email</div>-->
+<!--                    <div th:text="${project.assignedFreelancer.user.phoneNumber}">phone</div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </section>-->
     <section th:unless="project.assignedFreelancer" class="mt-3 freelancers row">
         <div th:each="freelancer, iStat : ${freelancers}" class="card mx-auto text-white bg-success mb-3 text-center col-md-3" data-aos="fade-up-right" th:data-aos="${iStat.even}? 'fade-up-right' : 'fade-up-left'">
             <div class="card-header"><span class="badge bg-light text-dark rounded-pill" th:text="${freelancer.projectBidString}">200</span></div>
@@ -171,38 +67,7 @@
         </div>
     </section>
 </main>
-<!-- Footer -->
-<footer class="bg-light text-center text-lg-start mt-3" data-aos="fade-up">
-    <img class="img-fluid" src="../../../static/images/faith-banner.png" th:src="@{/images/faith-banner.png}" alt="banner">
-    <!-- Copyright -->
-    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
-        &copy; <span th:text="${#dates.year(#dates.createNow())}">2021</span> Copyright:
-        <a class="text-dark" href="#">F.A.I.T.H.</a>
-    </div>
-    <!-- Copyright -->
-</footer>
-<!-- Footer -->
-<!-- MDB -->
-<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
-<script
-        type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.3.0/mdb.min.js"
-></script>
-<script
-        type="text/javascript"
-        src="../../../static/js/noframework.waypoints.min.js"
-        th:src="@{/js/noframework.waypoints.min.js}"
-></script>
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-<script type="text/javascript" src="../../../static/slick/slick.min.js" th:src="@{/slick/slick.min.js}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.1/chart.min.js" integrity="sha512-tOcHADT+YGCQqH7YO99uJdko6L8Qk5oudLN6sCeI4BQnpENq6riR6x9Im+SGzhXpgooKBRkPsget4EOoH5jNCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script
-        type="text/javascript"
-        src="../../../static/js/main.js"
-        th:src="@{/js/main.js}"
-></script>
-<script th:replace="${extrajs}">
+<script id="extrajs">
     // Bids Chart
     const bidsCtx = document.getElementById('bids-stats');
     const bidsChart = new Chart(bidsCtx, {
@@ -261,7 +126,6 @@
             }
         }
     });
-
 </script>
 </body>
 </html>

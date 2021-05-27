@@ -54,4 +54,12 @@ public class ProjectServiceImpl implements ProjectService {
     public List<ProjectDto> findByOwnerDto( Stakeholder owner ) {
         return projectRepository.findByOwner( owner ).stream().map( projectMapper::projectToProjectDto ).collect( Collectors.toList() );
     }
+
+    @Override
+    public ProjectDto findByIdForOwnerDto( Stakeholder owner, long id ) throws ProjectNotFoundException {
+        var project = findById( id );
+        if ( !project.getOwner().getUser().equals( owner.getUser() ) )
+            throw new ProjectNotFoundException();
+        return projectMapper.projectToProjectDto( project );
+    }
 }
