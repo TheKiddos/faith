@@ -15,4 +15,6 @@ public interface FreelancerService {
     void updateProfile( User user, FreelancerDto dto );
 
     List<FreelancerDto> getAvailableFreelancersDto( Project projectToFindFreelancersFor );
+    
+    Freelancer getAvailableFreelancerById( Long id ) throws FreelancerNotFoundException;
 }

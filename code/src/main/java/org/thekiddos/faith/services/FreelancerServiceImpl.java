@@ -57,4 +57,20 @@ public class FreelancerServiceImpl implements FreelancerService {
     private Predicate<FreelancerDto> canHireFreelancer() {
         return freelancerDto -> freelancerDto.isAvailable() || freelancerDto.getProjectBidAmount() > 0;
     }
+    
+    @Override
+    public Freelancer getAvailableFreelancerById( Long id ) throws FreelancerNotFoundException {
+        // TODO: Use Freelancer Repo
+        for ( var user : userRepository.findAll() ) {
+            try {
+                var freelancer = (Freelancer) user.getType();
+                if ( freelancer.getId() == id && freelancer.isAvailable() )
+                    return freelancer;
+            }
+            catch ( Exception exception ) {
+                // Ignore
+            }
+        }
+        throw new FreelancerNotFoundException();
+    }
 }
