@@ -1,6 +1,8 @@
 package org.thekiddos.faith.services;
 
 import org.thekiddos.faith.dtos.FreelancerDto;
+import org.thekiddos.faith.exceptions.FreelancerNotFoundException;
+import org.thekiddos.faith.models.Freelancer;
 import org.thekiddos.faith.models.Project;
 import org.thekiddos.faith.models.User;
 

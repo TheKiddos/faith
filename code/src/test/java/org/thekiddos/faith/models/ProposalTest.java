@@ -10,17 +10,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.TransactionSystemException;
-import org.thekiddos.faith.dtos.ProposalDto;
 import org.thekiddos.faith.dtos.ProjectDto;
+import org.thekiddos.faith.dtos.ProposalDto;
 import org.thekiddos.faith.dtos.UserDto;
+import org.thekiddos.faith.exceptions.FreelancerNotFoundException;
+import org.thekiddos.faith.exceptions.ProjectNotFoundException;
 import org.thekiddos.faith.exceptions.ProposalNotAllowedException;
 import org.thekiddos.faith.mappers.UserMapper;
-import org.thekiddos.faith.repositories.ProposalRepository;
 import org.thekiddos.faith.repositories.ProjectRepository;
+import org.thekiddos.faith.repositories.ProposalRepository;
 import org.thekiddos.faith.repositories.UserRepository;
-import org.thekiddos.faith.services.ProposalService;
 import org.thekiddos.faith.services.EmailService;
 import org.thekiddos.faith.services.ProjectService;
+import org.thekiddos.faith.services.ProposalService;
 import org.thekiddos.faith.services.UserService;
 import org.thekiddos.faith.utils.EmailSubjectConstants;
 import org.thekiddos.faith.utils.EmailTemplatesConstants;
@@ -52,7 +54,7 @@ public class ProposalTest {
                     ProposalRepository proposalRepository, UserRepository userRepository,
                     ProjectRepository projectRepository,
                     UserService userService,
-                    ProjectService projectService, BidCommentRepository bidCommentRepository ) {
+                    ProjectService projectService ) {
         this.proposalService = proposalService;
         this.proposalRepository = proposalRepository;
         this.userRepository = userRepository;
@@ -154,7 +156,7 @@ public class ProposalTest {
                            
         assertTrue( proposalRepository.findAll().isEmpty() );
         
-        assertThrows( RuntimeException.class, () -> proposalService.sendProposal( dto ) );
+        assertThrows( ProjectNotFoundException.class, () -> proposalService.sendProposal( dto ) );
 
         var proposals = proposalRepository.findAll();
         assertEquals( 0, proposals.size() );
@@ -175,7 +177,7 @@ public class ProposalTest {
                            
         assertTrue( proposalRepository.findAll().isEmpty() );
         
-        assertThrows( RuntimeException.class, () -> proposalService.sendProposal( dto ) );
+        assertThrows( FreelancerNotFoundException.class, () -> proposalService.sendProposal( dto ) );
 
         var proposals = proposalRepository.findAll();
         assertEquals( 0, proposals.size() );
@@ -188,8 +190,8 @@ public class ProposalTest {
     void sendProposalToUnavailableFreelancerIsInvalid() {
         double amount = 10.0;
         this.freelancer.setAvailable( false );
-        this.freelancer.setUser( this.user );
-        this.userRepository.save( user );
+        this.freelancer.setUser( this.freelancerUser );
+        this.freelancerUser = this.userRepository.save( this.freelancerUser );
         
         ProposalDto dto = ProposalDto.builder()
                            .amount( amount )
@@ -199,7 +201,7 @@ public class ProposalTest {
                            
         assertTrue( proposalRepository.findAll().isEmpty() );
         
-        assertThrows( RuntimeException.class, () -> proposalService.sendProposal( dto ) );
+        assertThrows( FreelancerNotFoundException.class, () -> proposalService.sendProposal( dto ) );
 
         var proposals = proposalRepository.findAll();
         assertEquals( 0, proposals.size() );
@@ -230,6 +232,7 @@ public class ProposalTest {
 
     @Test
     void findByProject() {
+        double amount = 10.;
         ProposalDto dto = ProposalDto.builder()
                            .amount( amount )
                            .freelancerId( -1L )
@@ -256,6 +259,7 @@ public class ProposalTest {
     
     @Test
     void findByFreelancer() {
+        double amount = 10.;
         ProposalDto dto = ProposalDto.builder()
                            .amount( amount )
                            .freelancerId( -1L )
@@ -277,11 +281,15 @@ public class ProposalTest {
 
         var proposals = proposalService.findByFreelancer( (Freelancer) freelancer2.getType() );
         assertEquals( 2, proposals.size() );
-        assertTrue( proposals.stream().allMatch( proposal -> proposal.getFreelancer().equals( (Freelancer) freelancer2.getType() ) ) );
+
+        // for java lambda
+        User finalFreelancer = freelancer2;
+        assertTrue( proposals.stream().allMatch( proposal -> proposal.getFreelancer().equals( finalFreelancer.getType() ) ) );
     }
 
     @Test
     void findByFreelancerDto() {
+        double amount = 10.;
         ProposalDto dto = ProposalDto.builder()
                            .amount( amount )
                            .freelancerId( -1L )
@@ -301,9 +309,11 @@ public class ProposalTest {
         dto.setProjectId( project2.getId() );
         proposalService.sendProposal( dto );
 
-        var proposals = proposalService.findByFreelancer( (Freelancer) freelancer2.getType() );
+        var proposals = proposalService.findByFreelancerDto( (Freelancer) freelancer2.getType() );
         assertEquals( 2, proposals.size() );
-        assertTrue( proposals.stream().allMatch( proposal -> proposal.getFreelancerId().equals( freelancer2.getType().getId() ) ) );
+
+        User finalFreelancer = freelancer2;
+        assertTrue( proposals.stream().allMatch( proposal -> proposal.getId().equals( finalFreelancer.getType().getId() ) ) );
     }
 
     @Test

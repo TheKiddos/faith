@@ -7,12 +7,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.thekiddos.faith.dtos.*;
+import org.thekiddos.faith.dtos.FreelancerDto;
+import org.thekiddos.faith.dtos.ProjectDto;
+import org.thekiddos.faith.dtos.ProposalDto;
+import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.models.*;
-import org.thekiddos.faith.mappers.*;
 import org.thekiddos.faith.repositories.ProjectRepository;
 import org.thekiddos.faith.repositories.UserRepository;
-import org.thekiddos.faith.services.*;
+import org.thekiddos.faith.services.FreelancerService;
+import org.thekiddos.faith.services.ProjectService;
+import org.thekiddos.faith.services.UserService;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -66,15 +70,24 @@ public class ProposalMapperTest {
         this.project = projectService.createProjectFor( stakeholder, projectDto );
         
         
-        User user = userService.createUser( UserDto.builder()
+        user = userService.createUser( UserDto.builder()
                 .email( "freelancer@gmail.com" )
                 .password( "password" )
                 .nickname( "freelancer" )
-                .type( "Frelancer" )
+                .type( "Freelancer" )
                 .firstName( "Test" )
                 .lastName( "aaa" )
                 .build() );
-        this.freelancer = (Freelancer) user.getType(); 
+        this.freelancer = (Freelancer) user.getType();
+
+
+        FreelancerDto freelancerDto = FreelancerDto.builder()
+                .summary( "Hehhehe" )
+                .available( true )
+                .skills( "c++\nsuck" )
+                .build();
+
+        freelancerService.updateProfile( user, freelancerDto );
     }
 
     @AfterEach
@@ -129,7 +142,7 @@ public class ProposalMapperTest {
 
     @Test
     void toDto() {
-        Proposal proposal = new BidProposal;
+        Proposal proposal = new Proposal();
         proposal.setId( 1L );
         proposal.setProject( this.project );
         proposal.setAmount( 20.0 );
@@ -140,12 +153,12 @@ public class ProposalMapperTest {
         assertEquals( proposal.getId(), dto.getId() );
         assertEquals( proposal.getAmount(), dto.getAmount() );
         assertEquals( proposal.getProject().getId(), dto.getProjectId() );
-        assertEquals( proposal.getFreekancer().getId(), dto.getFreelancerId() );
+        assertEquals( proposal.getFreelancer().getId(), dto.getFreelancerId() );
     }
 
     @Test
     void nullTest() {
-        assertNull( bidMapper.toEntity( null ) );
-        assertNull( bidMapper.toDto( null ) );
+        assertNull( proposalMapper.toEntity( null ) );
+        assertNull( proposalMapper.toDto( null ) );
     }
 }

@@ -4,9 +4,11 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.thekiddos.faith.dtos.ProposalDto;
+import org.thekiddos.faith.exceptions.FreelancerNotFoundException;
+import org.thekiddos.faith.exceptions.ProjectNotFoundException;
 import org.thekiddos.faith.models.Proposal;
+import org.thekiddos.faith.services.FreelancerService;
 import org.thekiddos.faith.services.ProjectService;
-import org.thekiddos.faith.exceptions.*;
 
 @Mapper(componentModel = "spring", uses = { ProjectService.class } )
 public abstract class ProposalMapper {

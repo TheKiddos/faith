@@ -31,7 +31,7 @@ public class Proposal {
         if ( this == o ) return true;
         if ( o == null || getClass() != o.getClass() ) return false;
         Proposal proposal = (Proposal) o;
-        return Double.compare( bid.amount, amount ) == 0;
+        return Double.compare( proposal.amount, amount ) == 0;
     }
 
     @Override

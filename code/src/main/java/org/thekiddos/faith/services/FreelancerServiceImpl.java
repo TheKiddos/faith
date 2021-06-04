@@ -2,6 +2,7 @@ package org.thekiddos.faith.services;
 
 import org.springframework.stereotype.Service;
 import org.thekiddos.faith.dtos.FreelancerDto;
+import org.thekiddos.faith.exceptions.FreelancerNotFoundException;
 import org.thekiddos.faith.mappers.FreelancerMapper;
 import org.thekiddos.faith.models.Freelancer;
 import org.thekiddos.faith.models.Project;
@@ -64,7 +65,7 @@ public class FreelancerServiceImpl implements FreelancerService {
         for ( var user : userRepository.findAll() ) {
             try {
                 var freelancer = (Freelancer) user.getType();
-                if ( freelancer.getId() == id && freelancer.isAvailable() )
+                if ( freelancer.getId().equals( id ) && freelancer.isAvailable() )
                     return freelancer;
             }
             catch ( Exception exception ) {
