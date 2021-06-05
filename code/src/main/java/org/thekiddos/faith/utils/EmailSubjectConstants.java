@@ -9,4 +9,5 @@ public final class EmailSubjectConstants {
     public static final String ACCOUNT_DELETED = "Faith Account Deleted!";
     public static final String PASSWORD_RESET = "Password Reset Request";
     public static final String NEW_BID = "New Bid On Your Project";
+    public static final String NEW_PROPOSAL = "New Proposal";
 }
