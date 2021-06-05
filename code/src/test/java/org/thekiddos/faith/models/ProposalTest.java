@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.TransactionSystemException;
+import org.thekiddos.faith.dtos.FreelancerDto;
 import org.thekiddos.faith.dtos.ProjectDto;
 import org.thekiddos.faith.dtos.ProposalDto;
 import org.thekiddos.faith.dtos.UserDto;
@@ -20,10 +21,7 @@ import org.thekiddos.faith.mappers.UserMapper;
 import org.thekiddos.faith.repositories.ProjectRepository;
 import org.thekiddos.faith.repositories.ProposalRepository;
 import org.thekiddos.faith.repositories.UserRepository;
-import org.thekiddos.faith.services.EmailService;
-import org.thekiddos.faith.services.ProjectService;
-import org.thekiddos.faith.services.ProposalService;
-import org.thekiddos.faith.services.UserService;
+import org.thekiddos.faith.services.*;
 import org.thekiddos.faith.utils.EmailSubjectConstants;
 import org.thekiddos.faith.utils.EmailTemplatesConstants;
 
@@ -41,6 +39,7 @@ public class ProposalTest {
     private final ProjectRepository projectRepository;
     private final UserService userService;
     private final ProjectService projectService;
+    private final FreelancerService freelancerService;
     private final UserMapper userMapper = UserMapper.INSTANCE;
     @MockBean
     private EmailService emailService;
@@ -51,16 +50,17 @@ public class ProposalTest {
     
     @Autowired
     public ProposalTest( ProposalService proposalService,
-                    ProposalRepository proposalRepository, UserRepository userRepository,
-                    ProjectRepository projectRepository,
-                    UserService userService,
-                    ProjectService projectService ) {
+                         ProposalRepository proposalRepository, UserRepository userRepository,
+                         ProjectRepository projectRepository,
+                         UserService userService,
+                         ProjectService projectService, FreelancerService freelancerService ) {
         this.proposalService = proposalService;
         this.proposalRepository = proposalRepository;
         this.userRepository = userRepository;
         this.projectRepository = projectRepository;
         this.userService = userService;
         this.projectService = projectService;
+        this.freelancerService = freelancerService;
     }
     
     @AfterEach
@@ -91,6 +91,14 @@ public class ProposalTest {
         this.project = projectService.createProjectFor( stakeholder, projectDto );
         this.freelancerUser = userRepository.save( getTestUser() );
         this.freelancer = (Freelancer) this.freelancerUser.getType();
+
+        FreelancerDto freelancerDto = FreelancerDto.builder()
+                .summary( "Hehhehe" )
+                .available( true )
+                .skills( "c++\nsuck" )
+                .build();
+
+        freelancerService.updateProfile( freelancerUser, freelancerDto );
     }
 
     @Test
@@ -112,7 +120,7 @@ public class ProposalTest {
         Proposal proposal = proposals.stream().findFirst().orElse( null );
         assertNotNull( proposal );
         assertNotNull( proposal.getId() );
-        assertEquals( "proposal of " + amount, proposal.toString() );
+        assertEquals( "Proposal of " + amount, proposal.toString() );
         assertEquals( amount, proposal.getAmount() );
         assertEquals( this.project, proposal.getProject() );
         assertEquals( freelancer, proposal.getFreelancer() );
@@ -216,7 +224,7 @@ public class ProposalTest {
 
         ProposalDto dto = ProposalDto.builder()
                            .amount( amount )
-                           .freelancerId( -1L )
+                           .freelancerId( this.freelancer.getId() )
                            .projectId( this.project.getId() )
                            .build();
         assertTrue( proposalRepository.findAll().isEmpty() );
@@ -235,7 +243,7 @@ public class ProposalTest {
         double amount = 10.;
         ProposalDto dto = ProposalDto.builder()
                            .amount( amount )
-                           .freelancerId( -1L )
+                           .freelancerId( this.freelancer.getId() )
                            .projectId( this.project.getId() )
                            .build();
         proposalService.sendProposal( dto );
@@ -244,6 +252,13 @@ public class ProposalTest {
         freelancer2.setEmail( "freelancer2@test.com" );
         freelancer2.setNickname( "freelancer2" );
         freelancer2 = userRepository.save( freelancer2 );
+        FreelancerDto freelancerDto = FreelancerDto.builder()
+                .summary( "Hehhehe" )
+                .available( true )
+                .skills( "c++\nsuck" )
+                .build();
+
+        freelancerService.updateProfile( freelancer2, freelancerDto );
         
         dto.setFreelancerId( freelancer2.getType().getId() );
         proposalService.sendProposal( dto );
@@ -262,7 +277,7 @@ public class ProposalTest {
         double amount = 10.;
         ProposalDto dto = ProposalDto.builder()
                            .amount( amount )
-                           .freelancerId( -1L )
+                           .freelancerId( this.freelancer.getId() )
                            .projectId( this.project.getId() )
                            .build();
         proposalService.sendProposal( dto );
@@ -271,6 +286,13 @@ public class ProposalTest {
         freelancer2.setEmail( "freelancer2@test.com" );
         freelancer2.setNickname( "freelancer2" );
         freelancer2 = userRepository.save( freelancer2 );
+        FreelancerDto freelancerDto = FreelancerDto.builder()
+                .summary( "Hehhehe" )
+                .available( true )
+                .skills( "c++\nsuck" )
+                .build();
+
+        freelancerService.updateProfile( freelancer2, freelancerDto );
         
         dto.setFreelancerId( freelancer2.getType().getId() );
         proposalService.sendProposal( dto );
@@ -292,7 +314,7 @@ public class ProposalTest {
         double amount = 10.;
         ProposalDto dto = ProposalDto.builder()
                            .amount( amount )
-                           .freelancerId( -1L )
+                           .freelancerId( this.freelancer.getId() )
                            .projectId( this.project.getId() )
                            .build();
         proposalService.sendProposal( dto );
@@ -301,6 +323,13 @@ public class ProposalTest {
         freelancer2.setEmail( "freelancer2@test.com" );
         freelancer2.setNickname( "freelancer2" );
         freelancer2 = userRepository.save( freelancer2 );
+        FreelancerDto freelancerDto = FreelancerDto.builder()
+                .summary( "Hehhehe" )
+                .available( true )
+                .skills( "c++\nsuck" )
+                .build();
+
+        freelancerService.updateProfile( freelancer2, freelancerDto );
         
         dto.setFreelancerId( freelancer2.getType().getId() );
         proposalService.sendProposal( dto );
@@ -313,7 +342,7 @@ public class ProposalTest {
         assertEquals( 2, proposals.size() );
 
         User finalFreelancer = freelancer2;
-        assertTrue( proposals.stream().allMatch( proposal -> proposal.getId().equals( finalFreelancer.getType().getId() ) ) );
+        assertTrue( proposals.stream().allMatch( proposal -> proposal.getFreelancerId() == finalFreelancer.getType().getId() ) );
     }
 
     @Test

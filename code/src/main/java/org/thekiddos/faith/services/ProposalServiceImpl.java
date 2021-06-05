@@ -11,6 +11,9 @@ import org.thekiddos.faith.models.Freelancer;
 import org.thekiddos.faith.models.Project;
 import org.thekiddos.faith.models.Proposal;
 import org.thekiddos.faith.repositories.ProposalRepository;
+import org.thekiddos.faith.utils.EmailSubjectConstants;
+import org.thekiddos.faith.utils.EmailTemplatesConstants;
+import org.thymeleaf.context.Context;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,11 +22,13 @@ import java.util.stream.Collectors;
 public class ProposalServiceImpl implements ProposalService {
     private final ProposalMapper proposalMapper;
     private final ProposalRepository proposalRepository;
+    private final EmailService emailService;
 
     @Autowired
-    public ProposalServiceImpl( ProposalMapper proposalMapper, ProposalRepository proposalRepository ) {
+    public ProposalServiceImpl( ProposalMapper proposalMapper, ProposalRepository proposalRepository, EmailService emailService ) {
         this.proposalMapper = proposalMapper;
         this.proposalRepository = proposalRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -31,6 +36,10 @@ public class ProposalServiceImpl implements ProposalService {
         Proposal proposal = proposalMapper.toEntity( dto );
         validate( proposal );
         proposalRepository.save( proposal );
+
+        Context context = new Context();
+        context.setVariable( "proposal", proposal );
+        emailService.sendTemplateMail( List.of( proposal.getFreelancer().getUser().getEmail() ), "admin@faith.com", EmailSubjectConstants.NEW_PROPOSAL, EmailTemplatesConstants.NEW_PROPOSAL_TEMPLATE, context );
     }
 
     private void validate( Proposal proposal ) {

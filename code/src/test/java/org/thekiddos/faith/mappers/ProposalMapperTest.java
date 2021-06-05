@@ -69,7 +69,6 @@ public class ProposalMapperTest {
 
         this.project = projectService.createProjectFor( stakeholder, projectDto );
         
-        
         user = userService.createUser( UserDto.builder()
                 .email( "freelancer@gmail.com" )
                 .password( "password" )
