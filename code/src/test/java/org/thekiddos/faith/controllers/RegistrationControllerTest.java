@@ -30,7 +30,7 @@ class RegistrationControllerTest {
     private UserService userService;
     @MockBean
     private UserRepository userRepository;
-    private UserMapper userMapper = UserMapper.INSTANCE;
+    private final UserMapper userMapper = UserMapper.INSTANCE;
 
     @Autowired
     RegistrationControllerTest( MockMvc mockMvc ) {

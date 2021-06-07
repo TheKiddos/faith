@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 import org.thekiddos.faith.dtos.ProposalDto;
 import org.thekiddos.faith.models.Stakeholder;
 import org.thekiddos.faith.models.User;
@@ -34,7 +33,7 @@ public class ProposalController {
     }
 
     @PostMapping( value = "/propose" )
-    public String sendProposal( @Valid ProposalDto proposalDto, BindingResult binding, Principal principal ) {
+    public ResponseEntity<String> sendProposal( @Valid ProposalDto proposalDto, BindingResult binding, Principal principal ) {
         if ( binding.hasErrors() ) {
             return new ResponseEntity<>( "Please check form errors", HttpStatus.BAD_REQUEST );
         }

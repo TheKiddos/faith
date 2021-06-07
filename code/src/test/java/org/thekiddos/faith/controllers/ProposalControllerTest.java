@@ -11,10 +11,11 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.thekiddos.faith.dtos.ProposalDto;
 import org.thekiddos.faith.dtos.UserDto;
+import org.thekiddos.faith.exceptions.ProjectNotFoundException;
 import org.thekiddos.faith.mappers.UserMapper;
-import org.thekiddos.faith.models.Freelancer;
 import org.thekiddos.faith.models.User;
 import org.thekiddos.faith.repositories.UserRepository;
+import org.thekiddos.faith.services.ProjectService;
 import org.thekiddos.faith.services.ProposalService;
 
 import java.util.Optional;
@@ -30,6 +31,8 @@ class ProposalControllerTest {
     private final MockMvc mockMvc;
     @MockBean
     private ProposalService proposalService;
+    @MockBean
+    private ProjectService projectService;
     @MockBean
     private UserRepository userRepository;
     private final UserMapper userMapper = UserMapper.INSTANCE;
@@ -113,7 +116,7 @@ class ProposalControllerTest {
                 .andExpect( status().isBadRequest() )
                 .andReturn();
 
-        Mockito.verify( proposalService, Mockito.times( 1 ) ).sendProposal( dto );
+        Mockito.verify( proposalService, Mockito.times( 0 ) ).sendProposal( dto );
     }
 
     @Test
