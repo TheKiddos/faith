@@ -10,6 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.thekiddos.faith.dtos.FreelancerDto;
 import org.thekiddos.faith.models.*;
 import org.thekiddos.faith.repositories.BidRepository;
+import org.thekiddos.faith.repositories.ProposalRepository;
 
 import java.util.Optional;
 import java.util.Set;
@@ -25,6 +26,8 @@ public class FreelancerMapperTest {
     // TODO: Implement with service instead of repo
     @MockBean
     private BidRepository bidRepository;
+    @MockBean
+    private ProposalRepository proposalRepository;
 
     @Autowired
     public FreelancerMapperTest( FreelancerMapper freelancerMapper ) {
@@ -90,9 +93,13 @@ public class FreelancerMapperTest {
 
         Bid bid = new Bid();
         bid.setAmount( 200 );
+        
+        Proposal proposal = new Proposal();
+        proposal.setAmount( 20 );
 
 
         Mockito.doReturn( Optional.of( bid ) ).when( bidRepository ).findByBidderAndProject( freelancer, project );
+        Mockito.doReturn( Optional.of( proposal ) ).when( proposalRepository ).findByProjectAndFreelancer( project, freelancer );
 
         FreelancerDto dto = freelancerMapper.toDtoWithProject( freelancer, project );
         assertEquals( freelancer.getSummary(), dto.getSummary() );
@@ -100,6 +107,7 @@ public class FreelancerMapperTest {
         assertEquals( freelancer.getSkills(), Skill.createSkills( dto.getSkills() ) );
         assertEquals( freelancer.getUser().getEmail(), dto.getUser().getEmail() );
         assertEquals( bid.getAmount(), dto.getProjectBidAmount() );
+        assertEquals( proposal.getAmount(), proposal.getProjectProposalAmount() );
 
         Mockito.verify( bidRepository, Mockito.times( 1 ) ).findByBidderAndProject( freelancer, project );
     }

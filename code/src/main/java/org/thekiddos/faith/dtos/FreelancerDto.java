@@ -19,4 +19,5 @@ public class FreelancerDto {
     private String skills;
     private UserDto user;
     private double projectBidAmount;
+    private double projectProposalAmount;
 }
