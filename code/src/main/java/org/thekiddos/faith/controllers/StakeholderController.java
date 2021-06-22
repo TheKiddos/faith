@@ -61,7 +61,7 @@ public class StakeholderController {
     }
 
     @GetMapping( value = "/my-projects/{id}" )
-    public String getMyProjectsPage( Model model, Principal principal, @PathVariable Long id ) {
+    public String getProjectDashboard( Model model, Principal principal, @PathVariable Long id ) {
         User user = (User) userService.loadUserByUsername( principal.getName() );
         ProjectDto projectDto;
         try {

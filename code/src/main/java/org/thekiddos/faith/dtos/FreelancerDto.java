@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FreelancerDto {
+    private Long id;
     @NotNull
     private String summary;
     private boolean available;
@@ -19,4 +20,5 @@ public class FreelancerDto {
     private String skills;
     private UserDto user;
     private double projectBidAmount;
+    private double projectProposalAmount;
 }

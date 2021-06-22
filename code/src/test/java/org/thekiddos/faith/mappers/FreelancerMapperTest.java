@@ -10,6 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.thekiddos.faith.dtos.FreelancerDto;
 import org.thekiddos.faith.models.*;
 import org.thekiddos.faith.repositories.BidRepository;
+import org.thekiddos.faith.repositories.ProposalRepository;
 
 import java.util.Optional;
 import java.util.Set;
@@ -25,6 +26,8 @@ public class FreelancerMapperTest {
     // TODO: Implement with service instead of repo
     @MockBean
     private BidRepository bidRepository;
+    @MockBean
+    private ProposalRepository proposalRepository;
 
     @Autowired
     public FreelancerMapperTest( FreelancerMapper freelancerMapper ) {
@@ -54,6 +57,7 @@ public class FreelancerMapperTest {
     @Test
     void toDtoTest() {
         Freelancer freelancer = new Freelancer();
+        freelancer.setId( 1L );
         freelancer.setSummary( "Hehhehe" );
         freelancer.setAvailable( true );
         freelancer.setSkills( Set.of( Skill.of( "c++" ), Skill.of( "suck" ) ) );
@@ -63,6 +67,7 @@ public class FreelancerMapperTest {
         freelancer.setUser( user );
 
         FreelancerDto dto = freelancerMapper.toDto( freelancer );
+        assertEquals( freelancer.getId(), dto.getId() );
         assertEquals( freelancer.getSummary(), dto.getSummary() );
         assertEquals( freelancer.isAvailable(), dto.isAvailable() );
         assertEquals( freelancer.getSkills(), Skill.createSkills( dto.getSkills() ) );
@@ -77,6 +82,7 @@ public class FreelancerMapperTest {
     @Test
     void toDtoWithProject() {
         Freelancer freelancer = new Freelancer();
+        freelancer.setId( 1L );
         freelancer.setSummary( "Hehhehe" );
         freelancer.setAvailable( true );
         freelancer.setSkills( Set.of( Skill.of( "c++" ), Skill.of( "suck" ) ) );
@@ -90,16 +96,22 @@ public class FreelancerMapperTest {
 
         Bid bid = new Bid();
         bid.setAmount( 200 );
+        
+        Proposal proposal = new Proposal();
+        proposal.setAmount( 20 );
 
 
         Mockito.doReturn( Optional.of( bid ) ).when( bidRepository ).findByBidderAndProject( freelancer, project );
+        Mockito.doReturn( Optional.of( proposal ) ).when( proposalRepository ).findByProjectAndFreelancer( project, freelancer );
 
         FreelancerDto dto = freelancerMapper.toDtoWithProject( freelancer, project );
+        assertEquals( freelancer.getId(), dto.getId() );
         assertEquals( freelancer.getSummary(), dto.getSummary() );
         assertEquals( freelancer.isAvailable(), dto.isAvailable() );
         assertEquals( freelancer.getSkills(), Skill.createSkills( dto.getSkills() ) );
         assertEquals( freelancer.getUser().getEmail(), dto.getUser().getEmail() );
         assertEquals( bid.getAmount(), dto.getProjectBidAmount() );
+        assertEquals( proposal.getAmount(), dto.getProjectProposalAmount() );
 
         Mockito.verify( bidRepository, Mockito.times( 1 ) ).findByBidderAndProject( freelancer, project );
     }

@@ -8,11 +8,14 @@ import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.models.Freelancer;
 import org.thekiddos.faith.models.Project;
 import org.thekiddos.faith.repositories.BidRepository;
+import org.thekiddos.faith.repositories.ProposalRepository;
 
 @Mapper(componentModel = "spring")
 public abstract class FreelancerMapper {
     @Autowired
     protected BidRepository bidRepository;
+    @Autowired
+    protected ProposalRepository proposalRepository;
 
 
     @Mapping( target = "user", ignore = true )
@@ -30,6 +33,7 @@ public abstract class FreelancerMapper {
         UserDto user = UserMapper.INSTANCE.userToUserDto( freelancer.getUser() );
 
         return FreelancerDto.builder()
+                .id( freelancer.getId() )
                 .summary( freelancer.getSummary() )
                 .available( freelancer.isAvailable() )
                 .skills( skills )
@@ -42,7 +46,9 @@ public abstract class FreelancerMapper {
 
         if ( projectToFindFreelancersFor != null ) {
             var bid = bidRepository.findByBidderAndProject( freelancer, projectToFindFreelancersFor );
+            var proposal = proposalRepository.findByProjectAndFreelancer( projectToFindFreelancersFor, freelancer );
             bid.ifPresent( value -> dto.setProjectBidAmount( value.getAmount() ) );
+            proposal.ifPresent( value -> dto.setProjectProposalAmount( value.getAmount() ) );
         }
 
         return dto;

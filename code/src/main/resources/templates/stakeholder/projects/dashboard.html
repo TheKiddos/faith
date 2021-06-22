@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::main},'Dashboard', '', '', ~{::#extrajs})}" lang="en">
 <body>
-<!-- TODO: Apply Layout -->
 <main>
     <header data-aos="fade-up">
         <!-- Jumbotron -->
@@ -34,7 +33,7 @@
             </div>
         </div>
     </section>
-    <!-- TODO: only if unassigned, if it's assigned show that freelancer details -->
+    <!-- TODO: only if unassigned, if it's assigned show the freelancer details -->
 <!--    <section th:if="project.assignedFreelancer">-->
 <!--        <div class="card mx-auto text-white bg-success mb-3 text-center" data-aos="fade-up-right">-->
 <!--            <div class="card-body">-->
@@ -58,17 +57,29 @@
                 </div>
             </div>
             <div class="card-footer">
-                <button
-                        type="button"
-                        class="btn btn-outline-light btn-rounded"
-                        data-mdb-ripple-color="dark"
-                >
-                    Propose Job
+                <span th:if="${freelancer.projectProposalAmount} > 0" th:text="'Proposal: ' + ${freelancer.projectProposalAmount}">Proposal: 100</span>
+                <form th:if="${freelancer.projectProposalAmount} == 0" role="form" class="form" id="send-proposal-form" method="post" th:action="@{/stakeholder/propose}" th:method="post">
+                    <div class="form-outline mb-4 mx-auto form-white" style="max-width: 18rem">
+                        <i class="fas fa-money-bill trailing"></i>
+                        <input class="form-control pe-5" min="10" value="10.0" type="number" name="amount" id="amount">
+                        <label class="form-label" for="amount">Amount</label>
+                    </div>
+
+                    <label for="project-id"></label><input hidden type="number" name="projectId" th:value="${project.id}" id="project-id">
+                    <label for="freelancer-id"></label><input hidden type="number" name="freelancerId" th:value="${freelancer.id}" id="freelancer-id">
+                <button id="send-proposal-btn" class="btn btn-success" type="submit">Propose
+                    <span
+                            class="spinner-border spinner-border-sm visually-hidden"
+                            role="status"
+                            aria-hidden="true"
+                            id="send-proposal-spinner"
+                    />
                 </button></div>
         </div>
     </section>
 </main>
 <div id="extrajs">
+    <script src="../../static/js/send-proposal-form.js" th:src="@{/js/send-proposal-form.js}"></script>
     <script>
         // TODO: Maybe this logic should be in service or something
         function getBids() {
