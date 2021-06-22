@@ -57,6 +57,7 @@ public class FreelancerMapperTest {
     @Test
     void toDtoTest() {
         Freelancer freelancer = new Freelancer();
+        freelancer.setId( 1L );
         freelancer.setSummary( "Hehhehe" );
         freelancer.setAvailable( true );
         freelancer.setSkills( Set.of( Skill.of( "c++" ), Skill.of( "suck" ) ) );
@@ -66,6 +67,7 @@ public class FreelancerMapperTest {
         freelancer.setUser( user );
 
         FreelancerDto dto = freelancerMapper.toDto( freelancer );
+        assertEquals( freelancer.getId(), dto.getId() );
         assertEquals( freelancer.getSummary(), dto.getSummary() );
         assertEquals( freelancer.isAvailable(), dto.isAvailable() );
         assertEquals( freelancer.getSkills(), Skill.createSkills( dto.getSkills() ) );
@@ -80,6 +82,7 @@ public class FreelancerMapperTest {
     @Test
     void toDtoWithProject() {
         Freelancer freelancer = new Freelancer();
+        freelancer.setId( 1L );
         freelancer.setSummary( "Hehhehe" );
         freelancer.setAvailable( true );
         freelancer.setSkills( Set.of( Skill.of( "c++" ), Skill.of( "suck" ) ) );
@@ -102,12 +105,13 @@ public class FreelancerMapperTest {
         Mockito.doReturn( Optional.of( proposal ) ).when( proposalRepository ).findByProjectAndFreelancer( project, freelancer );
 
         FreelancerDto dto = freelancerMapper.toDtoWithProject( freelancer, project );
+        assertEquals( freelancer.getId(), dto.getId() );
         assertEquals( freelancer.getSummary(), dto.getSummary() );
         assertEquals( freelancer.isAvailable(), dto.isAvailable() );
         assertEquals( freelancer.getSkills(), Skill.createSkills( dto.getSkills() ) );
         assertEquals( freelancer.getUser().getEmail(), dto.getUser().getEmail() );
         assertEquals( bid.getAmount(), dto.getProjectBidAmount() );
-        assertEquals( proposal.getAmount(), proposal.getProjectProposalAmount() );
+        assertEquals( proposal.getAmount(), dto.getProjectProposalAmount() );
 
         Mockito.verify( bidRepository, Mockito.times( 1 ) ).findByBidderAndProject( freelancer, project );
     }

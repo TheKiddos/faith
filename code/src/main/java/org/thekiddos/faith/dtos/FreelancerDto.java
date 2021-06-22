@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FreelancerDto {
+    private Long id;
     @NotNull
     private String summary;
     private boolean available;

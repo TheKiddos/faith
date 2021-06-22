@@ -14,6 +14,7 @@ import org.thekiddos.faith.repositories.ProposalRepository;
 public abstract class FreelancerMapper {
     @Autowired
     protected BidRepository bidRepository;
+    @Autowired
     protected ProposalRepository proposalRepository;
 
 
@@ -32,6 +33,7 @@ public abstract class FreelancerMapper {
         UserDto user = UserMapper.INSTANCE.userToUserDto( freelancer.getUser() );
 
         return FreelancerDto.builder()
+                .id( freelancer.getId() )
                 .summary( freelancer.getSummary() )
                 .available( freelancer.isAvailable() )
                 .skills( skills )
