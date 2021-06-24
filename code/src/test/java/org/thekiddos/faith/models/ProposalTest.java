@@ -124,6 +124,7 @@ public class ProposalTest {
         assertEquals( amount, proposal.getAmount() );
         assertEquals( this.project, proposal.getProject() );
         assertEquals( freelancer, proposal.getFreelancer() );
+        assertEquals( Status.NEW, proposal.getStatus() );
 
         Mockito.verify( emailService, Mockito.times( 1 ) )
                 .sendTemplateMail( eq( List.of( this.freelancerUser.getEmail() ) ), anyString(), eq( EmailSubjectConstants.NEW_PROPOSAL ), eq( EmailTemplatesConstants.NEW_PROPOSAL_TEMPLATE ), any() );

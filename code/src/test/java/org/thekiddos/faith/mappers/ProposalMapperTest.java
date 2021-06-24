@@ -146,6 +146,7 @@ public class ProposalMapperTest {
         proposal.setProject( this.project );
         proposal.setAmount( 20.0 );
         proposal.setFreelancer( this.freelancer );
+        proposal.setStatus( Status.NEW );
 
         ProposalDto dto = proposalMapper.toDto( proposal );
 
@@ -153,6 +154,7 @@ public class ProposalMapperTest {
         assertEquals( proposal.getAmount(), dto.getAmount() );
         assertEquals( proposal.getProject().getId(), dto.getProjectId() );
         assertEquals( proposal.getFreelancer().getId(), dto.getFreelancerId() );
+        assertEquals( proposal.getStatus().name(), dto.getStatus() );
     }
 
     @Test

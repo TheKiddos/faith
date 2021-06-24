@@ -14,6 +14,8 @@ public class Proposal {
     private Long id;
     @NotNull @Min(1)
     private double amount;
+    @Enumerated( EnumType.STRING )
+    private Status status = Status.NEW;
 
     @ManyToOne( optional = false, cascade = { CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE } ) @NotNull
     private Freelancer freelancer;

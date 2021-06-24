@@ -22,5 +22,6 @@ public abstract class ProposalMapper {
 
     @Mapping( target = "projectId", source = "project.id" )
     @Mapping( target = "freelancerId", source = "freelancer.id" )
+    @Mapping( target = "status", expression = "java(proposal.getStatus().name())" )
     public abstract ProposalDto toDto( Proposal proposal );
 }
