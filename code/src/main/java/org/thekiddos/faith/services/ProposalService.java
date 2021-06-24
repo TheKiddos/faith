@@ -18,4 +18,6 @@ public interface ProposalService  {
     List<Proposal> findByFreelancer( Freelancer freelancer );
 
     List<ProposalDto> findByFreelancerDto( Freelancer freelancer );
+
+    List<ProposalDto> findFreelancerProposals( Freelancer freelancer );
 }

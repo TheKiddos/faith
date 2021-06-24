@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -38,6 +39,7 @@ class ProposalControllerTest {
     private final UserMapper userMapper = UserMapper.INSTANCE;
 
     private User stakeholderUser;
+    private User freelanecrUser;
 
     @Autowired
     ProposalControllerTest( MockMvc mockMvc ) {
@@ -46,7 +48,8 @@ class ProposalControllerTest {
 
     @BeforeEach
     public void setUp() {
-        this.stakeholderUser = getTestUser();
+        this.stakeholderUser = getTestUser( "Stakeholder" );
+        this.freelanecrUser = getTestUser( "Freelancer" );
     }
 
     @Test
@@ -142,8 +145,32 @@ class ProposalControllerTest {
                 .andReturn();
     }
 
-    private User getTestUser() {
-        UserDto userDto = UserDto.builder().email( "stakeholder@test.com" )
+    @Test
+    @WithMockUser( authorities = {"USER", "STAKEHOLDER"})
+    void getFreelancerProposalsNotFreelancer() throws Exception {
+        mockMvc.perform( get( "/freelancer/proposals" ) )
+                .andExpect( status().isForbidden() )
+                .andReturn();
+
+        Mockito.verify( proposalService, Mockito.times( 0 ) ).findFreelancerProposals( any() );
+    }
+
+    @Test
+    @WithMockUser( authorities = {"USER", "FREELANCER"}, username = "freelancer@test.com" )
+    void getFreelancerProposals() throws Exception {
+
+        Mockito.doReturn( Optional.of( freelanecrUser ) ).when( userRepository ).findById( freelanecrUser.getEmail() );
+
+        mockMvc.perform( get( "/freelancer/proposals" ) )
+                .andExpect( status().isOk() )
+                .andReturn();
+
+        Mockito.verify( proposalService, Mockito.times( 1 ) ).findFreelancerProposals( any() );
+    }
+
+    private User getTestUser( String type ) {
+        var email = type.equalsIgnoreCase( "Stakeholder" ) ? "stakeholder@test.com" : "freelancer@test.com";
+        UserDto userDto = UserDto.builder().email( email )
                 .password( "password" )
                 .passwordConfirm( "password" )
                 .nickname( "tasty" )
@@ -152,7 +179,7 @@ class ProposalControllerTest {
                 .civilId( new byte[]{} )
                 .phoneNumber( "+963987654321" )
                 .address( "Street" )
-                .type( "Stakeholder" )
+                .type( type )
                 .build();
 
         return userMapper.userDtoToUser( userDto );

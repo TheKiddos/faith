@@ -347,6 +347,48 @@ public class ProposalTest {
     }
 
     @Test
+    void findFreelancerProposalsDto() {
+        double amount = 10.;
+        ProposalDto dto = ProposalDto.builder()
+                .amount( amount )
+                .freelancerId( this.freelancer.getId() )
+                .projectId( this.project.getId() )
+                .build();
+        proposalService.sendProposal( dto );
+
+        var freelancer2 = getTestUser();
+        freelancer2.setEmail( "freelancer2@test.com" );
+        freelancer2.setNickname( "freelancer2" );
+        freelancer2 = userRepository.save( freelancer2 );
+        FreelancerDto freelancerDto = FreelancerDto.builder()
+                .summary( "Hehhehe" )
+                .available( true )
+                .skills( "c++\nsuck" )
+                .build();
+
+        freelancerService.updateProfile( freelancer2, freelancerDto );
+
+        dto.setFreelancerId( freelancer2.getType().getId() );
+        proposalService.sendProposal( dto );
+
+        // Modify the status
+        var proposal = proposalService.findByFreelancer( (Freelancer) freelancer2.getType() ).get( 0 );
+        proposal.setStatus( Status.REJECTED );
+        proposalRepository.save( proposal );
+
+        var project2 = projectService.createProjectFor( this.project.getOwner(), getTestProjectDto() );
+        dto.setProjectId( project2.getId() );
+        proposalService.sendProposal( dto );
+
+        var proposals = proposalService.findFreelancerProposals( (Freelancer) freelancer2.getType() );
+        assertEquals( 1, proposals.size() );
+
+        var proposalDto = proposals.get( 0 );
+        assertEquals( freelancer2.getType().getId(), proposalDto.getFreelancerId() );
+        assertEquals( Status.NEW.name(), proposalDto.getStatus() );
+    }
+
+    @Test
     void equalsAndHashcode() {
         Proposal proposal = new Proposal();
         proposal.setAmount( 200 );

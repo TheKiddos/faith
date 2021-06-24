@@ -10,6 +10,7 @@ import org.thekiddos.faith.mappers.ProposalMapper;
 import org.thekiddos.faith.models.Freelancer;
 import org.thekiddos.faith.models.Project;
 import org.thekiddos.faith.models.Proposal;
+import org.thekiddos.faith.models.Status;
 import org.thekiddos.faith.repositories.ProposalRepository;
 import org.thekiddos.faith.utils.EmailSubjectConstants;
 import org.thekiddos.faith.utils.EmailTemplatesConstants;
@@ -68,5 +69,12 @@ public class ProposalServiceImpl implements ProposalService {
     @Override
     public List<ProposalDto> findByFreelancerDto( Freelancer freelancer ) {
         return findByFreelancer( freelancer ).stream().map( proposalMapper::toDto ).collect( Collectors.toList() );
+    }
+
+    @Override
+    public List<ProposalDto> findFreelancerProposals( Freelancer freelancer ) {
+        return findByFreelancerDto( freelancer ).stream()
+                .filter( proposalDto -> proposalDto.getStatus().equals( Status.NEW.name() ) )
+                .collect( Collectors.toList() );
     }
 }

@@ -16,6 +16,7 @@ public abstract class ProposalMapper {
     protected FreelancerService freelancerService;
 
     @Mapping( target = "id", ignore = true )
+    @Mapping( target = "status", ignore = true )
     @Mapping( target = "project", source = "projectId" )
     @Mapping( target = "freelancer", expression = "java( freelancerService.getAvailableFreelancerById( dto.getFreelancerId() ) )")
     public abstract Proposal toEntity( ProposalDto dto ) throws ProjectNotFoundException, FreelancerNotFoundException;
