@@ -1,10 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" lang="en" th:replace="~{fragments/layout :: layout (~{::main},'Proposals', 'proposals', '', ~{#extrajs})}">
 <body>
-
+<main>
+    <header>
+        <!-- Jumbotron -->
+        <div class="p-5 text-center bg-light slide-down">
+            <h1 class="mb-3">Your Proposals!</h1>
+            <h4 class="mb-3">Here you'll see a list of all job offers you have</h4>
+            <hr>
+        </div>
+        <!-- Jumbotron -->
+    </header>
+    <div class="container mt-3">
+        <div class="slide-down">
+            <table class="table align-middle mt-3 caption-top table-hover">
+                <caption class="lead">
+                    Proposals
+                </caption>
+                <thead class="table-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Project</th>
+                    <th scope="col">Reject</th>
+                    <th scope="col">Accept</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="proposal, iter: ${proposals}">
+                    <th scope="row" th:text="${iter.count}">1</th>
+                    <td th:text="${proposal.amount}"></td>
+                    <td><a th:href="@{'/projects/' + ${proposal.projectId}}" th:text="${proposal.projectId}">1</a></td>
+                    <td>
+                        <form class="form" role="form">
+                            <button class="btn btn btn-danger"><span class="fas fa-times"></span></button>
+                        </form>
+                    </td>
+                    <td>
+                        <form class="form" role="form">
+                            <button class="btn btn-success"><span class="fas fa-check"></span></button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
 </body>
 </html>
