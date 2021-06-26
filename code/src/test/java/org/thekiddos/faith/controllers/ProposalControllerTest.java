@@ -7,19 +7,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.thekiddos.faith.dtos.ProposalDto;
 import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.exceptions.ProjectNotFoundException;
 import org.thekiddos.faith.mappers.UserMapper;
-import org.thekiddos.faith.models.User;
+import org.thekiddos.faith.models.*;
 import org.thekiddos.faith.repositories.UserRepository;
 import org.thekiddos.faith.services.ProjectService;
 import org.thekiddos.faith.services.ProposalService;
 
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -166,6 +169,31 @@ class ProposalControllerTest {
                 .andReturn();
 
         Mockito.verify( proposalService, Mockito.times( 1 ) ).findFreelancerProposals( any() );
+    }
+    
+    @Test
+    @WithMockUser( authorities = {"USER", "STAKEHOLDER"})
+    void getFreelancerProposalsCountNotFreelancer() throws Exception {
+        mockMvc.perform( get( "/freelancer/proposals/count" ) )
+                .andExpect( status().isForbidden() )
+                .andReturn();
+
+        Mockito.verify( proposalService, Mockito.times( 0 ) ).findFreelancerProposals( any() );
+    }
+
+    @Test
+    @WithMockUser( authorities = {"USER", "FREELANCER"}, username = "freelancer@test.com" )
+    void getFreelancerProposalsCount() throws Exception {
+
+        Mockito.doReturn( Optional.of( freelanecrUser ) ).when( userRepository ).findById( freelanecrUser.getEmail() );
+        Mockito.doReturn( List.of( null, null ) ).when( proposalService ).findFreelancerProposals( (Freelancer) freelanerUser.getType() );
+        
+
+        mockMvc.perform( get( "/freelancer/proposals" ).accept( MediaType.APPLICATION_JSON ) )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath( "$[*]", hasSize( 1 ) ) )
+                .andExpect( jsonPath( "$['proposalsCount']", is( 2 ) ) )
+                .andReturn();
     }
 
     private User getTestUser( String type ) {
