@@ -73,6 +73,7 @@
                             aria-expanded="false"
                     >
                         <i class="fas fa-user"></i>
+                        <span class="badge rounded-pill badge-notification bg-danger d-none" id="notification-count">1</span>
                     </a>
                     <!-- Dropdown menu -->
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -86,6 +87,7 @@
                         </li>
                         <li><hr class="dropdown-divider" /></li>
                         <li sec:authorize="hasAuthority('FREELANCER')"><a class="dropdown-item" href="#" th:href="@{/freelancer/profile}">Profile</a></li>
+                        <li sec:authorize="hasAuthority('FREELANCER')"><a class="dropdown-item" href="#" th:href="@{/freelancer/proposals}" th:data-url="@{/freelancer/proposals/count}" id="proposals">Proposals</a></li>
                         <li sec:authorize="hasAuthority('STAKEHOLDER')"><a class="dropdown-item" href="#" th:href="@{/stakeholder/my-projects}">My Projects</a></li>
                     </ul>
                 </li>
@@ -133,6 +135,17 @@
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script type="text/javascript" src="../../static/slick/slick.min.js" th:src="@{/slick/slick.min.js}"></script>
+<script>
+    $(_ =>{
+   try {
+       $.get($("#proposals").data("url"), function(data, status) {
+           $("#notification-count").text(data["proposalsCount"])
+       });
+   } catch ( e ) {
+       
+   }
+});
+</script>
 <script
         type="text/javascript"
         src="../../static/js/main.js"
