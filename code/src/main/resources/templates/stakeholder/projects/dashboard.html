@@ -58,23 +58,24 @@
             </div>
             <div class="card-footer">
                 <span th:if="${freelancer.projectProposalAmount} > 0" th:text="'Proposal: ' + ${freelancer.projectProposalAmount}">Proposal: 100</span>
-                <form th:if="${freelancer.projectProposalAmount} == 0" role="form" class="form" id="send-proposal-form" method="post" th:action="@{/stakeholder/propose}" th:method="post">
+                <form th:if="${freelancer.projectProposalAmount} == 0" role="form" class="form send-proposal-form" method="post" th:action="@{/stakeholder/propose}" th:method="post">
                     <div class="form-outline mb-4 mx-auto form-white" style="max-width: 18rem">
                         <i class="fas fa-money-bill trailing"></i>
-                        <input class="form-control pe-5" min="10" value="10.0" type="number" name="amount" id="amount">
-                        <label class="form-label" for="amount">Amount</label>
+                        <input class="form-control pe-5" min="10" value="10.0" type="number" name="amount" th:id="'amount' + ${iStat.count}">
+                        <label class="form-label" th:for="'amount' + ${iStat.count}">Amount</label>
                     </div>
 
-                    <label for="project-id"></label><input hidden type="number" name="projectId" th:value="${project.id}" id="project-id">
-                    <label for="freelancer-id"></label><input hidden type="number" name="freelancerId" th:value="${freelancer.id}" id="freelancer-id">
-                <button id="send-proposal-btn" class="btn btn-success" type="submit">Propose
-                    <span
-                            class="spinner-border spinner-border-sm visually-hidden"
-                            role="status"
-                            aria-hidden="true"
-                            id="send-proposal-spinner"
-                    />
-                </button></div>
+                    <label><input hidden type="number" name="projectId" th:value="${project.id}"></label>
+                    <label><input hidden type="number" name="freelancerId" th:value="${freelancer.id}"></label>
+                    <button class="btn btn-success send-proposal-btn" type="submit">Propose
+                        <span
+                                class="spinner-border spinner-border-sm visually-hidden send-proposal-spinner"
+                                role="status"
+                                aria-hidden="true"
+                        />
+                    </button>
+                </form>
+            </div>
         </div>
     </section>
 </main>
