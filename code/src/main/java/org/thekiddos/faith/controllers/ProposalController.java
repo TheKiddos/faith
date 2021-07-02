@@ -18,6 +18,8 @@ import org.thekiddos.faith.services.ProjectService;
 import org.thekiddos.faith.services.ProposalService;
 import org.thekiddos.faith.services.UserService;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.validation.Valid;
 import java.security.Principal;
 
@@ -61,5 +63,14 @@ public class ProposalController {
         User user = (User) userService.loadUserByUsername( principal.getName() );
         model.addAttribute( "proposals", proposalService.findFreelancerProposals( (Freelancer) user.getType() ) );
         return "freelancer/proposals";
+    }
+    
+    @GetMapping( value = "/freelancer/proposals/count" ) @ResponseBody
+    public ResponseEntity<Map<String, Integer>> getFreelancerProposals( Principal principal ) {
+        User user = (User) userService.loadUserByUsername( principal.getName() );
+        // TODO: remove logic from here
+        Map<String, Integer> result = new HashMap<>();
+        result.put( "proposalsCount", proposalService.findFreelancerProposals( (Freelancer) user.getType() ).size() );
+        return new ResponseEntity<>( result, HttpStatus.OK );
     }
 }
