@@ -73,7 +73,7 @@
                             aria-expanded="false"
                     >
                         <i class="fas fa-user"></i>
-                        <span class="badge rounded-pill badge-notification bg-danger d-none" id="notification-count">1</span>
+                        <span sec:authorize="hasAuthority('FREELANCER')" class="badge rounded-pill badge-notification bg-danger d-none" id="notification-count">1</span>
                     </a>
                     <!-- Dropdown menu -->
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -139,7 +139,12 @@
     $(_ =>{
    try {
        $.get($("#proposals").data("url"), function(data, status) {
-           $("#notification-count").text(data["proposalsCount"])
+           const notificationsCount = data["proposalsCount"];
+           $("#notification-count").text(notificationsCount)
+
+           if ( notificationsCount > 0 ) {
+               $("#notification-count").removeClass("d-none");
+           }
        });
    } catch ( e ) {
        

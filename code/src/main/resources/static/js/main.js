@@ -31,12 +31,3 @@ $(window).scroll(_ => {
             navBar.addClass("navbar-transparent");
     }
 })
-
-// TODO: move to separte file and conditionally add it
-$(_ =>{
-   try {
-       
-   } catch ( e ) {
-       
-   }
-});

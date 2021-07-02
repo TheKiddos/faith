@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en" th:replace="~{fragments/layout :: layout (~{::main},'Proposals', 'proposals', '', ~{#extrajs})}">
+<html xmlns:th="http://www.thymeleaf.org" lang="en" th:replace="~{fragments/layout :: layout (~{::main},'Proposals', 'proposals', '', ~{fragments/emptyjs :: #extrajs})}">
 <body>
 <main>
     <header>
