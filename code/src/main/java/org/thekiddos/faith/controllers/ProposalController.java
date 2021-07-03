@@ -1,28 +1,27 @@
 package org.thekiddos.faith.controllers;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.thekiddos.faith.dtos.ProposalDto;
-import org.thekiddos.faith.models.Freelancer;
-import org.thekiddos.faith.models.Stakeholder;
-import org.thekiddos.faith.models.User;
+import org.thekiddos.faith.exceptions.InvalidTransitionException;
+import org.thekiddos.faith.exceptions.ProposalNotAllowedException;
+import org.thekiddos.faith.models.*;
 import org.thekiddos.faith.services.ProjectService;
 import org.thekiddos.faith.services.ProposalService;
 import org.thekiddos.faith.services.UserService;
 
-import java.util.HashMap;
-import java.util.Map;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
+@Slf4j
 @Controller
 public class ProposalController {
     private final UserService userService;
@@ -61,8 +60,21 @@ public class ProposalController {
     @GetMapping( value = "/freelancer/proposals" )
     public String getFreelancerProposals( Model model, Principal principal ) {
         User user = (User) userService.loadUserByUsername( principal.getName() );
-        model.addAttribute( "proposals", proposalService.findFreelancerProposals( (Freelancer) user.getType() ) );
+        model.addAttribute( "proposals", proposalService.findNewFreelancerProposals( (Freelancer) user.getType() ) );
         return "freelancer/proposals";
+    }
+
+    @PostMapping( value = "/freelancer/proposals/reject/{id}" )
+    public String rejectProposal( Principal principal, @PathVariable Long id ) {
+        User user = (User) userService.loadUserByUsername( principal.getName() );
+        try {
+            Proposal proposal = proposalService.findProposalFor( (Freelancer) user.getType(), id );
+            proposalService.setStatus( proposal, Status.REJECTED );
+        }
+        catch ( ProposalNotAllowedException | InvalidTransitionException e ) {
+            log.error( e.getMessage() );
+        }
+        return "redirect:/freelancer/proposals";
     }
     
     @GetMapping( value = "/freelancer/proposals/count" ) @ResponseBody
@@ -70,7 +82,7 @@ public class ProposalController {
         User user = (User) userService.loadUserByUsername( principal.getName() );
         // TODO: remove logic from here
         Map<String, Integer> result = new HashMap<>();
-        result.put( "proposalsCount", proposalService.findFreelancerProposals( (Freelancer) user.getType() ).size() );
+        result.put( "proposalsCount", proposalService.findNewFreelancerProposals( (Freelancer) user.getType() ).size() );
         return new ResponseEntity<>( result, HttpStatus.OK );
     }
 }

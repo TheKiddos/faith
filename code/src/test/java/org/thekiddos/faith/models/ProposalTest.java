@@ -14,9 +14,7 @@ import org.thekiddos.faith.dtos.FreelancerDto;
 import org.thekiddos.faith.dtos.ProjectDto;
 import org.thekiddos.faith.dtos.ProposalDto;
 import org.thekiddos.faith.dtos.UserDto;
-import org.thekiddos.faith.exceptions.FreelancerNotFoundException;
-import org.thekiddos.faith.exceptions.ProjectNotFoundException;
-import org.thekiddos.faith.exceptions.ProposalNotAllowedException;
+import org.thekiddos.faith.exceptions.*;
 import org.thekiddos.faith.mappers.UserMapper;
 import org.thekiddos.faith.repositories.ProjectRepository;
 import org.thekiddos.faith.repositories.ProposalRepository;
@@ -347,7 +345,7 @@ public class ProposalTest {
     }
 
     @Test
-    void findFreelancerProposalsDto() {
+    void findNewFreelancerProposalsDto() {
         double amount = 10.;
         ProposalDto dto = ProposalDto.builder()
                 .amount( amount )
@@ -380,12 +378,82 @@ public class ProposalTest {
         dto.setProjectId( project2.getId() );
         proposalService.sendProposal( dto );
 
-        var proposals = proposalService.findFreelancerProposals( (Freelancer) freelancer2.getType() );
+        var proposals = proposalService.findNewFreelancerProposals( (Freelancer) freelancer2.getType() );
         assertEquals( 1, proposals.size() );
 
         var proposalDto = proposals.get( 0 );
         assertEquals( freelancer2.getType().getId(), proposalDto.getFreelancerId() );
         assertEquals( Status.NEW.name(), proposalDto.getStatus() );
+    }
+
+    @Test
+    void findProposalFor() {
+        // Since method is simple we will test all cases here
+        double amount = 10.;
+        ProposalDto dto = ProposalDto.builder()
+                .amount( amount )
+                .freelancerId( this.freelancer.getId() )
+                .projectId( this.project.getId() )
+                .build();
+        proposalService.sendProposal( dto );
+
+        var freelancer2 = getTestUser();
+        freelancer2.setEmail( "freelancer2@test.com" );
+        freelancer2.setNickname( "freelancer2" );
+        freelancer2 = userRepository.save( freelancer2 );
+        FreelancerDto freelancerDto = FreelancerDto.builder()
+                .summary( "Hehhehe" )
+                .available( true )
+                .skills( "c++\nsuck" )
+                .build();
+
+        freelancerService.updateProfile( freelancer2, freelancerDto );
+
+        dto.setFreelancerId( freelancer2.getType().getId() );
+        proposalService.sendProposal( dto );
+
+        var project2 = projectService.createProjectFor( this.project.getOwner(), getTestProjectDto() );
+        dto.setProjectId( project2.getId() );
+        proposalService.sendProposal( dto );
+
+        var proposals = proposalService.findByFreelancerDto( (Freelancer) freelancer2.getType() );
+        // Normal Case
+        // we have two proposals here
+        var proposal = proposalService.findProposalFor( (Freelancer) freelancer2.getType(), proposals.get( 0 ).getId() );
+        assertEquals( (Freelancer) freelancer2.getType(), proposal.getFreelancer() );
+        assertEquals( proposals.get( 0 ).getId(), proposal.getId() );
+
+        // Wrong id for freelancer
+        assertThrows( ProposalNotFoundException.class, () -> proposalService.findProposalFor( freelancer, proposals.get( 0 ).getId() ) );
+    }
+
+    @Test
+    void setStatus() {
+        double amount = 10.;
+        ProposalDto dto = ProposalDto.builder()
+                .amount( amount )
+                .freelancerId( this.freelancer.getId() )
+                .projectId( this.project.getId() )
+                .build();
+        proposalService.sendProposal( dto );
+
+        var proposal = proposalService.findByFreelancer( this.freelancer ).get( 0 );
+
+        // Move from new to something else is allowed
+        proposalService.setStatus( proposal, Status.REJECTED );
+        proposal = proposalRepository.findById( proposal.getId() ).orElse( null );
+        assert proposal != null;
+        assertEquals( Status.REJECTED, proposal.getStatus() );
+
+        // Move from non-new status to something else is not allowed
+        Proposal finalProposal = proposal;
+        assertThrows( InvalidTransitionException.class, () -> proposalService.setStatus( finalProposal, Status.NEW ) );
+
+        // Make sure status not changed
+        proposal = proposalRepository.findById( proposal.getId() ).orElse( null );
+        assertEquals( Status.REJECTED, proposal.getStatus() );
+
+        // The test makes it point but it's not extensive but we will leave it for now.
     }
 
     @Test

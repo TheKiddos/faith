@@ -3,9 +3,7 @@ package org.thekiddos.faith.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thekiddos.faith.dtos.ProposalDto;
-import org.thekiddos.faith.exceptions.FreelancerNotFoundException;
-import org.thekiddos.faith.exceptions.ProjectNotFoundException;
-import org.thekiddos.faith.exceptions.ProposalNotAllowedException;
+import org.thekiddos.faith.exceptions.*;
 import org.thekiddos.faith.mappers.ProposalMapper;
 import org.thekiddos.faith.models.Freelancer;
 import org.thekiddos.faith.models.Project;
@@ -72,9 +70,30 @@ public class ProposalServiceImpl implements ProposalService {
     }
 
     @Override
-    public List<ProposalDto> findFreelancerProposals( Freelancer freelancer ) {
+    public List<ProposalDto> findNewFreelancerProposals( Freelancer freelancer ) {
         return findByFreelancerDto( freelancer ).stream()
                 .filter( proposalDto -> proposalDto.getStatus().equals( Status.NEW.name() ) )
                 .collect( Collectors.toList() );
+    }
+
+    @Override
+    public Proposal findProposalFor( Freelancer freelancer, long proposalId ) throws ProposalNotFoundException {
+        var proposal = proposalRepository.findById( proposalId ).orElseThrow( ProposalNotFoundException::new );
+
+        if ( !proposal.getFreelancer().equals( freelancer ) ) {
+            throw new ProposalNotFoundException();
+        }
+
+        return proposal;
+    }
+
+    @Override
+    public void setStatus( Proposal proposal, Status status ) throws InvalidTransitionException {
+        if ( !proposal.getStatus().equals( Status.NEW ) ) {
+            throw new InvalidTransitionException( Status.NEW, status );
+        }
+
+        proposal.setStatus( status );
+        proposalRepository.save( proposal );
     }
 }

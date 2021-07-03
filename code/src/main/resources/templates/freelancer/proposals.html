@@ -32,12 +32,12 @@
                     <td th:text="${proposal.amount}"></td>
                     <td><a th:href="@{'/projects/' + ${proposal.projectId}}" th:text="${proposal.projectId}">1</a></td>
                     <td>
-                        <form class="form" role="form">
+                        <form th:action="@{'/freelancer/proposals/reject/' + ${proposal.id}}" th:method="post" class="form" role="form">
                             <button class="btn btn btn-danger"><span class="fas fa-times"></span></button>
                         </form>
                     </td>
                     <td>
-                        <form class="form" role="form">
+                        <form th:action="@{'/freelancer/proposals/accept/' + ${proposal.id}}" th:method="post" class="form" role="form">
                             <button class="btn btn-success"><span class="fas fa-check"></span></button>
                         </form>
                     </td>
