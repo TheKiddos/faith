@@ -64,12 +64,26 @@ public class ProposalController {
         return "freelancer/proposals";
     }
 
+    // TODO: We can write a set status instead and get rid of these two and their tests
     @PostMapping( value = "/freelancer/proposals/reject/{id}" )
     public String rejectProposal( Principal principal, @PathVariable Long id ) {
         User user = (User) userService.loadUserByUsername( principal.getName() );
         try {
             Proposal proposal = proposalService.findProposalFor( (Freelancer) user.getType(), id );
             proposalService.setStatus( proposal, Status.REJECTED );
+        }
+        catch ( ProposalNotAllowedException | InvalidTransitionException e ) {
+            log.error( e.getMessage() );
+        }
+        return "redirect:/freelancer/proposals";
+    }
+
+    @PostMapping( value = "/freelancer/proposals/accept/{id}" )
+    public String acceptProposal( Principal principal, @PathVariable Long id ) {
+        User user = (User) userService.loadUserByUsername( principal.getName() );
+        try {
+            Proposal proposal = proposalService.findProposalFor( (Freelancer) user.getType(), id );
+            proposalService.setStatus( proposal, Status.ACCEPTED );
         }
         catch ( ProposalNotAllowedException | InvalidTransitionException e ) {
             log.error( e.getMessage() );

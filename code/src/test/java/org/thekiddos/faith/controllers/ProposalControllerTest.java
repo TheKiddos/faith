@@ -212,7 +212,7 @@ class ProposalControllerTest {
         Mockito.doReturn( Optional.of( stakeholderUser ) ).when( userRepository ).findById( stakeholderUser.getEmail() );
 
         mockMvc.perform( post( "/freelancer/proposals/reject/1" )
-                         .with( csrf() ) )
+                .with( csrf() ) )
                 .andExpect( status().isForbidden() )
                 .andReturn();
     }
@@ -251,7 +251,6 @@ class ProposalControllerTest {
 
     }
 
-
     @Test
     @WithMockUser( authorities = {"USER", "FREELANCER"}, username = "freelancer@test.com")
     void rejectProposalNotFound() throws Exception {
@@ -260,6 +259,66 @@ class ProposalControllerTest {
         Mockito.doThrow( ProposalNotAllowedException.class ).when( proposalService ).findProposalFor( (Freelancer) freelancerUser.getType(), 1L );
 
         mockMvc.perform( post( "/freelancer/proposals/reject/1" )
+                .with( csrf() ) )
+                .andExpect( status().is3xxRedirection() )
+                .andReturn();
+    }
+
+    @Test
+    @WithMockUser( authorities = {"USER", "STAKEHOLDER"}, username = "stakeholder@test.com")
+    void acceptProposalRequiresFreelancer() throws Exception {
+
+        Mockito.doReturn( Optional.of( stakeholderUser ) ).when( userRepository ).findById( stakeholderUser.getEmail() );
+
+        mockMvc.perform( post( "/freelancer/proposals/accept/1" )
+                         .with( csrf() ) )
+                .andExpect( status().isForbidden() )
+                .andReturn();
+    }
+
+    @Test
+    @WithMockUser( authorities = {"USER", "FREELANCER"}, username = "freelancer@test.com")
+    void acceptProposal() throws Exception {
+
+        var proposal = new Proposal();
+
+        Mockito.doReturn( Optional.of( freelancerUser ) ).when( userRepository ).findById( freelancerUser.getEmail() );
+        Mockito.doReturn( proposal ).when( proposalService ).findProposalFor( (Freelancer) freelancerUser.getType(), 1L );
+
+        mockMvc.perform( post( "/freelancer/proposals/accept/1" )
+                .with( csrf() ) )
+                .andExpect( status().is3xxRedirection() )
+                .andReturn();
+
+        Mockito.verify( proposalService, Mockito.times( 1 ) ).setStatus( proposal, Status.ACCEPTED );
+    }
+
+    @Test
+    @WithMockUser( authorities = {"USER", "FREELANCER"}, username = "freelancer@test.com")
+    void acceptProposalInvalidTransition() throws Exception {
+
+        var proposal = new Proposal();
+
+        Mockito.doReturn( Optional.of( freelancerUser ) ).when( userRepository ).findById( freelancerUser.getEmail() );
+        Mockito.doReturn( proposal ).when( proposalService ).findProposalFor( (Freelancer) freelancerUser.getType(), 1L );
+        Mockito.doThrow( InvalidTransitionException.class ).when( proposalService ).setStatus( proposal, Status.ACCEPTED );
+
+        mockMvc.perform( post( "/freelancer/proposals/accept/1" )
+                .with( csrf() ) )
+                .andExpect( status().is3xxRedirection() )
+                .andReturn();
+
+    }
+
+
+    @Test
+    @WithMockUser( authorities = {"USER", "FREELANCER"}, username = "freelancer@test.com")
+    void acceptProposalNotFound() throws Exception {
+
+        Mockito.doReturn( Optional.of( freelancerUser ) ).when( userRepository ).findById( freelancerUser.getEmail() );
+        Mockito.doThrow( ProposalNotAllowedException.class ).when( proposalService ).findProposalFor( (Freelancer) freelancerUser.getType(), 1L );
+
+        mockMvc.perform( post( "/freelancer/proposals/accept/1" )
                 .with( csrf() ) )
                 .andExpect( status().is3xxRedirection() )
                 .andReturn();
