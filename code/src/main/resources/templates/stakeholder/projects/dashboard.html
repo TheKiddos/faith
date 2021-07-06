@@ -61,7 +61,7 @@
                 <form th:if="${freelancer.projectProposalAmount} == 0" role="form" class="form send-proposal-form" method="post" th:action="@{/stakeholder/propose}" th:method="post">
                     <div class="form-outline mb-4 mx-auto form-white" style="max-width: 18rem">
                         <i class="fas fa-money-bill trailing"></i>
-                        <input class="form-control pe-5" min="10" value="10.0" type="number" name="amount" th:id="'amount' + ${iStat.count}">
+                        <input class="form-control pe-5" min="10" value="10.0" type="number" name="amount" th:id="'amount-' + ${freelancer.id}">
                         <label class="form-label" th:for="'amount' + ${iStat.count}">Amount</label>
                     </div>
 

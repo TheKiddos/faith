@@ -27,6 +27,7 @@ public final class Utils {
     public static final String PUBLIC_PROJECTS_PAGE = SITE_ROOT + "projects";
     public static final String PUBLIC_PROJECT_DETAILS_PAGE_PREFIX = PUBLIC_PROJECTS_PAGE + "/";
     public static final String PROJECT_DASHBOARD_PAGE_PREFIX = "http://localhost:8080/stakeholder/my-projects/";
+    public static final String MY_PROPOSALS_PAGE = FREELANCER_ROOT + "/proposals";
 
     public static String toJson( Object object ) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
