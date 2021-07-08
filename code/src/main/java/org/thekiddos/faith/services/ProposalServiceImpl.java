@@ -96,4 +96,10 @@ public class ProposalServiceImpl implements ProposalService {
         proposal.setStatus( status );
         proposalRepository.save( proposal );
     }
+
+    @Override
+    public Proposal findFreelancerAcceptedProposalFor( Project project ) throws ProposalNotFoundException {
+        return findByProject( project ).stream().filter( proposal -> proposal.getStatus().equals( Status.ACCEPTED ) )
+                .findAny().orElseThrow( ProposalNotFoundException::new );
+    }
 }

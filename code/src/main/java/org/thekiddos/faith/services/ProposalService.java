@@ -23,4 +23,6 @@ public interface ProposalService  {
     Proposal findProposalFor( Freelancer freelancer, long proposalId ) throws ProposalNotFoundException;
 
     void setStatus( Proposal proposal, Status status ) throws InvalidTransitionException;
+
+    Proposal findFreelancerAcceptedProposalFor( Project project ) throws ProposalNotFoundException;
 }

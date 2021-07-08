@@ -428,6 +428,52 @@ public class ProposalTest {
     }
 
     @Test
+    void findFreelancerAcceptedProposalFor() {
+        // Since method is simple we will test all cases here
+        double amount = 10.;
+        ProposalDto dto = ProposalDto.builder()
+                .amount( amount )
+                .freelancerId( this.freelancer.getId() )
+                .projectId( this.project.getId() )
+                .build();
+        proposalService.sendProposal( dto );
+
+        var freelancer2 = getTestUser();
+        freelancer2.setEmail( "freelancer2@test.com" );
+        freelancer2.setNickname( "freelancer2" );
+        freelancer2 = userRepository.save( freelancer2 );
+        FreelancerDto freelancerDto = FreelancerDto.builder()
+                .summary( "Hehhehe" )
+                .available( true )
+                .skills( "c++\nsuck" )
+                .build();
+
+        freelancerService.updateProfile( freelancer2, freelancerDto );
+
+        dto.setFreelancerId( freelancer2.getType().getId() );
+        proposalService.sendProposal( dto );
+
+        var project2 = projectService.createProjectFor( this.project.getOwner(), getTestProjectDto() );
+        dto.setProjectId( project2.getId() );
+        proposalService.sendProposal( dto );
+
+        var proposals = proposalService.findByFreelancer( (Freelancer) freelancer2.getType() );
+
+        // Accept One of the proposals
+        var acceptedProposal = proposals.get( 0 );
+        var pendingProposal = proposals.get( 1 );
+        proposalService.setStatus( acceptedProposal, Status.ACCEPTED );
+        proposals = proposalService.findByFreelancer( (Freelancer) freelancer2.getType() );
+
+        // Normal Case Check For Actual Accepted Proposal
+        var proposal = proposalService.findFreelancerAcceptedProposalFor( acceptedProposal.getProject() );
+        assertEquals( (Freelancer) freelancer2.getType(), proposal.getFreelancer() );
+
+        // The second project still wasn't accepted
+        assertThrows( ProposalNotFoundException.class, () -> proposalService.findFreelancerAcceptedProposalFor( pendingProposal.getProject() ) );
+    }
+
+    @Test
     void setStatus() {
         double amount = 10.;
         ProposalDto dto = ProposalDto.builder()

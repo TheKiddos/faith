@@ -14,6 +14,8 @@ Feature: Proposal Feature
     Then proposal status is changed to accepted
     And stakeholder is informed by email that proposal was accepted
 
+  # TODO: Stakeholder checks dashboard of a project that has a freelancer
+
   Scenario: Freelancer Rejects Proposal
     Given Proposal Freelancer logs in
     And freelancer visits my proposals page

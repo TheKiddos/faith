@@ -12,10 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
 import org.thekiddos.faith.dtos.ProjectDto;
 import org.thekiddos.faith.exceptions.ProjectNotFoundException;
+import org.thekiddos.faith.exceptions.ProposalNotFoundException;
+import org.thekiddos.faith.models.Project;
 import org.thekiddos.faith.models.Stakeholder;
 import org.thekiddos.faith.models.User;
 import org.thekiddos.faith.services.FreelancerService;
 import org.thekiddos.faith.services.ProjectService;
+import org.thekiddos.faith.services.ProposalService;
 import org.thekiddos.faith.services.UserService;
 
 import javax.validation.Valid;
@@ -27,12 +30,14 @@ public class StakeholderController {
     private final ProjectService projectService;
     private final UserService userService;
     private final FreelancerService freelancerService;
+    private final ProposalService proposalService;
 
     @Autowired
-    public StakeholderController( ProjectService projectService, UserService userService, FreelancerService freelancerService ) {
+    public StakeholderController( ProjectService projectService, UserService userService, FreelancerService freelancerService, ProposalService proposalService ) {
         this.projectService = projectService;
         this.userService = userService;
         this.freelancerService = freelancerService;
+        this.proposalService = proposalService;
     }
 
     @GetMapping( value = "/my-projects" )
@@ -64,6 +69,7 @@ public class StakeholderController {
     public String getProjectDashboard( Model model, Principal principal, @PathVariable Long id ) {
         User user = (User) userService.loadUserByUsername( principal.getName() );
         ProjectDto projectDto;
+        Project project;
         try {
             projectDto = projectService.findByIdForOwnerDto( (Stakeholder) user.getType(), id );
         }
@@ -71,7 +77,16 @@ public class StakeholderController {
             throw new ResponseStatusException( HttpStatus.NOT_FOUND, e.getMessage(), e );
         }
         model.addAttribute( "project", projectDto );
-        model.addAttribute( "freelancers", freelancerService.getAvailableFreelancersDto( projectService.findById( id ) ) );
+
+        project = projectService.findById( id );
+        try {
+            var proposal = proposalService.findFreelancerAcceptedProposalFor( project );
+            model.addAttribute( "proposal", proposal );
+        }
+        catch ( ProposalNotFoundException e ) {
+            model.addAttribute( "freelancers", freelancerService.getAvailableFreelancersDto( project ) );
+        }
+
         return "stakeholder/projects/dashboard";
     }
 }
