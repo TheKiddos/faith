@@ -84,6 +84,7 @@ public class StakeholderController {
             model.addAttribute( "proposal", proposal );
         }
         catch ( ProposalNotFoundException e ) {
+            model.addAttribute( "proposal", null );
             model.addAttribute( "freelancers", freelancerService.getAvailableFreelancersDto( project ) );
         }
 
