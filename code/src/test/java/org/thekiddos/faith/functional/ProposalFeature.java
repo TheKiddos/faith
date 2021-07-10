@@ -172,7 +172,7 @@ public class ProposalFeature {
 
         var email = emails.get( 0 );
         assertEquals( stakeholder.getEmail(), email.getTo() );
-        assertEquals( EmailSubjectConstants.PROPOSAL_ACCEPTED, email.getSubject() );
+        assertEquals( EmailSubjectConstants.PROPOSAL_STATUS_CHANGED, email.getSubject() );
     }
 
     @Then( "proposal status is changed to rejected" )
@@ -189,6 +189,6 @@ public class ProposalFeature {
 
         var email = emails.get( 0 );
         assertEquals( stakeholder.getEmail(), email.getTo() );
-        assertEquals( EmailSubjectConstants.PROPOSAL_REJECTED, email.getSubject() );
+        assertEquals( EmailSubjectConstants.PROPOSAL_STATUS_CHANGED, email.getSubject() );
     }
 }

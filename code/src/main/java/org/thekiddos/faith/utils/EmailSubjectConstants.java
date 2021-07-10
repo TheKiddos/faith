@@ -10,6 +10,6 @@ public final class EmailSubjectConstants {
     public static final String PASSWORD_RESET = "Password Reset Request";
     public static final String NEW_BID = "New Bid On Your Project";
     public static final String NEW_PROPOSAL = "New Proposal";
-    public static final String PROPOSAL_ACCEPTED = "Proposal Accepted";
-    public static final String PROPOSAL_REJECTED = "Proposal Rejected";
+    public static final String PROPOSAL_STATUS_CHANGED = "Proposal Status Changed";
+
 }

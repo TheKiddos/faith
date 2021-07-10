@@ -43,6 +43,7 @@ public class ProposalTest {
     private EmailService emailService;
     
     private Project project;
+    private User stakeholderUser;
     private User freelancerUser;
     private Freelancer freelancer;
     
@@ -84,6 +85,7 @@ public class ProposalTest {
                 .firstName( "Test" )
                 .lastName( "aaa" )
                 .build() );
+        this.stakeholderUser = user;
         Stakeholder stakeholder = (Stakeholder) user.getType();
 
         this.project = projectService.createProjectFor( stakeholder, projectDto );
@@ -490,10 +492,14 @@ public class ProposalTest {
         proposal = proposalRepository.findById( proposal.getId() ).orElse( null );
         assert proposal != null;
         assertEquals( Status.REJECTED, proposal.getStatus() );
+        Mockito.verify( emailService, Mockito.times( 1 ) )
+                .sendTemplateMail( eq( List.of( this.stakeholderUser.getEmail() ) ), anyString(), eq( EmailSubjectConstants.PROPOSAL_STATUS_CHANGED ), eq( EmailTemplatesConstants.PROPOSAL_STATUS_TEMPLATE ), any() );
 
         // Move from non-new status to something else is not allowed
         Proposal finalProposal = proposal;
         assertThrows( InvalidTransitionException.class, () -> proposalService.setStatus( finalProposal, Status.NEW ) );
+        Mockito.verify( emailService, Mockito.times( 1 ) )
+                .sendTemplateMail( eq( List.of( this.stakeholderUser.getEmail() ) ), anyString(), eq( EmailSubjectConstants.PROPOSAL_STATUS_CHANGED ), eq( EmailTemplatesConstants.PROPOSAL_STATUS_TEMPLATE ), any() );
 
         // Make sure status not changed
         proposal = proposalRepository.findById( proposal.getId() ).orElse( null );

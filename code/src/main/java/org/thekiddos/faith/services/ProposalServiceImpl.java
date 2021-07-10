@@ -95,6 +95,12 @@ public class ProposalServiceImpl implements ProposalService {
 
         proposal.setStatus( status );
         proposalRepository.save( proposal );
+
+        var toEmail = proposal.getProject().getOwner().getUser().getEmail();
+
+        Context context = new Context();
+        context.setVariable( "proposal", proposal );
+        emailService.sendTemplateMail( List.of( toEmail ), "faith@admin.com", EmailSubjectConstants.PROPOSAL_STATUS_CHANGED, EmailTemplatesConstants.PROPOSAL_STATUS_TEMPLATE, context );
     }
 
     @Override
