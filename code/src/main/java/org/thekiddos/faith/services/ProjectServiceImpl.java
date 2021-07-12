@@ -62,4 +62,10 @@ public class ProjectServiceImpl implements ProjectService {
             throw new ProjectNotFoundException();
         return projectMapper.projectToProjectDto( project );
     }
+    
+    @Override
+    public void closeProject( Project project ) {
+        project.setClosed( true );
+        projectRepository.save( project );
+    }
 }

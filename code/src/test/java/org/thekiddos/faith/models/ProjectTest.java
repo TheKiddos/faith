@@ -409,4 +409,66 @@ class ProjectTest {
 
         assertThrows( ProjectNotFoundException.class, () -> projectService.findByIdForOwnerDto( stakeholder2, expectedProject.getId() ) );
     }
+    
+    @Test
+    void closeProject() {
+                ProjectDto projectDto = ProjectDto.builder()
+                .name( "new world order" )
+                .description( "Make all people slaves" )
+                .preferredBid( 200.0 )
+                .duration( 31 )
+                .minimumQualification( 100 )
+                .allowBidding( true )
+                .build();
+
+        User user = userService.createUser( UserDto.builder()
+                .email( "bhbh@gmail.com" )
+                .password( "password" )
+                .nickname( "bhbhbh" )
+                .type( "Stakeholder" )
+                .firstName( "Test" )
+                .lastName( "aaa" )
+                .build() );
+        Stakeholder stakeholder = (Stakeholder) user.getType();
+
+        Project project = projectService.createProjectFor( stakeholder, projectDto );
+        
+        assertFalse( project.isClosed() );
+        
+        projectService.closeProject( project );
+        
+        project = projectService.findById( project.getId() );
+        
+        assertTrue( project.isClosed() );
+    }
+    
+    @Test
+    void closeProjectTwice() {
+                ProjectDto projectDto = ProjectDto.builder()
+                .name( "new world order" )
+                .description( "Make all people slaves" )
+                .preferredBid( 200.0 )
+                .duration( 31 )
+                .minimumQualification( 100 )
+                .allowBidding( true )
+                .build();
+
+        User user = userService.createUser( UserDto.builder()
+                .email( "bhbh@gmail.com" )
+                .password( "password" )
+                .nickname( "bhbhbh" )
+                .type( "Stakeholder" )
+                .firstName( "Test" )
+                .lastName( "aaa" )
+                .build() );
+        Stakeholder stakeholder = (Stakeholder) user.getType();
+
+        Project project = projectService.createProjectFor( stakeholder, projectDto );
+        projectService.closeProject( project );
+        project = projectService.findById( project.getId() );
+
+        projectService.closeProject( project );
+        project = projectService.findById( project.getId() );
+        assertTrue( project.isClosed() );
+    }
 }
