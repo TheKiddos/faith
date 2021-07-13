@@ -1,5 +1,6 @@
 package org.thekiddos.faith.controllers;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,7 @@ import org.thekiddos.faith.services.UserService;
 import javax.validation.Valid;
 import java.security.Principal;
 
+@Slf4j
 @Controller
 @RequestMapping( value = "stakeholder" )
 public class StakeholderController {
@@ -89,5 +91,24 @@ public class StakeholderController {
         }
 
         return "stakeholder/projects/dashboard";
+    }
+
+    @PostMapping( value = "/my-projects/close/{id}" )
+    public String closeProject( Principal principal, @PathVariable Long id ) {
+        User user = (User) userService.loadUserByUsername( principal.getName() );
+        Project project;
+        try {
+            project = projectService.findById( id );
+            // TODO: move logic to service maybe create findByOwnerAndId method
+            if ( !project.getOwner().getUser().equals( user ) )
+                throw new ProjectNotFoundException();
+        }
+        catch ( ProjectNotFoundException e ) {
+            throw new ResponseStatusException( HttpStatus.NOT_FOUND, e.getMessage(), e );
+        }
+
+        projectService.closeProject( project );
+
+        return "redirect:/stakeholder/my-projects/" + id;
     }
 }
