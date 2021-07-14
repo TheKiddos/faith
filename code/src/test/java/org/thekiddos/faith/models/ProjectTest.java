@@ -78,6 +78,7 @@ class ProjectTest {
         assertEquals( projectDto.getMinimumQualification(), project.getMinimumQualification() );
         assertEquals( projectDto.isAllowBidding(), project.isAllowBidding() );
         assertEquals( stakeholder, project.getOwner() );
+        assertFalse( project.isClosed() );
 
         project = projectRepository.findById( project.getId() ).orElse( null );
         assertNotNull( project );

@@ -11,6 +11,8 @@ import org.thekiddos.faith.models.Project;
 public interface ProjectMapper {
     ProjectMapper INSTANCE = Mappers.getMapper( ProjectMapper.class );
 
+    @Mapping( target = "owner", ignore = true )
+    @Mapping( target = "closed", ignore = true )
     @Mapping( target = "id", ignore = true )
     @Mapping( target = "duration", expression = "java( java.time.Duration.ofDays( projectDto.getDuration() ) )" )
     Project projectDtoToProject( ProjectDto projectDto );
