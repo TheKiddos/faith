@@ -17,10 +17,12 @@
     </section>
     <section data-aos="fade-up">
         <div class="card">
-            <div class="card-header">
+            <div class="card-header text-center">
                 <div th:inline="text"><i class="fas fa-clock mx-2"></i>[[${project.duration} + ' Day(s)']]</div>
                 <div th:inline="text" id="preferred-bid" th:data-preferred-bid="${project.preferredBid}"><i class="fas fa-money-bill mx-2"></i>[[${project.preferredBid}]]</div>
-                <a class="btn btn-rounded btn-outline-white" href="#" th:if="${project.closed == false}" th:href="@{'/stakeholder/my-projects/close/' + ${project.id}}">Close</a>
+                <form th:if="${project.closed == false}" th:method="post" th:action="@{'/stakeholder/my-projects/close/' + ${project.id}}">
+                    <button class="btn btn-rounded btn-outline-info" id="close-project-btn" type="submit">Close</button>
+                </form>
                 <span th:unless="${project.closed == false}">Closed</span>
             </div>
             <div class="card-body text-center">

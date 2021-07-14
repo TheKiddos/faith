@@ -129,6 +129,7 @@ public class ProposalFeature {
         var email = emails.get( 0 );
         assertEquals( freelancer.getEmail(), email.getTo() );
         assertEquals( EmailSubjectConstants.NEW_PROPOSAL, email.getSubject() );
+        webDriver.close();
     }
 
     @Given( "Proposal Freelancer logs in" )
@@ -173,6 +174,7 @@ public class ProposalFeature {
         var email = emails.get( 0 );
         assertEquals( stakeholder.getEmail(), email.getTo() );
         assertEquals( EmailSubjectConstants.PROPOSAL_STATUS_CHANGED, email.getSubject() );
+        webDriver.close();
     }
 
     @Then( "proposal status is changed to rejected" )
@@ -190,5 +192,6 @@ public class ProposalFeature {
         var email = emails.get( 0 );
         assertEquals( stakeholder.getEmail(), email.getTo() );
         assertEquals( EmailSubjectConstants.PROPOSAL_STATUS_CHANGED, email.getSubject() );
+        webDriver.close();
     }
 }
