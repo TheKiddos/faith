@@ -17,9 +17,13 @@
     </section>
     <section data-aos="fade-up">
         <div class="card">
-            <div class="card-header">
+            <div class="card-header text-center">
                 <div th:inline="text"><i class="fas fa-clock mx-2"></i>[[${project.duration} + ' Day(s)']]</div>
                 <div th:inline="text" id="preferred-bid" th:data-preferred-bid="${project.preferredBid}"><i class="fas fa-money-bill mx-2"></i>[[${project.preferredBid}]]</div>
+                <form th:if="${project.closed == false}" th:method="post" th:action="@{'/stakeholder/my-projects/close/' + ${project.id}}">
+                    <button class="btn btn-rounded btn-outline-info" id="close-project-btn" type="submit">Close</button>
+                </form>
+                <span th:unless="${project.closed == false}">Closed</span>
             </div>
             <div class="card-body text-center">
                 <h5 class="card-title" th:text="${project.name}">Name</h5>
@@ -33,7 +37,7 @@
             </div>
         </div>
     </section>
-    <section th:if="proposal != null">
+    <section th:if="${proposal != null}">
         <div class="card mx-auto text-white bg-success mb-3 text-center" data-aos="fade-up-right">
             <div class="card-body">
                 <h5 class="card-title" th:text="${proposal.freelancer.user.firstName} + ${proposal.freelancer.user.lastName}">Freelancer Name</h5>
@@ -45,7 +49,7 @@
             </div>
         </div>
     </section>
-    <section th:unless="proposal != null" class="mt-3 freelancers row">
+    <section th:if="${proposal == null && project.closed == false}" class="mt-3 freelancers row">
         <div th:each="freelancer, iStat : ${freelancers}" class="card mx-auto text-white bg-success mb-3 text-center col-md-3" data-aos="fade-up-right" th:data-aos="${iStat.even}? 'fade-up-right' : 'fade-up-left'">
             <div class="card-header"><span class="badge bg-light text-dark rounded-pill bid-value" th:text="${freelancer.projectBidAmount}">200</span></div>
             <div class="card-body">

@@ -26,4 +26,5 @@ public class ProjectDto {
     private double minimumQualification;
     @NotNull
     private boolean allowBidding;
+    private boolean closed;
 }
