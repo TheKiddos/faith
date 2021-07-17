@@ -4,6 +4,11 @@
       "name": "selenium.edge.driver.path",
       "type": "java.lang.String",
       "description": "Full path to microsoft edge driver for selenium."
+    },
+    {
+      "name": "starat-token",
+      "type": "java.lang.String",
+      "description": "Token Key For StaRat API."
     }
   ]
 }
