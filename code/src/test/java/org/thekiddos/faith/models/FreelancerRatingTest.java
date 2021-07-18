@@ -18,6 +18,8 @@ import org.thekiddos.faith.repositories.UserRepository;
 import org.thekiddos.faith.services.FreelancerRatingService;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.notNull;
 
@@ -77,7 +79,7 @@ public class FreelancerRatingTest {
         final var responseSpecMock = Mockito.mock(WebClient.ResponseSpec.class);
 
         Mockito.when( webClient.get() ).thenReturn( uriSpecMock );
-        Mockito.when( uriSpecMock.uri( ArgumentMatchers.<String>notNull() ) ).thenReturn( headersSpecMock );
+        Mockito.when( uriSpecMock.uri( ArgumentMatchers.any( URI.class ) ) ).thenReturn( headersSpecMock );
         Mockito.when( headersSpecMock.header( notNull(), notNull() ) ).thenReturn( headersSpecMock );
         Mockito.when( headersSpecMock.accept( notNull() ) ).thenReturn( headersSpecMock );
         Mockito.when( headersSpecMock.retrieve() ).thenReturn( responseSpecMock );
