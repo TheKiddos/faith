@@ -34,6 +34,7 @@ public class FreelancerRatingTest {
     private WebClient webClient;
 
     private User freelancerUser;
+    private FreelancerRating freelancerRating;
 
     @Autowired
     public FreelancerRatingTest( FreelancerRatingService freelancerRatingService, UserRepository userRepository, FreelancerRatingRepository freelancerRatingRepository ) {
@@ -47,6 +48,12 @@ public class FreelancerRatingTest {
         freelancerRatingRepository.deleteAll();
         userRepository.deleteAll();
         this.freelancerUser = userRepository.save( getTestUser() );
+        
+        FreelancerRating freelancerRating = new FreelancerRating();
+        freelancerRating.setId( 1L );
+        freelancerRating.setFreelancer( (Freelancer) freelancerUser.getType() );
+        this.freelancerRating =freelancerRating;
+        // We save in test
     }
 
     /**
@@ -63,10 +70,6 @@ public class FreelancerRatingTest {
      */
     @Test
     void getRating() {
-        // TODO: add more fields like url maybe?
-        FreelancerRating freelancerRating = new FreelancerRating();
-        freelancerRating.setId( 1L );
-        freelancerRating.setFreelancer( (Freelancer) freelancerUser.getType() );
         freelancerRatingRepository.save( freelancerRating );
 
         Rateable rateable = new Rateable();
@@ -74,11 +77,33 @@ public class FreelancerRatingTest {
         rateable.setAverageRating( "2.0" );
 
         // TODO: we can replace this with MockWebServer
-        var uriSpecMock  = Mockito.mock(WebClient.RequestHeadersUriSpec.class);
-        final var headersSpecMock = Mockito.mock(WebClient.RequestHeadersSpec.class);
-        final var responseSpecMock = Mockito.mock(WebClient.ResponseSpec.class);
+        var uriSpecMock  = Mockito.mock( WebClient.RequestHeadersUriSpec.class );
+        final var headersSpecMock = Mockito.mock( WebClient.RequestHeadersSpec.class );
+        final var responseSpecMock = Mockito.mock( WebClient.ResponseSpec.class );
 
         Mockito.when( webClient.get() ).thenReturn( uriSpecMock );
+        Mockito.when( uriSpecMock.uri( ArgumentMatchers.any( URI.class ) ) ).thenReturn( headersSpecMock );
+        Mockito.when( headersSpecMock.header( notNull(), notNull() ) ).thenReturn( headersSpecMock );
+        Mockito.when( headersSpecMock.accept( notNull() ) ).thenReturn( headersSpecMock );
+        Mockito.when( headersSpecMock.retrieve() ).thenReturn( responseSpecMock );
+        Mockito.when( responseSpecMock.bodyToMono( ArgumentMatchers.<Class<Rateable>>notNull() ) )
+                .thenReturn( Mono.just( rateable ) );
+
+        assertEquals( 2.0, freelancerRatingService.getRating( (Freelancer) freelancerUser.getType() ) );
+    }
+    
+    /**
+     * Test that we can rate a freelancer
+     */
+    @Test
+    void rate() {
+        freelancerRatingRepository.save( freelancerRating );
+
+        var uriSpecMock  = Mockito.mock( WebClient.RequestHeadersUriSpec.class );
+        final var headersSpecMock = Mockito.mock( WebClient.RequestHeadersSpec.class );
+        final var responseSpecMock = Mockito.mock( WebClient.ResponseSpec.class );
+
+        Mockito.when( webClient.post() ).thenReturn( uriSpecMock );
         Mockito.when( uriSpecMock.uri( ArgumentMatchers.any( URI.class ) ) ).thenReturn( headersSpecMock );
         Mockito.when( headersSpecMock.header( notNull(), notNull() ) ).thenReturn( headersSpecMock );
         Mockito.when( headersSpecMock.accept( notNull() ) ).thenReturn( headersSpecMock );
