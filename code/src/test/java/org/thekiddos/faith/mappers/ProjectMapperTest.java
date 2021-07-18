@@ -31,6 +31,7 @@ class ProjectMapperTest {
         assertEquals( Duration.ofDays( projectDto.getDuration() ), project.getDuration() );
         assertEquals( projectDto.getMinimumQualification(), project.getMinimumQualification() );
         assertEquals( projectDto.isAllowBidding(), project.isAllowBidding() );
+        assertFalse( project.isClosed() );
     }
 
     @Test
@@ -62,6 +63,7 @@ class ProjectMapperTest {
         assertEquals( project.getDuration(), Duration.ofDays( projectDto.getDuration() ) );
         assertEquals( project.getMinimumQualification(), projectDto.getMinimumQualification() );
         assertEquals( project.isAllowBidding(), projectDto.isAllowBidding() );
+        assertEquals( project.isClosed(), projectDto.isClosed() );
     }
 
     @Test

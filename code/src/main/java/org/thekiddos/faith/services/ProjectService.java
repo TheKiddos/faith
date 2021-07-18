@@ -32,4 +32,6 @@ public interface ProjectService {
     List<ProjectDto> findByOwnerDto( Stakeholder owner );
 
     ProjectDto findByIdForOwnerDto( Stakeholder owner, long id ) throws ProjectNotFoundException;
+    
+    void closeProject( Project project );
 }

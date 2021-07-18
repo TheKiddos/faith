@@ -13,10 +13,7 @@ import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.exceptions.ProjectNotFoundException;
 import org.thekiddos.faith.exceptions.ProposalNotFoundException;
 import org.thekiddos.faith.mappers.UserMapper;
-import org.thekiddos.faith.models.Project;
-import org.thekiddos.faith.models.Proposal;
-import org.thekiddos.faith.models.Stakeholder;
-import org.thekiddos.faith.models.User;
+import org.thekiddos.faith.models.*;
 import org.thekiddos.faith.repositories.UserRepository;
 import org.thekiddos.faith.services.FreelancerService;
 import org.thekiddos.faith.services.ProjectService;
@@ -172,9 +169,14 @@ class StakeholderControllerTest {
         ProjectDto projectDto = new ProjectDto();
         projectDto.setId( id );
 
+        var proposal = new Proposal();
+        var otherUser = getTestUser();
+        otherUser.setType( new Freelancer() );
+        proposal.setFreelancer( (Freelancer) otherUser.getType() );
+
         Mockito.doReturn( projectDto ).when( projectService ).findByIdForOwnerDto( (Stakeholder) user.getType(), id );
         Mockito.doReturn( project ).when( projectService ).findById( id );
-        Mockito.doReturn( new Proposal() ).when( proposalService ).findFreelancerAcceptedProposalFor( project );
+        Mockito.doReturn( proposal ).when( proposalService ).findFreelancerAcceptedProposalFor( project );
         Mockito.doReturn( List.of() ).when( freelancerService ).getAvailableFreelancersDto( project );
 
         mockMvc.perform( get(  "/stakeholder/my-projects/" + id ) )
@@ -196,6 +198,64 @@ class StakeholderControllerTest {
                 .andExpect( status().isNotFound() );
 
         Mockito.verify( freelancerService, Mockito.times( 0 ) ).getAvailableFreelancersDto( any() );
+    }
+
+    @Test
+    @WithMockUser( authorities = {"USER", "STAKEHOLDER"}, username = "stakeholder@test.com")
+    void closeProject() throws Exception {
+        User user = getTestUser();
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findById( user.getEmail() );
+
+        long id = 1L;
+        Project project = new Project();
+        project.setId( id );
+        project.setOwner( (Stakeholder) user.getType() );
+
+        Mockito.doReturn( project ).when( projectService ).findById( id );
+
+        mockMvc.perform( post(  "/stakeholder/my-projects/close/" + id ).with( csrf() ) )
+                .andExpect( status().is3xxRedirection() );
+
+        Mockito.verify( projectService, Mockito.times( 1 ) ).closeProject( project );
+    }
+
+    @Test
+    @WithMockUser( authorities = {"USER", "STAKEHOLDER"}, username = "stakeholder@test.com")
+    void closeProjectNotFound() throws Exception {
+        User user = getTestUser();
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findById( user.getEmail() );
+
+        Mockito.doThrow( ProjectNotFoundException.class ).when( projectService ).findById( anyLong() );
+
+        mockMvc.perform( post(  "/stakeholder/my-projects/close/" + 1 ).with( csrf() ) )
+                .andExpect( status().isNotFound() );
+
+        Mockito.verify( projectService, Mockito.times( 0 ) ).closeProject( any() );
+    }
+
+    @Test
+    @WithMockUser( authorities = {"USER", "STAKEHOLDER"}, username = "stakeholder@test.com")
+    void closeProjectNotOwner() throws Exception {
+        User user = getTestUser();
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findById( user.getEmail() );
+
+        long id = 1L;
+        Project project = new Project();
+        project.setId( id );
+
+        User otherUser = getTestUser();
+        otherUser.setEmail( "other@stakeholder.com" );
+        otherUser.setNickname( "abh" );
+        var owner = new Stakeholder();
+        otherUser.setType( owner );
+        project.setOwner( owner );
+
+        Mockito.doReturn( project ).when( projectService ).findById( id );
+
+        mockMvc.perform( post(  "/stakeholder/my-projects/close/" + id ).with( csrf() ) )
+                .andExpect( status().isNotFound() );
+
+        Mockito.verify( projectService, Mockito.times( 0 ) ).closeProject( any() );
     }
 
     private User getTestUser() {

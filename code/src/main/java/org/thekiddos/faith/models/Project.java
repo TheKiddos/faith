@@ -18,6 +18,7 @@ public class Project {
     private Duration duration;
     private double minimumQualification;
     private boolean allowBidding;
+    private boolean closed = false;
 
     @ManyToOne( optional = false ) @NotNull
     private Stakeholder owner;
