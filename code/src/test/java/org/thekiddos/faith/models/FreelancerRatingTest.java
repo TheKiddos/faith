@@ -99,19 +99,24 @@ public class FreelancerRatingTest {
     void rate() {
         freelancerRatingRepository.save( freelancerRating );
 
-        var uriSpecMock  = Mockito.mock( WebClient.RequestHeadersUriSpec.class );
-        final var headersSpecMock = Mockito.mock( WebClient.RequestHeadersSpec.class );
+        var uriSpecMock = Mockito.mock( WebClient.RequestBodyUriSpec.class );
+        final var headersSpecMock = Mockito.mock( WebClient.RequestBodySpec.class );
+        final var requestHeadersSpecMock = Mockito.mock( WebClient.RequestHeadersSpec.class );
         final var responseSpecMock = Mockito.mock( WebClient.ResponseSpec.class );
 
         Mockito.when( webClient.post() ).thenReturn( uriSpecMock );
         Mockito.when( uriSpecMock.uri( ArgumentMatchers.any( URI.class ) ) ).thenReturn( headersSpecMock );
         Mockito.when( headersSpecMock.header( notNull(), notNull() ) ).thenReturn( headersSpecMock );
+        Mockito.when( headersSpecMock.contentType( notNull() ) ).thenReturn( headersSpecMock );
         Mockito.when( headersSpecMock.accept( notNull() ) ).thenReturn( headersSpecMock );
-        Mockito.when( headersSpecMock.retrieve() ).thenReturn( responseSpecMock );
-        Mockito.when( responseSpecMock.bodyToMono( ArgumentMatchers.<Class<Rateable>>notNull() ) )
-                .thenReturn( Mono.just( rateable ) );
+        Mockito.when( headersSpecMock.body( notNull() ) ).thenReturn( requestHeadersSpecMock );
+        Mockito.when( requestHeadersSpecMock.retrieve() ).thenReturn( responseSpecMock );
+        Mockito.when( responseSpecMock.bodyToMono( ArgumentMatchers.<Class<String>>notNull() ) )
+                .thenReturn( Mono.just( "" ) );
 
-        assertEquals( 2.0, freelancerRatingService.getRating( (Freelancer) freelancerUser.getType() ) );
+        freelancerRatingService.rate( (Freelancer) freelancerUser.getType(), 2 );
+
+        Mockito.verify( webClient, Mockito.times( 1 ) ).post();
     }
 
     // TODO: test getRating404

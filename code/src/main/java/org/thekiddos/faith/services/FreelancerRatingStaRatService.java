@@ -5,6 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.thekiddos.faith.models.Freelancer;
 import org.thekiddos.faith.models.api.Rateable;
@@ -18,11 +21,11 @@ import java.util.Objects;
 public class FreelancerRatingStaRatService implements FreelancerRatingService {
     private final FreelancerRatingRepository freelancerRatingRepository;
     private final WebClient webClient;
-    
+
     private static final int MIN_RATING = 1;
     private static final int MAX_RATING = 10;
-    
-    @Value( "${starat-token}" )
+
+    @Value( "${starat-token:Token}" )
     private String authHeader;
 
     @Autowired
@@ -35,9 +38,9 @@ public class FreelancerRatingStaRatService implements FreelancerRatingService {
     @Override
     public double getRating( Freelancer freelancer ) {
         var id = getFreelancerRatingId( freelancer );
-        if ( id == 0 )
+        if ( id == 0L )
             return 0;
-            
+
         Rateable rateable = webClient.get()
                 .uri( new URI( StaRatURL.getRateableURL( id ) ) )
                 .header( "Authorization", authHeader )
@@ -48,32 +51,33 @@ public class FreelancerRatingStaRatService implements FreelancerRatingService {
 
         return Double.parseDouble( Objects.requireNonNull( rateable ).getAverageRating() );
     }
-    
-    private int getFreelancerRatingId( Freelancer freelancer ) {
+
+    private Long getFreelancerRatingId( Freelancer freelancer ) {
         var freelancerRating = freelancerRatingRepository.findByFreelancer( freelancer ).orElse( null );
         if ( freelancerRating == null )
-            return 0;
-        
+            return 0L;
+
         return freelancerRating.getId();
     }
-    
+
+    @SneakyThrows
     @Override
     public void rate( Freelancer freelancer, int stars ) {
         var id = getFreelancerRatingId( freelancer );
         stars = Math.min( MAX_RATING, Math.max( stars, MIN_RATING ) );
-        
+
         MultiValueMap<String, String> bodyValues = new LinkedMultiValueMap<>();
         bodyValues.add( "rateable", "value" );
         bodyValues.add( "stars", String.valueOf( stars ) );
-        
-        client.post()
-            .uri( new URI( StaRatURL.RATINGS_URL ) )
-            .header( "Authorization", authHeader )
-            .contentType( MediaType.APPLICATION_FORM_URLENCODED )
-            .accept( MediaType.APPLICATION_JSON )
-            .body( BodyInserters.fromFormData( bodyValues ) )
-            .retrieve()
-            .bodyToMono( String.class )
-            .block();
+
+        webClient.post()
+                .uri( new URI( StaRatURL.RATINGS_URL ) )
+                .header( "Authorization", authHeader )
+                .contentType( MediaType.APPLICATION_FORM_URLENCODED )
+                .accept( MediaType.APPLICATION_JSON )
+                .body( BodyInserters.fromFormData( bodyValues ) )
+                .retrieve()
+                .bodyToMono( String.class )
+                .block();
     }
 }
