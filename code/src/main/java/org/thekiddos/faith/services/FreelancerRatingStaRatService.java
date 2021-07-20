@@ -10,6 +10,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.thekiddos.faith.models.Freelancer;
+import org.thekiddos.faith.models.FreelancerRating;
 import org.thekiddos.faith.models.api.Rateable;
 import org.thekiddos.faith.repositories.FreelancerRatingRepository;
 import org.thekiddos.faith.utils.StaRatURL;
@@ -64,10 +65,29 @@ public class FreelancerRatingStaRatService implements FreelancerRatingService {
     @Override
     public void rate( Freelancer freelancer, int stars ) {
         var id = getFreelancerRatingId( freelancer );
+        if ( id == 0L ) {
+            MultiValueMap<String, String> rateableBody = new LinkedMultiValueMap<>();
+            rateableBody.add( "name", freelancer.getUser().getNickname() );
+            rateableBody.add( "type", "freelancer" );
+
+            var rateable = webClient.post()
+                    .uri( new URI( StaRatURL.RATINGS_URL ) )
+                    .header( "Authorization", authHeader )
+                    .contentType( MediaType.APPLICATION_FORM_URLENCODED )
+                    .accept( MediaType.APPLICATION_JSON )
+                    .body( BodyInserters.fromFormData( rateableBody ) )
+                    .retrieve()
+                    .bodyToMono( Rateable.class )
+                    .block();
+
+            // TODO: Creating Logic should be handled by something else
+            saveRatingInfo( freelancer, rateable );
+        }
+
         stars = Math.min( MAX_RATING, Math.max( stars, MIN_RATING ) );
 
         MultiValueMap<String, String> bodyValues = new LinkedMultiValueMap<>();
-        bodyValues.add( "rateable", "value" );
+        bodyValues.add( "rateable", String.valueOf( id ) );
         bodyValues.add( "stars", String.valueOf( stars ) );
 
         webClient.post()
@@ -79,5 +99,12 @@ public class FreelancerRatingStaRatService implements FreelancerRatingService {
                 .retrieve()
                 .bodyToMono( String.class )
                 .block();
+    }
+
+    private void saveRatingInfo( Freelancer freelancer, Rateable rateable ) {
+        FreelancerRating freelancerRating = new FreelancerRating();
+        freelancerRating.setFreelancer( freelancer );
+        freelancerRating.setId( rateable.getId() );
+        freelancerRatingRepository.save( freelancerRating );
     }
 }

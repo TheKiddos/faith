@@ -91,7 +91,9 @@ public class FreelancerRatingTest {
 
         assertEquals( 2.0, freelancerRatingService.getRating( (Freelancer) freelancerUser.getType() ) );
     }
-    
+
+    // TODO: test getRating404
+
     /**
      * Test that we can rate a freelancer
      */
@@ -119,7 +121,39 @@ public class FreelancerRatingTest {
         Mockito.verify( webClient, Mockito.times( 1 ) ).post();
     }
 
-    // TODO: test getRating404
+    /**
+     * Test that we can rate a freelancer that wasn't rated before
+     */
+    @Test
+    void rateFirstTime() {
+        Rateable rateable = new Rateable();
+        rateable.setId( 1L );
+        rateable.setAverageRating( "2.0" );
+
+        var uriSpecMock = Mockito.mock( WebClient.RequestBodyUriSpec.class );
+        final var headersSpecMock = Mockito.mock( WebClient.RequestBodySpec.class );
+        final var requestHeadersSpecMock = Mockito.mock( WebClient.RequestHeadersSpec.class );
+        final var responseSpecMock = Mockito.mock( WebClient.ResponseSpec.class );
+
+        Mockito.when( webClient.post() ).thenReturn( uriSpecMock );
+        Mockito.when( uriSpecMock.uri( ArgumentMatchers.any( URI.class ) ) ).thenReturn( headersSpecMock );
+        Mockito.when( headersSpecMock.header( notNull(), notNull() ) ).thenReturn( headersSpecMock );
+        Mockito.when( headersSpecMock.contentType( notNull() ) ).thenReturn( headersSpecMock );
+        Mockito.when( headersSpecMock.accept( notNull() ) ).thenReturn( headersSpecMock );
+        Mockito.when( headersSpecMock.body( notNull() ) ).thenReturn( requestHeadersSpecMock );
+        Mockito.when( requestHeadersSpecMock.retrieve() ).thenReturn( responseSpecMock );
+        Mockito.when( responseSpecMock.bodyToMono( ArgumentMatchers.<Class<String>>notNull() ) )
+                .thenReturn( Mono.just( "" ) );
+        Mockito.when( responseSpecMock.bodyToMono( ArgumentMatchers.<Class<Rateable>>notNull() ) )
+                .thenReturn( Mono.just( rateable ) );
+
+        freelancerRatingService.rate( (Freelancer) freelancerUser.getType(), 2 );
+        assertEquals( 1, freelancerRatingRepository.findAll().size() );
+        assertEquals( freelancerUser.getType(), freelancerRatingRepository.findAll().get( 0 ).getFreelancer() );
+
+        // TODO: this is not good, but better than nothing for now.
+        Mockito.verify( webClient, Mockito.times( 2 ) ).post();
+    }
 
     // TODO: move to utils and use in all other test with defaults and option to override them
     private User getTestUser() {
