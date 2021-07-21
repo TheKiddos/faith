@@ -11,6 +11,7 @@ import org.thekiddos.faith.dtos.FreelancerDto;
 import org.thekiddos.faith.models.*;
 import org.thekiddos.faith.repositories.BidRepository;
 import org.thekiddos.faith.repositories.ProposalRepository;
+import org.thekiddos.faith.services.FreelancerRatingService;
 
 import java.util.Optional;
 import java.util.Set;
@@ -22,6 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @ExtendWith( SpringExtension.class )
 public class FreelancerMapperTest {
     private final FreelancerMapper freelancerMapper;
+
+    @MockBean
+    private FreelancerRatingService freelancerRatingService;
 
     // TODO: Implement with service instead of repo
     @MockBean
@@ -66,12 +70,17 @@ public class FreelancerMapperTest {
         user.setEmail( "hello@gmail.com" );
         freelancer.setUser( user );
 
+        Mockito.doReturn( 5.0 ).when( freelancerRatingService ).getRating( freelancer );
+
         FreelancerDto dto = freelancerMapper.toDto( freelancer );
         assertEquals( freelancer.getId(), dto.getId() );
         assertEquals( freelancer.getSummary(), dto.getSummary() );
         assertEquals( freelancer.isAvailable(), dto.isAvailable() );
         assertEquals( freelancer.getSkills(), Skill.createSkills( dto.getSkills() ) );
         assertEquals( freelancer.getUser().getEmail(), dto.getUser().getEmail() );
+        assertEquals( 5.0, dto.getRating() );
+
+        Mockito.verify( freelancerRatingService, Mockito.times( 1 ) ).getRating( freelancer );
     }
 
     @Test

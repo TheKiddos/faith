@@ -4,8 +4,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.thekiddos.faith.dtos.BidDto;
 import org.thekiddos.faith.dtos.FreelancerDto;
@@ -15,10 +17,7 @@ import org.thekiddos.faith.repositories.BidRepository;
 import org.thekiddos.faith.repositories.ProjectRepository;
 import org.thekiddos.faith.repositories.SkillRepository;
 import org.thekiddos.faith.repositories.UserRepository;
-import org.thekiddos.faith.services.BidService;
-import org.thekiddos.faith.services.FreelancerService;
-import org.thekiddos.faith.services.ProjectService;
-import org.thekiddos.faith.services.UserService;
+import org.thekiddos.faith.services.*;
 
 import java.util.List;
 import java.util.Set;
@@ -36,6 +35,9 @@ public class FreelancerTest {
     private final ProjectRepository projectRepository;
     private final BidService bidService;
     private final BidRepository bidRepository;
+
+    @MockBean
+    private FreelancerRatingService freelancerRatingService;
 
     @Autowired
     public FreelancerTest( FreelancerService freelancerService, SkillRepository skillRepository, UserService userService, UserRepository userRepository, ProjectService projectService, ProjectRepository projectRepository, BidService bidService, BidRepository bidRepository ) {
@@ -189,6 +191,48 @@ public class FreelancerTest {
         List<FreelancerDto> freelancers = freelancerService.getAvailableFreelancersDto( projectToFindFreelancersFor );
         assertEquals( 2, freelancers.size() );
         assertTrue( freelancers.stream().anyMatch( freelancerDto -> freelancerDto.getProjectBidAmount() == 100 ) );
-        assertTrue( freelancers.stream().anyMatch( freelancerDto -> freelancerDto.getProjectBidAmount() == 0  ) );
+        assertTrue( freelancers.stream().anyMatch( freelancerDto -> freelancerDto.getProjectBidAmount() == 0 ) );
+    }
+
+    @Test
+    void findFeaturedFreelancersDto() {
+        // TODO: Should limit number of freelancer to get
+
+        User freelancer = userService.createUser( UserDto.builder()
+                .email( "freelancer@gmail.com" )
+                .password( "password" )
+                .nickname( "freelancer" )
+                .type( "Freelancer" )
+                .firstName( "Test" )
+                .lastName( "aaa" )
+                .build() );
+
+        User freelancer2 = userService.createUser( UserDto.builder()
+                .email( "freelancer2@gmail.com" )
+                .password( "password" )
+                .nickname( "freelancer2" )
+                .type( "Freelancer" )
+                .firstName( "Test" )
+                .lastName( "aaa" )
+                .build() );
+
+        User freelancer3 = userService.createUser( UserDto.builder()
+                .email( "freelancer3@gmail.com" )
+                .password( "password" )
+                .nickname( "freelancer3" )
+                .type( "Freelancer" )
+                .firstName( "Test" )
+                .lastName( "aaa" )
+                .build() );
+
+        Mockito.doReturn( 2.0 ).when( freelancerRatingService ).getRating( (Freelancer) freelancer.getType() );
+        Mockito.doReturn( 5.0 ).when( freelancerRatingService ).getRating( (Freelancer) freelancer2.getType() );
+        Mockito.doReturn( 3.0 ).when( freelancerRatingService ).getRating( (Freelancer) freelancer3.getType() );
+
+        List<FreelancerDto> freelancers = freelancerService.findFeaturedFreelancersDto();
+        assertEquals( 3, freelancers.size() );
+        assertEquals( 5.0, freelancers.get( 0 ).getRating() );
+        assertEquals( 3.0, freelancers.get( 1 ).getRating() );
+        assertEquals( 2.0, freelancers.get( 2 ).getRating() );
     }
 }

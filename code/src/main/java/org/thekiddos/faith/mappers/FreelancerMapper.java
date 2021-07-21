@@ -9,13 +9,16 @@ import org.thekiddos.faith.models.Freelancer;
 import org.thekiddos.faith.models.Project;
 import org.thekiddos.faith.repositories.BidRepository;
 import org.thekiddos.faith.repositories.ProposalRepository;
+import org.thekiddos.faith.services.FreelancerRatingService;
 
-@Mapper(componentModel = "spring")
+@Mapper( componentModel = "spring" )
 public abstract class FreelancerMapper {
     @Autowired
     protected BidRepository bidRepository;
     @Autowired
     protected ProposalRepository proposalRepository;
+    @Autowired
+    protected FreelancerRatingService freelancerRatingService;
 
 
     @Mapping( target = "user", ignore = true )
@@ -38,6 +41,7 @@ public abstract class FreelancerMapper {
                 .available( freelancer.isAvailable() )
                 .skills( skills )
                 .user( user )
+                .rating( freelancerRatingService.getRating( freelancer ) )
                 .build();
     }
 

@@ -4,8 +4,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.thekiddos.faith.dtos.BidDto;
 import org.thekiddos.faith.dtos.ProjectDto;
@@ -13,6 +15,7 @@ import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.models.*;
 import org.thekiddos.faith.repositories.ProjectRepository;
 import org.thekiddos.faith.repositories.UserRepository;
+import org.thekiddos.faith.services.FreelancerRatingService;
 import org.thekiddos.faith.services.ProjectService;
 import org.thekiddos.faith.services.UserService;
 
@@ -26,6 +29,9 @@ public class BidMapperTest {
     private final ProjectRepository projectRepository;
     private final UserService userService;
     private final ProjectService projectService;
+
+    @MockBean
+    private FreelancerRatingService freelancerRatingService;
 
     private Project project;
 
@@ -111,6 +117,8 @@ public class BidMapperTest {
         user.setEmail( "hello@gmail.com" );
         freelancer.setUser( user );
         bid.setBidder( freelancer );
+
+        Mockito.doReturn( 0.0 ).when( freelancerRatingService ).getRating( freelancer );
 
         BidDto dto = bidMapper.toDto( bid );
 

@@ -10,6 +10,7 @@ import org.thekiddos.faith.models.User;
 import org.thekiddos.faith.repositories.SkillRepository;
 import org.thekiddos.faith.repositories.UserRepository;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -67,11 +68,17 @@ public class FreelancerServiceImpl implements FreelancerService {
                 var freelancer = (Freelancer) user.getType();
                 if ( freelancer.getId().equals( id ) && freelancer.isAvailable() )
                     return freelancer;
-            }
-            catch ( Exception exception ) {
+            } catch ( Exception exception ) {
                 // Ignore
             }
         }
         throw new FreelancerNotFoundException();
+    }
+
+    @Override
+    public List<FreelancerDto> findFeaturedFreelancersDto() {
+        var freelancerUsers = userRepository.findAll().stream().filter( user -> user.getType() instanceof Freelancer );
+        return freelancerUsers.map( user -> freelancerMapper.toDto( (Freelancer) user.getType() ) )
+                .sorted( Comparator.comparingDouble( FreelancerDto::getRating ).reversed() ).collect( Collectors.toList() );
     }
 }

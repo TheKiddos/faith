@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.thekiddos.faith.services.FreelancerService;
 import org.thekiddos.faith.services.ProjectService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -19,6 +20,8 @@ class HomeControllerTest {
 
     @MockBean
     private ProjectService projectService;
+    @MockBean
+    private FreelancerService freelancerService;
 
     @Autowired
     HomeControllerTest( MockMvc mockMvc ) {
@@ -30,5 +33,6 @@ class HomeControllerTest {
         mockMvc.perform( get( "/" ) )
                 .andExpect( status().isOk() );
         Mockito.verify( projectService, Mockito.times( 1 ) ).findFeaturedProjectsDto();
+        Mockito.verify( freelancerService, Mockito.times( 1 ) ).findFeaturedFreelancersDto();
     }
 }

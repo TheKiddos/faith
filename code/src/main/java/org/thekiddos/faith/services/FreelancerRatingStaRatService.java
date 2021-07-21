@@ -35,6 +35,7 @@ public class FreelancerRatingStaRatService implements FreelancerRatingService {
         this.webClient = webClient;
     }
 
+    // TODO: if errors occurs return something
     @SneakyThrows
     @Override
     public double getRating( Freelancer freelancer ) {

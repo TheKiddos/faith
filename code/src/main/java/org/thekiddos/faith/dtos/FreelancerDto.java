@@ -21,4 +21,5 @@ public class FreelancerDto {
     private UserDto user;
     private double projectBidAmount;
     private double projectProposalAmount;
+    private double rating;
 }

@@ -11,8 +11,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.thekiddos.faith.dtos.FreelancerDto;
 import org.thekiddos.faith.dtos.UserDto;
 import org.thekiddos.faith.mappers.UserMapper;
+import org.thekiddos.faith.models.Freelancer;
 import org.thekiddos.faith.models.User;
 import org.thekiddos.faith.repositories.UserRepository;
+import org.thekiddos.faith.services.FreelancerRatingService;
 import org.thekiddos.faith.services.FreelancerService;
 
 import java.util.Optional;
@@ -31,6 +33,8 @@ class FreelancerControllerTest {
     private UserRepository userRepository;
     @MockBean
     private FreelancerService freelancerService;
+    @MockBean
+    private FreelancerRatingService freelancerRatingService;
 
     @Autowired
     FreelancerControllerTest( MockMvc mockMvc ) {
@@ -38,12 +42,13 @@ class FreelancerControllerTest {
     }
 
     @Test
-    @WithMockUser( authorities = {"USER", "FREELANCER"}, username = "freelancer@test.com" )
+    @WithMockUser( authorities = { "USER", "FREELANCER" }, username = "freelancer@test.com" )
     void profilePageLoadsOk() throws Exception {
         User user = getTestUser();
         Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findById( user.getEmail() );
 
-        mockMvc.perform( get(  "/freelancer/profile" ) )
+        Mockito.doReturn( 0.0 ).when( freelancerRatingService ).getRating( (Freelancer) user.getType() );
+        mockMvc.perform( get( "/freelancer/profile" ) )
                 .andExpect( status().isOk() );
 
         Mockito.verify( userRepository, Mockito.times( 1 ) ).findById( user.getEmail() );
