@@ -124,7 +124,23 @@
         </section>
         <hr />
         <section>
-            <!-- TODO: top freelancers -->
+            <div class="lead text-center" th:if="${freelancers.isEmpty()}">No Freelancers Yet!!!</div>
+            <div class="freelancers" data-aos="fade-up-left">
+                <div th:each="freelancer, iStat : ${freelancers}"
+                     class="card mx-auto text-white bg-success mb-3 text-center col-md-3">
+                    <div class="card-header">
+                        <div class="rating mx-auto" data-rate-value=6 th:data-rate-value="${freelancer.rating}"></div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${freelancer.user.firstName} + ${freelancer.user.lastName}">
+                            Freelancer Name</h5>
+                        <div class="card-text">
+                            <div th:text="${freelancer.user.email}">email</div>
+                            <div th:text="${freelancer.user.phoneNumber}">phone</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
     </div>
 </main>
@@ -136,6 +152,23 @@
             slidesToScroll: 1,
             arrows: true,
             dots: true,
+        });
+
+        $('.freelancers').slick({
+            infinite: true,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            arrows: true,
+            dots: true,
+        });
+
+        $(".rating").rate({
+            max_value: 10,
+            step_size: 0.5,
+            initial_value: 0,
+            selected_symbol_type: 'utf8_star',
+            cursor: 'default',
+            readonly: true,
         });
     </script>
 </div>

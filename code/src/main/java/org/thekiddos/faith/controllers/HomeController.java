@@ -21,7 +21,7 @@ public class HomeController {
     }
 
     @GetMapping
-    public String projectList( Model model ) {
+    public String getHome( Model model ) {
         model.addAttribute( "projects", projectService.findFeaturedProjectsDto() );
         model.addAttribute( "freelancers", freelancerService.findFeaturedFreelancersDto() );
         return "home/home";
