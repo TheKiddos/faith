@@ -15,6 +15,7 @@ import org.thekiddos.faith.exceptions.ProposalNotFoundException;
 import org.thekiddos.faith.mappers.UserMapper;
 import org.thekiddos.faith.models.*;
 import org.thekiddos.faith.repositories.UserRepository;
+import org.thekiddos.faith.services.FreelancerRatingService;
 import org.thekiddos.faith.services.FreelancerService;
 import org.thekiddos.faith.services.ProjectService;
 import org.thekiddos.faith.services.ProposalService;
@@ -22,8 +23,7 @@ import org.thekiddos.faith.services.ProposalService;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -41,6 +41,8 @@ class StakeholderControllerTest {
     private UserRepository userRepository;
     @MockBean
     private ProposalService proposalService;
+    @MockBean
+    private FreelancerRatingService freelancerRatingService;
     private final UserMapper userMapper = UserMapper.INSTANCE;
 
     @Autowired
@@ -49,7 +51,7 @@ class StakeholderControllerTest {
     }
 
     @Test
-    @WithMockUser( authorities = {"USER", "STAKEHOLDER"}, username = "stakeholder@test.com")
+    @WithMockUser( authorities = { "USER", "STAKEHOLDER" }, username = "stakeholder@test.com" )
     void myProjectsPageLoadsOk() throws Exception {
         User user = getTestUser();
         Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findById( user.getEmail() );
@@ -252,10 +254,127 @@ class StakeholderControllerTest {
 
         Mockito.doReturn( project ).when( projectService ).findById( id );
 
-        mockMvc.perform( post(  "/stakeholder/my-projects/close/" + id ).with( csrf() ) )
+        mockMvc.perform( post( "/stakeholder/my-projects/close/" + id ).with( csrf() ) )
                 .andExpect( status().isNotFound() );
 
         Mockito.verify( projectService, Mockito.times( 0 ) ).closeProject( any() );
+    }
+
+    @Test
+    @WithMockUser( authorities = { "USER", "STAKEHOLDER" }, username = "stakeholder@test.com" )
+    void rateFreelancer() throws Exception {
+        User user = getTestUser();
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findById( user.getEmail() );
+
+        long id = 1L;
+        Project project = new Project();
+        project.setId( id );
+        project.setOwner( (Stakeholder) user.getType() );
+        project.setClosed( true );
+
+        var freelancer = new Freelancer();
+
+        var proposal = new Proposal();
+        proposal.setFreelancer( freelancer );
+
+        Mockito.doReturn( project ).when( projectService ).findById( 1L );
+        Mockito.doReturn( proposal ).when( proposalService ).findFreelancerAcceptedProposalFor( project );
+
+        mockMvc.perform( post( "/stakeholder/my-projects/rate/" + 1 )
+                .with( csrf() )
+                .param( "value", String.valueOf( 1 ) ) )
+                .andExpect( status().is3xxRedirection() );
+
+        Mockito.verify( freelancerRatingService, Mockito.times( 1 ) ).rate( freelancer, 1 );
+    }
+
+    @Test
+    @WithMockUser( authorities = { "USER", "STAKEHOLDER" }, username = "stakeholder@test.com" )
+    void rateFreelancerProjectNotFound() throws Exception {
+        User user = getTestUser();
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findById( user.getEmail() );
+
+        Mockito.doThrow( ProjectNotFoundException.class ).when( projectService ).findById( anyLong() );
+
+        mockMvc.perform( post( "/stakeholder/my-projects/rate/" + 1 )
+                .with( csrf() )
+                .param( "value", String.valueOf( 1 ) ) )
+                .andExpect( status().isNotFound() );
+
+        Mockito.verify( freelancerRatingService, Mockito.times( 0 ) ).rate( any(), anyInt() );
+    }
+
+    @Test
+    @WithMockUser( authorities = { "USER", "STAKEHOLDER" }, username = "stakeholder@test.com" )
+    void rateFreelancerNotOwner() throws Exception {
+        User user = getTestUser();
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findById( user.getEmail() );
+
+        long id = 1L;
+        Project project = new Project();
+        project.setId( id );
+
+        User otherUser = getTestUser();
+        otherUser.setEmail( "other@stakeholder.com" );
+        otherUser.setNickname( "abh" );
+        var owner = new Stakeholder();
+        otherUser.setType( owner );
+        project.setOwner( owner );
+        project.setClosed( true );
+
+        Mockito.doReturn( project ).when( projectService ).findById( 1L );
+
+        mockMvc.perform( post( "/stakeholder/my-projects/rate/" + 1 )
+                .with( csrf() )
+                .param( "value", String.valueOf( 1 ) ) )
+                .andExpect( status().isNotFound() );
+
+        Mockito.verify( freelancerRatingService, Mockito.times( 0 ) ).rate( any(), anyInt() );
+    }
+
+    @Test
+    @WithMockUser( authorities = { "USER", "STAKEHOLDER" }, username = "stakeholder@test.com" )
+    void rateFreelancerNotClosed() throws Exception {
+        User user = getTestUser();
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findById( user.getEmail() );
+
+        long id = 1L;
+        Project project = new Project();
+        project.setId( id );
+        project.setOwner( (Stakeholder) user.getType() );
+        project.setClosed( false );
+
+        Mockito.doReturn( project ).when( projectService ).findById( 1L );
+
+        mockMvc.perform( post( "/stakeholder/my-projects/rate/" + 1 )
+                .with( csrf() )
+                .param( "value", String.valueOf( 1 ) ) )
+                .andExpect( status().isNotFound() );
+
+        Mockito.verify( freelancerRatingService, Mockito.times( 0 ) ).rate( any(), anyInt() );
+    }
+
+    @Test
+    @WithMockUser( authorities = { "USER", "STAKEHOLDER" }, username = "stakeholder@test.com" )
+    void rateFreelancerNotAssigned() throws Exception {
+        User user = getTestUser();
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findById( user.getEmail() );
+
+        long id = 1L;
+        Project project = new Project();
+        project.setId( id );
+        project.setOwner( (Stakeholder) user.getType() );
+        project.setClosed( true );
+
+        Mockito.doReturn( project ).when( projectService ).findById( 1L );
+        Mockito.doThrow( ProposalNotFoundException.class ).when( proposalService ).findFreelancerAcceptedProposalFor( project );
+
+        mockMvc.perform( post( "/stakeholder/my-projects/rate/" + 1 )
+                .with( csrf() )
+                .param( "value", String.valueOf( 1 ) ) )
+                .andExpect( status().isNotFound() );
+
+        Mockito.verify( freelancerRatingService, Mockito.times( 0 ) ).rate( any(), anyInt() );
     }
 
     private User getTestUser() {

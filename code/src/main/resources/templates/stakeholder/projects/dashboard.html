@@ -39,8 +39,14 @@
     </section>
     <section th:if="${proposal != null}">
         <div class="card mx-auto text-white bg-success mb-3 text-center" data-aos="fade-up-right">
+            <div class="card-header">
+                <div th:if="${project.closed == true}" th:data-post-url="@{'/my-projects/rate/' + ${project.id}}"
+                     class="rating mx-auto" data-rate-value="0"></div>
+            </div>
             <div class="card-body">
-                <h5 class="card-title" th:text="${proposal.freelancer.user.firstName} + ${proposal.freelancer.user.lastName}">Freelancer Name</h5>
+                <h5 class="card-title"
+                    th:text="${proposal.freelancer.user.firstName} + ${proposal.freelancer.user.lastName}">Freelancer
+                    Name</h5>
                 <div class="card-text">
                     <div th:text="${proposal.freelancer.user.email}">email</div>
                     <div th:text="${proposal.freelancer.user.phoneNumber}">phone</div>
@@ -166,6 +172,19 @@
                     }
                 }
             }
+        });
+
+        // Rating
+        $(".rating").rate({
+            max_value: 10,
+            step_size: 0.5,
+            initial_value: 0,
+            selected_symbol_type: 'utf8_star',
+            cursor: 'default',
+            readonly: false,
+            change_once: true, // Determines if the rating can only be set once
+            ajax_method: 'POST',
+            url: $(".rating").data("postUrl"),
         });
     </script>
 </div>

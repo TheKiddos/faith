@@ -17,10 +17,7 @@ import org.thekiddos.faith.exceptions.ProposalNotFoundException;
 import org.thekiddos.faith.models.Project;
 import org.thekiddos.faith.models.Stakeholder;
 import org.thekiddos.faith.models.User;
-import org.thekiddos.faith.services.FreelancerService;
-import org.thekiddos.faith.services.ProjectService;
-import org.thekiddos.faith.services.ProposalService;
-import org.thekiddos.faith.services.UserService;
+import org.thekiddos.faith.services.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
@@ -33,13 +30,15 @@ public class StakeholderController {
     private final UserService userService;
     private final FreelancerService freelancerService;
     private final ProposalService proposalService;
+    private final FreelancerRatingService freelancerRatingService;
 
     @Autowired
-    public StakeholderController( ProjectService projectService, UserService userService, FreelancerService freelancerService, ProposalService proposalService ) {
+    public StakeholderController( ProjectService projectService, UserService userService, FreelancerService freelancerService, ProposalService proposalService, FreelancerRatingService freelancerRatingService ) {
         this.projectService = projectService;
         this.userService = userService;
         this.freelancerService = freelancerService;
         this.proposalService = proposalService;
+        this.freelancerRatingService = freelancerRatingService;
     }
 
     @GetMapping( value = "/my-projects" )
@@ -102,12 +101,30 @@ public class StakeholderController {
             // TODO: move logic to service maybe create findByOwnerAndId method
             if ( !project.getOwner().getUser().equals( user ) )
                 throw new ProjectNotFoundException();
-        }
-        catch ( ProjectNotFoundException e ) {
+        } catch ( ProjectNotFoundException e ) {
             throw new ResponseStatusException( HttpStatus.NOT_FOUND, e.getMessage(), e );
         }
 
         projectService.closeProject( project );
+
+        return "redirect:/stakeholder/my-projects/" + id;
+    }
+
+    @PostMapping( value = "/my-projects/rate/{id}" )
+    public String rateFreelancer( Principal principal, @PathVariable Long id, Integer value ) {
+        User user = (User) userService.loadUserByUsername( principal.getName() );
+
+        try {
+            var project = projectService.findById( id );
+            // TODO: move logic to service maybe create findByOwnerAndId method
+            if ( !project.getOwner().getUser().equals( user ) || !project.isClosed() )
+                throw new ProjectNotFoundException();
+            var proposal = proposalService.findFreelancerAcceptedProposalFor( project );
+
+            freelancerRatingService.rate( proposal.getFreelancer(), value );
+        } catch ( ProjectNotFoundException | ProposalNotFoundException e ) {
+            throw new ResponseStatusException( HttpStatus.NOT_FOUND, e.getMessage(), e );
+        }
 
         return "redirect:/stakeholder/my-projects/" + id;
     }

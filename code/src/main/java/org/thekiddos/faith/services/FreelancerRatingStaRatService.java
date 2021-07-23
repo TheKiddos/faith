@@ -83,6 +83,7 @@ public class FreelancerRatingStaRatService implements FreelancerRatingService {
 
             // TODO: Creating Logic should be handled by something else
             saveRatingInfo( freelancer, rateable );
+            id = rateable.getId();
         }
 
         stars = Math.min( MAX_RATING, Math.max( stars, MIN_RATING ) );
