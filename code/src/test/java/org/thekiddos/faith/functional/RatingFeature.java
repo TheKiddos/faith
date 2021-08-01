@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.thekiddos.faith.Utils;
 import org.thekiddos.faith.services.UserService;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class RatingFeature {
     private final WebDriver webDriver;
@@ -22,16 +22,18 @@ public class RatingFeature {
     }
 
     private void setUp() {
-        Utils.getOrCreateTestUser( userService, "freelancer@test.com", "Freelancer" );
+        Utils.getOrCreateTestUser( userService, "freelancer@rating.com", "Freelancer" );
     }
 
     @When( "Rating User Opens Homepage" )
     public void ratingUserOpensHomepage() {
         webDriver.manage().window().maximize();
+        webDriver.get( Utils.SITE_ROOT );
     }
 
     @Then( "He Can See Each Freelancer Rating" )
     public void heCanSeeEachFreelancerRating() {
-        assertTrue( webDriver.findElement( By.className( "rating" ) ).isDisplayed() );
+        assertDoesNotThrow( () -> webDriver.findElement( By.className( "rating" ) ) );
+        webDriver.close();
     }
 }
