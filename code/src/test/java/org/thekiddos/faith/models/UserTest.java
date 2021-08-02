@@ -254,14 +254,15 @@ class UserTest {
     }
 
     @Test
-    void deleteUser() {
+    void rejectUser() {
         String nickname = "someidiot";
         UserDto userDTO = UserDto.builder().email( "test@test.com" ).password( "password" ).nickname( nickname ).build();
         User user = userMapper.userDtoToUser( userDTO );
+        user.setEnabled( false );
 
         Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findByNicknameIgnoreCase( nickname );
 
-        userService.deleteUser( nickname );
+        userService.rejectUser( nickname );
 
         Mockito.verify( userRepository, Mockito.times( 1 ) ).deleteById( user.getEmail() );
         Mockito.verify( emailService, Mockito.times( 1 ) )
@@ -269,12 +270,28 @@ class UserTest {
     }
 
     @Test
-    void deleteUserThatDoesNotExistsDoesNothing() {
+    void rejectUserThatWasAccepted() {
+        String nickname = "someidiot";
+        UserDto userDTO = UserDto.builder().email( "test@test.com" ).password( "password" ).nickname( nickname ).build();
+        User user = userMapper.userDtoToUser( userDTO );
+        user.setEnabled( true );
+
+        Mockito.doReturn( Optional.of( user ) ).when( userRepository ).findByNicknameIgnoreCase( nickname );
+
+        assertThrows( RuntimeException.class, () -> userService.rejectUser( nickname ) );
+
+        Mockito.verify( userRepository, Mockito.times( 0 ) ).deleteById( user.getEmail() );
+        Mockito.verify( emailService, Mockito.times( 0 ) )
+                .sendTemplateMail( eq( List.of( user.getEmail() ) ), anyString(), eq( EmailSubjectConstants.ACCOUNT_DELETED ), eq( EmailTemplatesConstants.ACCOUNT_DELETED_TEMPLATE ), any() );
+    }
+
+    @Test
+    void rejectUserThatDoesNotExistsDoesNothing() {
         String nickname = "someidiot";
 
         Mockito.doReturn( Optional.empty() ).when( userRepository ).findByNicknameIgnoreCase( nickname );
 
-        userService.deleteUser( nickname );
+        userService.rejectUser( nickname );
 
         // No exception was thrown so we are done
     }

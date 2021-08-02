@@ -59,12 +59,24 @@ class AdminControllerTest {
     }
 
     @Test
-    @WithMockUser( authorities = {"ADMIN"} )
-    void deleteUserAccount() throws Exception {
-        mockMvc.perform( post("/admin/users/delete/someidiot" )
-                .with( csrf() ) )
+    @WithMockUser(authorities = { "ADMIN" })
+    void rejectUser() throws Exception {
+        mockMvc.perform( post( "/admin/users/reject/someidiot" )
+                        .with( csrf() ) )
                 .andExpect( status().is3xxRedirection() );
 
-        Mockito.verify( userService, Mockito.times( 1 ) ).deleteUser( "someidiot" );
+        Mockito.verify( userService, Mockito.times( 1 ) ).rejectUser( "someidiot" );
+    }
+
+    @Test
+    @WithMockUser(authorities = { "ADMIN" })
+    void rejectUserNotAllowed() throws Exception {
+        Mockito.doThrow( RuntimeException.class ).when( userService ).rejectUser( "someidiot" );
+
+        mockMvc.perform( post( "/admin/users/reject/someidiot" )
+                        .with( csrf() ) )
+                .andExpect( status().isNotFound() );
+
+        Mockito.verify( userService, Mockito.times( 1 ) ).rejectUser( "someidiot" );
     }
 }

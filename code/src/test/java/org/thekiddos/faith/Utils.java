@@ -49,7 +49,7 @@ public final class Utils {
             if ( type == null && user.getType() == null )
                 return user;
             if ( !user.getType().toString().equals( type ) ) {
-                userService.deleteUser( user.getNickname() );
+                userService.rejectUser( user.getNickname() );
                 throw new UsernameNotFoundException( "Die" );
             }
         }

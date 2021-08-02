@@ -38,7 +38,7 @@
             <th scope="col">First Name</th>
             <th scope="col">Last Name</th>
             <th scope="col">Phone Number</th>
-            <th scope="col">Delete</th>
+            <th scope="col">Reject</th>
             <th scope="col">Activate</th>
         </tr>
         </thead>
@@ -51,8 +51,10 @@
             <td th:text="${user.lastName}">User</td>
             <td th:text="${user.phoneNumber}">+963956592332</td>
             <td>
-                <form th:action="@{'/admin/users/delete/' + ${user.nickname}}" class="form" role="form" th:method="post">
-                    <button class="delete-user-btn btn btn btn-danger" th:id="'delete-' + ${user.nickname}"><span class="fas fa-times"></span></button>
+                <form th:if="${!user.enabled}" th:action="@{'/admin/users/reject/' + ${user.nickname}}" class="form"
+                      role="form" th:method="post">
+                    <button class="delete-user-btn btn btn btn-danger" th:id="'delete-' + ${user.nickname}"><span
+                            class="fas fa-times"></span></button>
                 </form>
             </td>
             <td>

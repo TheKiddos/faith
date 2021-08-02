@@ -91,15 +91,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser( String nickname ) {
-        var user = userRepository.findByNicknameIgnoreCase( nickname );
-        if ( user.isEmpty() ) {
+    public void rejectUser( String nickname ) throws RuntimeException {
+        var user = userRepository.findByNicknameIgnoreCase( nickname ).orElse( null );
+        if ( user == null ) {
             log.warn( "Attempting to delete a user that does not exists. IGNORING..." );
             return;
         }
 
-        userRepository.deleteById( user.get().getEmail() );
-        sendAccountDeletedInfoMail( user.get() );
+        if ( user.isEnabled() )
+            throw new RuntimeException( "Can't reject already accepted user" );
+
+        userRepository.deleteById( user.getEmail() );
+        sendAccountDeletedInfoMail( user );
     }
 
     private void sendAccountDeletedInfoMail( User user ) {

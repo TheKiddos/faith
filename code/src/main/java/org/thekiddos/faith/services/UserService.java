@@ -40,9 +40,12 @@ public interface UserService extends UserDetailsService {
     /**
      * Delete the user account with the provided nickname and send an email to that user
      * if the user does not exists the method will simply log that and ignore it.
+     * if the user was accepted this method will throw a RuntimeException
+     *
      * @param nickname The nickname if the user to delete
+     * @throws RuntimeException if the user was accepted before
      */
-    void deleteUser( String nickname );
+    void rejectUser( String nickname );
 
     /**
      * Creates and send a unique token to user email so he can reset his password
