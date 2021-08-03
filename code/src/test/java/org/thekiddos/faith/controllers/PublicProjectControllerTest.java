@@ -47,14 +47,14 @@ class PublicProjectControllerTest {
     public void projectList() throws Exception {
         mockMvc.perform( get( "/projects" ) )
                 .andExpect( status().isOk() );
-        Mockito.verify( projectService, Mockito.times( 1 ) ).findAllDto();
+        Mockito.verify( projectService, Mockito.times( 1 ) ).findAllPublicDto();
     }
 
     @Test
     public void projectDetails() throws Exception {
         Project project = getTestProject();
 
-        Mockito.doReturn( project ).when( projectService ).findById( project.getId() );
+        Mockito.doReturn( project ).when( projectService ).findPublicProjectById( project.getId() );
         Mockito.doReturn( List.of() ).when( bidService ).findByProjectDto( project );
         mockMvc.perform( get( "/projects/" + project.getId() ) )
                 .andExpect( status().isOk() );
@@ -69,7 +69,7 @@ class PublicProjectControllerTest {
         Project project = getTestProject();
         User user = getTestUser();
 
-        Mockito.doReturn( project ).when( projectService ).findById( project.getId() );
+        Mockito.doReturn( project ).when( projectService ).findPublicProjectById( project.getId() );
         Mockito.doReturn( List.of() ).when( bidService ).findByProjectDto( project );
         Mockito.doReturn( user ).when( userService ).loadUserByUsername( user.getEmail() );
         Mockito.doReturn( true ).when( bidService ).canBidOnProject( user, project );

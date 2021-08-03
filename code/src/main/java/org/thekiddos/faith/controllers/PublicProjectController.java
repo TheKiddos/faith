@@ -31,14 +31,14 @@ public class PublicProjectController {
 
     @GetMapping
     public String projectList( Model model ) {
-        model.addAttribute( "projects", projectService.findAllDto() );
+        model.addAttribute( "projects", projectService.findAllPublicDto() );
         return "projects/list";
     }
 
     @GetMapping( value = "/{id}")
     public String projectDetails( Model model, @PathVariable Long id, Principal principal ) {
         // TODO: there is too much inconsistency between what's passed to a context (Dto vs Entity) do we need to worry about this?
-        Project project = projectService.findById( id );
+        Project project = projectService.findPublicProjectById( id );
 
         boolean canBid = false;
         if ( !( principal == null ) ) {
