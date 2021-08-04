@@ -10,5 +10,8 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
     List<User> findByAdminTrue();
+
+    List<User> findAllByEnabled( boolean isEnabled );
+
     Optional<User> findByNicknameIgnoreCase( String nickname );
 }

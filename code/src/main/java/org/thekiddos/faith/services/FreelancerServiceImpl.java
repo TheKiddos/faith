@@ -51,7 +51,7 @@ public class FreelancerServiceImpl implements FreelancerService {
     @Override
     public List<FreelancerDto> getAvailableFreelancersDto( Project projectToFindFreelancersFor ) {
         // TODO: Implement with dedicated repo instead
-        var freelancerUsers = userRepository.findAll().stream().filter( user -> user.getType() instanceof Freelancer );
+        var freelancerUsers = userRepository.findAllByEnabled( true ).stream().filter( user -> user.getType() instanceof Freelancer );
         return freelancerUsers.map( user -> freelancerMapper.toDtoWithProject( (Freelancer) user.getType(), projectToFindFreelancersFor ) )
                 .filter( canHireFreelancer() ).collect( Collectors.toList() );
     }
@@ -63,7 +63,7 @@ public class FreelancerServiceImpl implements FreelancerService {
     @Override
     public Freelancer getAvailableFreelancerById( Long id ) throws FreelancerNotFoundException {
         // TODO: Use Freelancer Repo
-        for ( var user : userRepository.findAll() ) {
+        for ( var user : userRepository.findAllByEnabled( true ) ) {
             try {
                 var freelancer = (Freelancer) user.getType();
                 if ( freelancer.getId().equals( id ) && freelancer.isAvailable() )
@@ -77,7 +77,7 @@ public class FreelancerServiceImpl implements FreelancerService {
 
     @Override
     public List<FreelancerDto> findFeaturedFreelancersDto() {
-        var freelancerUsers = userRepository.findAll().stream().filter( user -> user.getType() instanceof Freelancer );
+        var freelancerUsers = userRepository.findAllByEnabled( true ).stream().filter( user -> user.getType() instanceof Freelancer );
         return freelancerUsers.map( user -> freelancerMapper.toDto( (Freelancer) user.getType() ) )
                 .sorted( Comparator.comparingDouble( FreelancerDto::getRating ).reversed() ).collect( Collectors.toList() );
     }

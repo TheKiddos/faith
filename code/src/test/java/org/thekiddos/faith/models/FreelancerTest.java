@@ -13,6 +13,7 @@ import org.thekiddos.faith.dtos.BidDto;
 import org.thekiddos.faith.dtos.FreelancerDto;
 import org.thekiddos.faith.dtos.ProjectDto;
 import org.thekiddos.faith.dtos.UserDto;
+import org.thekiddos.faith.exceptions.FreelancerNotFoundException;
 import org.thekiddos.faith.repositories.BidRepository;
 import org.thekiddos.faith.repositories.ProjectRepository;
 import org.thekiddos.faith.repositories.SkillRepository;
@@ -179,6 +180,17 @@ public class FreelancerTest {
                 .lastName( "aaa" )
                 .build() );
 
+        User freelancerDisabled = userService.createUser( UserDto.builder()
+                .email( "freelancer@disabled.com" )
+                .password( "password" )
+                .nickname( "freelancerDisabled" )
+                .type( "Freelancer" )
+                .firstName( "Test" )
+                .lastName( "aaa" )
+                .build() );
+        freelancerDisabled.setEnabled( false );
+        userRepository.save( freelancerDisabled );
+
         BidDto bidDto = BidDto.builder()
                 .amount( 100 )
                 .projectId( projectToFindFreelancersFor.getId() )
@@ -234,5 +246,114 @@ public class FreelancerTest {
         assertEquals( 5.0, freelancers.get( 0 ).getRating() );
         assertEquals( 3.0, freelancers.get( 1 ).getRating() );
         assertEquals( 2.0, freelancers.get( 2 ).getRating() );
+    }
+
+    @Test
+    void findFeaturedFreelancersDtoDisabledFreelancer() {
+        // TODO: Should limit number of freelancer to get
+
+        User freelancer = userService.createUser( UserDto.builder()
+                .email( "freelancer@gmail.com" )
+                .password( "password" )
+                .nickname( "freelancer" )
+                .type( "Freelancer" )
+                .firstName( "Test" )
+                .lastName( "aaa" )
+                .build() );
+        freelancer.setEnabled( false );
+        userRepository.save( freelancer );
+
+        Mockito.doReturn( 2.0 ).when( freelancerRatingService ).getRating( (Freelancer) freelancer.getType() );
+
+        List<FreelancerDto> freelancers = freelancerService.findFeaturedFreelancersDto();
+        assertEquals( 0, freelancers.size() );
+    }
+
+    @Test
+    void getAvailableFreelancerById() {
+        User stakeholderUser = userService.createUser( UserDto.builder()
+                .email( "stakeholder@gmail.com" )
+                .password( "password" )
+                .nickname( "bhbhbh" )
+                .type( "Stakeholder" )
+                .firstName( "Test" )
+                .lastName( "aaa" )
+                .build() );
+
+        ProjectDto projectDto = ProjectDto.builder()
+                .duration( 2 )
+                .allowBidding( true )
+                .description( "Asdasd" )
+                .name( "asdasd" )
+                .preferredBid( 200 )
+                .minimumQualification( 200 ).build();
+
+        Project projectToFindFreelancersFor = projectService.createProjectFor( (Stakeholder) stakeholderUser.getType(), projectDto );
+        Project otherProject = projectService.createProjectFor( (Stakeholder) stakeholderUser.getType(), projectDto );
+
+        User freelancerNoBid = userService.createUser( UserDto.builder()
+                .email( "freelancerNoBid@gmail.com" )
+                .password( "password" )
+                .nickname( "freelancerNoBid" )
+                .type( "Freelancer" )
+                .firstName( "Test" )
+                .lastName( "aaa" )
+                .build() );
+        FreelancerDto freelancerUpdateDto = FreelancerDto.builder().available( true ).build();
+        freelancerService.updateProfile( freelancerNoBid, freelancerUpdateDto );
+
+        User freelancerWithBid = userService.createUser( UserDto.builder()
+                .email( "freelancerWithBid@gmail.com" )
+                .password( "password" )
+                .nickname( "freelancerWithBid" )
+                .type( "Freelancer" )
+                .firstName( "Test" )
+                .lastName( "aaa" )
+                .build() );
+
+        User freelancerBidOtherProject = userService.createUser( UserDto.builder()
+                .email( "freelancerOtherBid@gmail.com" )
+                .password( "password" )
+                .nickname( "freelancerOtherBid" )
+                .type( "Freelancer" )
+                .firstName( "Test" )
+                .lastName( "aaa" )
+                .build() );
+
+        User freelancerNotAvailable = userService.createUser( UserDto.builder()
+                .email( "freelancerNot@gmail.com" )
+                .password( "password" )
+                .nickname( "freelancerNot" )
+                .type( "Freelancer" )
+                .firstName( "Test" )
+                .lastName( "aaa" )
+                .build() );
+
+        User freelancerDisabled = userService.createUser( UserDto.builder()
+                .email( "freelancer@disabled.com" )
+                .password( "password" )
+                .nickname( "freelancerDisabled" )
+                .type( "Freelancer" )
+                .firstName( "Test" )
+                .lastName( "aaa" )
+                .build() );
+        freelancerDisabled.setEnabled( false );
+        userRepository.save( freelancerDisabled );
+
+        BidDto bidDto = BidDto.builder()
+                .amount( 100 )
+                .projectId( projectToFindFreelancersFor.getId() )
+                .build();
+        bidService.addBid( bidDto, (Freelancer) freelancerWithBid.getType() );
+
+        bidDto.setProjectId( otherProject.getId() );
+        bidService.addBid( bidDto, (Freelancer) freelancerBidOtherProject.getType() );
+
+        assertEquals( freelancerNoBid.getType(), freelancerService.getAvailableFreelancerById( freelancerNoBid.getType().getId() ) );
+
+        assertThrows( FreelancerNotFoundException.class, () -> freelancerService.getAvailableFreelancerById( freelancerWithBid.getType().getId() ) );
+        assertThrows( FreelancerNotFoundException.class, () -> freelancerService.getAvailableFreelancerById( freelancerBidOtherProject.getType().getId() ) );
+        assertThrows( FreelancerNotFoundException.class, () -> freelancerService.getAvailableFreelancerById( freelancerNotAvailable.getType().getId() ) );
+        assertThrows( FreelancerNotFoundException.class, () -> freelancerService.getAvailableFreelancerById( freelancerDisabled.getType().getId() ) );
     }
 }

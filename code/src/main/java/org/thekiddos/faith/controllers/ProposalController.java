@@ -91,8 +91,9 @@ public class ProposalController {
         return "redirect:/freelancer/proposals";
     }
     
-    @GetMapping( value = "/freelancer/proposals/count" ) @ResponseBody
-    public ResponseEntity<Map<String, Integer>> getFreelancerProposals( Principal principal ) {
+    @GetMapping(value = "/freelancer/proposals/count")
+    @ResponseBody
+    public ResponseEntity<Map<String, Integer>> getFreelancerProposalsCount( Principal principal ) {
         User user = (User) userService.loadUserByUsername( principal.getName() );
         // TODO: remove logic from here
         Map<String, Integer> result = new HashMap<>();
