@@ -37,6 +37,11 @@
     font-family: 'Orbitron', serif;
 }
 
+.nav__items.active svg {
+    padding-left: 3px;
+    border-left: 2px solid #54a4ff;
+}
+
 .nav__items a {
     position: relative;
     display: block;
@@ -104,4 +109,7 @@ h1 {
     letter-spacing: 6px;
     text-shadow: 10px 10px 10px rgba(0, 0, 0, .3);
 }
- 
+
+footer {
+    font-family: 'Orbitron', serif;
+}
