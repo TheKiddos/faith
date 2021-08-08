@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap');
 
+* {
+    font-family: 'Orbitron', serif;
+}
+
 .nav__cont {
     position: fixed;
     width: 60px;

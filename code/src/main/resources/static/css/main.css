@@ -32,6 +32,10 @@
     height: 600px;
 }
 
+.navbar {
+    z-index: 1000;
+}
+
 .navbar-brand img {
     max-height: 40px;
 }
@@ -106,3 +110,6 @@ footer {
     font-family: 'Orbitron', serif;
 }
 
+footer img {
+    width: 100%;
+}

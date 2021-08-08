@@ -72,24 +72,27 @@
 <nav class="nav__cont">
     <ul class="nav__wrapper">
         <li class="nav__items active" th:class="'nav__items' +  ${'home' == menu ? ' active' : ''}">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+            <svg xmlns="http://www.w3.org/2000/svg" onclick="document.getElementById('home-link').click()"
+                 viewBox="0 0 48 48">
                 <use xlink:href="#home"></use>
             </svg>
-            <a href="#" th:href="@{/admin}">Home</a>
+            <a href="#" id="home-link" th:href="@{/admin}">Home</a>
         </li>
 
         <li class="nav__items " th:class="'nav__items' +  ${'users' == menu ? ' active' : ''}">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"
+                 onclick="document.getElementById('users-link').click()">
                 <use xlink:href="#users"></use>
             </svg>
-            <a href="users" th:href="@{/admin/users}">Users</a>
+            <a href="users" id="users-link" th:href="@{/admin/users}">Users</a>
         </li>
 
         <li class="nav__items ">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"
+                 onclick="document.getElementById('logout-link').click()">
                 <use xlink:href="#logout"></use>
             </svg>
-            <a href="javascript:void(0)" onclick="document.getElementById('logout-form').submit();">Logout</a>
+            <a href="javascript:void(0)" id="logout-link" onclick="document.getElementById('logout-form').submit();">Logout</a>
         </li>
 
     </ul>
