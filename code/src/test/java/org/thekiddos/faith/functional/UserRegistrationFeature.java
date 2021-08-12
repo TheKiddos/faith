@@ -43,15 +43,7 @@ public class UserRegistrationFeature {
         this.projectRepository = projectRepository;
         this.bidCommentRepository = bidCommentRepository;
         this.bidRepository = bidRepository;
-
         setUp();
-    }
-
-    @io.cucumber.java.en.Given( "A new user visits registration page" )
-    public void userIsNotLoggedIn() {
-        webDriver.manage().window().maximize();
-        webDriver.get( Utils.SITE_ROOT + "register" );
-        assertEquals( Utils.SITE_ROOT + "register", webDriver.getCurrentUrl() );
     }
 
     private void setUp() {
@@ -62,7 +54,14 @@ public class UserRegistrationFeature {
         emailRepository.deleteAll();
     }
 
-    @io.cucumber.java.en.And( "User fills required info" )
+    @io.cucumber.java.en.Given("A new user visits registration page")
+    public void aNewUserVisitsRegistrationPage() {
+        webDriver.manage().window().maximize();
+        webDriver.get( Utils.SITE_ROOT + "register" );
+        assertEquals( Utils.SITE_ROOT + "register", webDriver.getCurrentUrl() );
+    }
+
+    @io.cucumber.java.en.And("User fills required info")
     public void userFillsRequiredInfo() throws IOException {
         webDriver.findElement( By.id( "email" ) ).sendKeys( "testuser@test.com" );
         webDriver.findElement( By.id( "nickname" ) ).sendKeys( "tasty" );
@@ -70,7 +69,7 @@ public class UserRegistrationFeature {
         webDriver.findElement( By.id( "last-name" ) ).sendKeys( "User" );
         webDriver.findElement( By.id( "password" ) ).sendKeys( "password" );
         webDriver.findElement( By.id( "password-confirm" ) ).sendKeys( "password" );
-        String civilIdPath = new ClassPathResource("banner.txt").getFile().getAbsolutePath();
+        String civilIdPath = new ClassPathResource( "banner.txt" ).getFile().getAbsolutePath();
         webDriver.findElement( By.id( "civil-id" ) ).sendKeys( civilIdPath );
         webDriver.findElement( By.id( "phone-number" ) ).sendKeys( "+963987654321" );
         webDriver.findElement( By.id( "address" ) ).sendKeys( "+963987654321" );
