@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.thekiddos.faith.dtos.UserDto;
@@ -30,7 +31,7 @@ public class RegistrationController {
     }
 
     @PostMapping
-    public String createUser( @Valid UserDto userDto, BindingResult binding, Model model ) {
+    public String createUser( @Valid @ModelAttribute("user") UserDto userDto, BindingResult binding, Model model ) {
         if ( binding.hasErrors() ) {
             model.addAttribute( "user", userDto );
             return "accounts/register";

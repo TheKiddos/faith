@@ -4,38 +4,72 @@
 <main class="container">
     <div class="jumbotron mx-auto my-3 p-3 bg-light border border-1 border-info rounded">
         <form role="form" class="form" th:object="${user}" th:action="@{/register}" th:method="post">
+            <div th:if="${#fields.hasErrors('global')}">
+                <p th:each="error : ${#fields.errors('global')}" th:text="${error}" class="text-danger"/>
+            </div>
+
             <div class="form-outline mb-4">
-                <input class="form-control" type="email" id="email" name="email" th:field="*{email}">
+                <input class="form-control" required th:classappend="${#fields.hasErrors('email') ? 'is-invalid' : ''}"
+                       type="email" id="email" name="email" th:field="*{email}">
                 <label class="form-label" for="email"><span class="fa fa-sm fa-user fa-fw"></span>Email</label>
+                <div class="invalid-feedback">
+                    <span th:each="error : ${#fields.errors('email')}" th:text="${error}">Error</span>
+                </div>
             </div>
 
             <div class="form-outline mb-4">
-                <input class="form-control" type="text" name="nickname" th:field="*{nickname}" id="nickname">
+                <input class="form-control" required
+                       th:classappend="${#fields.hasErrors('nickname') ? 'is-invalid' : ''}" type="text" name="nickname"
+                       th:field="*{nickname}" id="nickname">
                 <label class="form-label" for="nickname"><span class="fa fa-sm fa-user fa-fw"></span>Nickname</label>
+                <div class="invalid-feedback">
+                    <span th:each="error : ${#fields.errors('nickname')}" th:text="${error}">Error</span>
+                </div>
             </div>
 
             <div class="form-outline mb-4">
-                <input class="form-control" type="password" id="password" name="password" th:field="*{password}">
+                <input class="form-control" required
+                       th:classappend="${#fields.hasErrors('password') ? 'is-invalid' : ''}" type="password"
+                       id="password" name="password" th:field="*{password}">
                 <label class="form-label" for="password"><span class="fa fa-sm fa-lock fa-fw"></span>Password</label>
+                <div class="invalid-feedback">
+                    <span th:each="error : ${#fields.errors('password')}" th:text="${error}">Error</span>
+                </div>
             </div>
 
             <div class="form-outline mb-4">
-                <input class="form-control" type="password" name="passwordConfirm" th:field="*{passwordConfirm}" id="password-confirm">
-                <label class="form-label" for="password-confirm"><span class="fa fa-sm fa-lock fa-fw"></span>Password Confirm</label>
+                <input class="form-control" required
+                       th:classappend="${#fields.hasErrors('passwordConfirm') ? 'is-invalid' : ''}" type="password"
+                       name="passwordConfirm" th:field="*{passwordConfirm}" id="password-confirm">
+                <label class="form-label" for="password-confirm"><span class="fa fa-sm fa-lock fa-fw"></span>Password
+                    Confirm</label>
+                <div class="invalid-feedback">
+                    <span th:each="error : ${#fields.errors('passwordConfirm')}" th:text="${error}">Error</span>
+                </div>
             </div>
 
             <div class="row">
                 <div class="col-6">
                     <div class="form-outline mb-4">
-                        <input class="form-control" type="text" name="firstName" th:field="*{firstName}" id="first-name">
+                        <input class="form-control" required
+                               th:classappend="${#fields.hasErrors('firstName') ? 'is-invalid' : ''}" type="text"
+                               name="firstName" th:field="*{firstName}" id="first-name">
                         <label class="form-label" for="first-name">First Name</label>
+                    </div>
+                    <div class="invalid-feedback">
+                        <span th:each="error : ${#fields.errors('firstName')}" th:text="${error}">Error</span>
                     </div>
                 </div>
 
                 <div class="col-6">
                     <div class="form-outline mb-4">
-                        <input class="form-control" type="text" name="lastName" th:field="*{lastName}" id="last-name">
+                        <input class="form-control" required
+                               th:classappend="${#fields.hasErrors('lastName') ? 'is-invalid' : ''}" type="text"
+                               name="lastName" th:field="*{lastName}" id="last-name">
                         <label class="form-label" for="last-name">Last Name</label>
+                    </div>
+                    <div class="invalid-feedback">
+                        <span th:each="error : ${#fields.errors('lastName')}" th:text="${error}">Error</span>
                     </div>
                 </div>
             </div>
@@ -43,18 +77,34 @@
             <div class="form-group">
                 <span>Civil Id</span>
                 <div class="form-outline mb-4">
-                    <input class="form-control" type="file" name="civilId" th:field="*{civilId}" id="civil-id">
+                    <input class="form-control" required
+                           th:classappend="${#fields.hasErrors('civilId') ? 'is-invalid' : ''}" type="file"
+                           name="civilId" th:field="*{civilId}" id="civil-id">
+                    <div class="invalid-feedback">
+                        <span th:each="error : ${#fields.errors('civilId')}" th:text="${error}">Error</span>
+                    </div>
                 </div>
             </div>
 
             <div class="form-outline mb-4">
-                <input class="form-control" type="tel" name="phoneNumber" th:field="*{phoneNumber}" id="phone-number">
+                <input class="form-control" required
+                       th:classappend="${#fields.hasErrors('phoneNumber') ? 'is-invalid' : ''}" type="tel"
+                       name="phoneNumber" th:field="*{phoneNumber}" id="phone-number">
                 <label class="form-label" for="phone-number"><span class="fa fa-sm fa-fw fa-phone"></span>Phone</label>
+                <div class="invalid-feedback">
+                    <span th:each="error : ${#fields.errors('phoneNumber')}" th:text="${error}">Error</span>
+                </div>
             </div>
 
             <div class="form-outline mb-4">
-                <input class="form-control" type="text" name="address" th:field="*{address}" id="address">
-                <label class="form-label" for="address"><span class="fa fa-sm fa-fw fa-location-arrow"></span>Address</label>
+                <input class="form-control" required
+                       th:classappend="${#fields.hasErrors('address') ? 'is-invalid' : ''}" type="text" name="address"
+                       th:field="*{address}" id="address">
+                <label class="form-label" for="address"><span
+                        class="fa fa-sm fa-fw fa-location-arrow"></span>Address</label>
+                <div class="invalid-feedback">
+                    <span th:each="error : ${#fields.errors('address')}" th:text="${error}">Error</span>
+                </div>
             </div>
 
             <div class="row mx-auto">
