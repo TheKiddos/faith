@@ -113,3 +113,8 @@ footer {
 footer img {
     width: 100%;
 }
+
+input[required] + label:after, .required {
+    content: " *";
+    color: orangered;
+}
