@@ -4,7 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.thekiddos.faith.dtos.PasswordConfirmDto;
@@ -16,7 +18,8 @@ import javax.validation.Valid;
 
 @Slf4j
 @Controller
-public class LoginController {
+public class
+LoginController {
     private final UserService userService;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
 
@@ -25,19 +28,24 @@ public class LoginController {
         this.passwordResetTokenRepository = passwordResetTokenRepository;
     }
 
-    @GetMapping( value = "/login" )
+    @GetMapping(value = "/login")
     String get() {
         return "accounts/login";
     }
 
-    @GetMapping( value = "/forgot-password" )
-    String getForgotPasswordPage() {
+    @GetMapping(value = "/forgot-password")
+    String getForgotPasswordPage( Model model ) {
+        model.addAttribute( "email", "" );
         return "accounts/forgot-password";
     }
 
-    @PostMapping( value = "/forgot-password" )
-    String generateToken( String email ) {
-        userService.createForgotPasswordToken( email );
+    @PostMapping(value = "/forgot-password")
+    String generateToken( @Valid @ModelAttribute("email") String email, BindingResult binding ) {
+        var token = userService.createForgotPasswordToken( email );
+        if ( token == null ) {
+            var error = new ObjectError( "email", "No user with this email was found!" );
+            binding.addError( error );
+        }
         return "accounts/forgot-password";
     }
 
@@ -50,8 +58,8 @@ public class LoginController {
         return "accounts/reset-password";
     }
 
-    @PostMapping( value = "/reset-password/{token}" )
-    String resetUserPassword( @PathVariable String token, @Valid PasswordConfirmDto passwordConfirmDto, BindingResult binding, Model model ) {
+    @PostMapping(value = "/reset-password/{token}")
+    String resetUserPassword( @PathVariable String token, @Valid @ModelAttribute("passwordObject") PasswordConfirmDto passwordConfirmDto, BindingResult binding, Model model ) {
         passwordResetTokenRepository.findByToken( token ).orElseThrow( PasswordResetTokenNotFoundException::new );
 
         if ( binding.hasErrors() ) {

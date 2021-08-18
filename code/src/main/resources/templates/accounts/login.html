@@ -11,7 +11,12 @@
 
                 <div class="form-outline mb-4">
                     <input class="form-control" type="password" id="password" name="password">
-                    <label class="form-label" for="password"><span class="fa fa-sm fa-lock fa-fw"></span>Password</label>
+                    <label class="form-label" for="password"><span
+                            class="fa fa-sm fa-lock fa-fw"></span>Password</label>
+                </div>
+
+                <div th:if="${param.error}" class="alert alert-danger">
+                    Invalid username and/or password.
                 </div>
 
                 <input class="btn-block btn btn-primary" id="submit" type="submit">
