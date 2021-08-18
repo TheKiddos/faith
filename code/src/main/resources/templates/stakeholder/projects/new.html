@@ -1,44 +1,75 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en" th:replace="~{fragments/layout :: layout (~{::main},'New Project', '', '', ~{fragments/emptyjs :: #extrajs})}">
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      th:replace="~{fragments/layout :: layout (~{::main},'New Project', '', '', ~{fragments/emptyjs :: #extrajs})}">
 <body>
 <main class="container">
     <div class="jumbotron mx-auto my-3 p-3 bg-light border border-1 border-info rounded">
-        <form role="form" id="project-form" class="form" th:object="${project}" th:action="@{/stakeholder/my-projects/add}" th:method="post">
+        <form role="form" id="project-form" class="form" th:object="${project}"
+              th:action="@{/stakeholder/my-projects/add}" th:method="post">
 
             <div class="form-outline mb-4">
-                <input class="form-control" type="text" name="name" th:field="*{name}" id="name">
+                <input required th:classappend="${#fields.hasErrors('name') ? 'is-invalid' : ''}" class="form-control"
+                       type="text" name="name" th:field="*{name}" id="name">
                 <label class="form-label" for="name">Project Name</label>
+                <div class="invalid-feedback">
+                    <span th:each="error : ${#fields.errors('name')}" th:text="${error}">Error</span>
+                </div>
             </div>
-            
+
             <div class="form-outline mb-4">
-              <textarea class="form-control" id="description" rows="4" th:field="*{description}"></textarea>
-              <label class="form-label" for="description">Description</label>
+                <textarea required th:classappend="${#fields.hasErrors('description') ? 'is-invalid' : ''}"
+                          class="form-control" id="description" rows="4" th:field="*{description}"></textarea>
+                <label class="form-label" for="description">Description</label>
+                <div class="invalid-feedback">
+                    <span th:each="error : ${#fields.errors('description')}" th:text="${error}">Error</span>
+                </div>
             </div>
-            
+
             <div class="form-outline mb-4">
                 <i class="fas fa-money-bill trailing"></i>
-                <input class="form-control" type="number" name="preferredBid" th:field="*{preferredBid}" id="preferred-bid">
+                <input required th:classappend="${#fields.hasErrors('preferredBid') ? 'is-invalid' : ''}"
+                       class="form-control" type="number" name="preferredBid" th:field="*{preferredBid}"
+                       id="preferred-bid">
                 <label class="form-label" for="preferred-bid">Preferred Bid</label>
+                <div class="invalid-feedback">
+                    <span th:each="error : ${#fields.errors('preferredBid')}" th:text="${error}">Error</span>
+                </div>
             </div>
-            
+
             <div class="form-outline mb-4">
                 <i class="fas fa-clock trailing"></i>
-                <input class="form-control" type="number" name="duration" th:field="*{duration}" id="duration">
+                <input required th:classappend="${#fields.hasErrors('duration') ? 'is-invalid' : ''}"
+                       class="form-control" type="number" name="duration" th:field="*{duration}" id="duration">
                 <label class="form-label" for="duration">Duration (Days)</label>
+                <div class="invalid-feedback">
+                    <span th:each="error : ${#fields.errors('duration')}" th:text="${error}">Error</span>
+                </div>
             </div>
 
             <div class="row">
                 <div class="col-8">
                     <div class="form-outline mb-4">
-                        <input class="form-control" type="number" name="minimumQualification" th:field="*{minimumQualification}" id="minimum-qualification">
+                        <input required
+                               th:classappend="${#fields.hasErrors('minimumQualification') ? 'is-invalid' : ''}"
+                               class="form-control" type="number" name="minimumQualification"
+                               th:field="*{minimumQualification}" id="minimum-qualification">
                         <label class="form-label" for="minimum-qualification">Minumum Points</label>
+                        <div class="invalid-feedback">
+                            <span th:each="error : ${#fields.errors('minimumQualification')}"
+                                  th:text="${error}">Error</span>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-4 my-auto">
                     <div class="form-check mb-4">
-                        <input class="form-check-input" type="checkbox" name="allowBidding" th:field="*{allowBidding}" id="allow-bidding">
+                        <input required th:classappend="${#fields.hasErrors('allowBidding') ? 'is-invalid' : ''}"
+                               class="form-check-input" type="checkbox" name="allowBidding" th:field="*{allowBidding}"
+                               id="allow-bidding">
                         <label class="form-check-label" for="allow-bidding">Bidding</label>
+                        <div class="invalid-feedback">
+                            <span th:each="error : ${#fields.errors('allowBidding')}" th:text="${error}">Error</span>
+                        </div>
                     </div>
                 </div>
             </div>

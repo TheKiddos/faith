@@ -6,10 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.thekiddos.faith.dtos.ProjectDto;
 import org.thekiddos.faith.exceptions.ProjectNotFoundException;
@@ -54,15 +51,15 @@ public class StakeholderController {
         return "stakeholder/projects/new";
     }
 
-    @PostMapping( value = "/my-projects/add" )
-    public String createNewProject( Model model, @Valid ProjectDto projectDto, BindingResult binding, Principal principal ) {
+    @PostMapping(value = "/my-projects/add")
+    public String createNewProject( Model model, @Valid @ModelAttribute("project") ProjectDto projectDto, BindingResult binding, Principal principal ) {
         if ( binding.hasErrors() ) {
             model.addAttribute( "project", projectDto );
             return "stakeholder/projects/new";
         }
 
         User user = (User) userService.loadUserByUsername( principal.getName() );
-        projectService.createProjectFor( (Stakeholder)user.getType(), projectDto );
+        projectService.createProjectFor( (Stakeholder) user.getType(), projectDto );
         return "redirect:/stakeholder/my-projects";
     }
 

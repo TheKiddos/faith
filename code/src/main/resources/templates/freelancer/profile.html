@@ -1,23 +1,39 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en" th:replace="~{fragments/layout :: layout (~{::main},'Profile', '', '', ~{fragments/emptyjs :: #extrajs})}">
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      th:replace="~{fragments/layout :: layout (~{::main},'Profile', '', '', ~{fragments/emptyjs :: #extrajs})}">
 <body>
 <main class="container">
     <div class="my-3">
-        <form role="form" id="freelancer-form" class="form" th:object="${freelancer}" th:action="@{/freelancer/profile}" th:method="post">
-            
-            <div class="form-outline mb-4">
-              <textarea class="form-control" id="summary" rows="4" th:field="*{summary}"></textarea>
-              <label class="form-label" for="summary">Summary</label>
+        <form role="form" id="freelancer-form" class="form" th:object="${freelancer}" th:action="@{/freelancer/profile}"
+              th:method="post">
+            <div th:if="${#fields.hasErrors('global')}" class="alert alert-danger">
+                <span th:each="error : ${#fields.errors('global')}" th:text="${error}" class="text-danger"/>
             </div>
-            
+
             <div class="form-outline mb-4">
-              <textarea class="form-control" id="skills" rows="4" th:field="*{skills}"></textarea>
-              <label class="form-label" for="skills">Skills</label>
+                <textarea class="form-control" required
+                          th:classappend="${#fields.hasErrors('summary') ? 'is-invalid' : ''}" id="summary" rows="4"
+                          th:field="*{summary}"></textarea>
+                <label class="form-label" for="summary">Summary</label>
+                <div class="invalid-feedback">
+                    <span th:each="error : ${#fields.errors('summary')}" th:text="${error}">Error</span>
+                </div>
             </div>
-            
+
+            <div class="form-outline mb-4">
+                <textarea class="form-control" required
+                          th:classappend="${#fields.hasErrors('skills') ? 'is-invalid' : ''}" id="skills" rows="4"
+                          th:field="*{skills}"></textarea>
+                <label class="form-label" for="skills">Skills</label>
+                <div class="invalid-feedback">
+                    <span th:each="error : ${#fields.errors('skills')}" th:text="${error}">Error</span>
+                </div>
+            </div>
+
 
             <div class="form-check mb-4">
-                <input class="form-check-input" type="checkbox" name="available" th:field="*{available}" id="is-available">
+                <input class="form-check-input" type="checkbox" name="available" th:field="*{available}"
+                       id="is-available">
                 <label class="form-check-label" for="is-available">Are you available?</label>
             </div>
 

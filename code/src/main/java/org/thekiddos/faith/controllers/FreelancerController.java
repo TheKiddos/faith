@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.thekiddos.faith.dtos.FreelancerDto;
@@ -39,8 +40,8 @@ public class FreelancerController {
         return "freelancer/profile";
     }
 
-    @PostMapping( value = "/profile" )
-    public String updateProfile( Model model, Principal principal, @Valid FreelancerDto freelancerDto, BindingResult binding ) {
+    @PostMapping(value = "/profile")
+    public String updateProfile( Model model, Principal principal, @Valid @ModelAttribute("freelancer") FreelancerDto freelancerDto, BindingResult binding ) {
         if ( binding.hasErrors() ) {
             model.addAttribute( "freelancer", freelancerDto );
             return "freelancer/profile";
