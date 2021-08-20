@@ -16,8 +16,8 @@
 
     <properties>
         <java.version>14</java.version>
-        <cucumber.version>5.6.0</cucumber.version>
-        <org.mapstruct.version>1.4.1.Final</org.mapstruct.version>
+        <cucumber.version>6.11.0</cucumber.version>
+        <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
     </properties>
 
     <dependencies>
@@ -78,7 +78,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.16</version>
+            <version>1.18.20</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -117,6 +117,8 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
+            <scope>test</scope>
+            <version>3.141.59</version>
         </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
