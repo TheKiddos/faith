@@ -32,9 +32,10 @@ public class UserRegistrationFeature {
     private final ProjectRepository projectRepository;
     private final BidCommentRepository bidCommentRepository;
     private final BidRepository bidRepository;
+    private final ProposalRepository proposalRepository;
 
     @Autowired
-    public UserRegistrationFeature( WebDriver webDriver, UserService userService, EmailService emailService, UserRepository userRepository, EmailRepository emailRepository, ProjectRepository projectRepository, BidCommentRepository bidCommentRepository, BidRepository bidRepository ) {
+    public UserRegistrationFeature( WebDriver webDriver, UserService userService, EmailService emailService, UserRepository userRepository, EmailRepository emailRepository, ProjectRepository projectRepository, BidCommentRepository bidCommentRepository, BidRepository bidRepository, ProposalRepository proposalRepository ) {
         this.webDriver = webDriver;
         this.userService = userService;
         this.emailService = emailService;
@@ -43,12 +44,14 @@ public class UserRegistrationFeature {
         this.projectRepository = projectRepository;
         this.bidCommentRepository = bidCommentRepository;
         this.bidRepository = bidRepository;
+        this.proposalRepository = proposalRepository;
         setUp();
     }
 
     private void setUp() {
         bidCommentRepository.deleteAll();
         bidRepository.deleteAll();
+        proposalRepository.deleteAll();
         projectRepository.deleteAll();
         userRepository.findAll().stream().filter( user -> !user.isAdmin() ).forEach( userRepository::delete );
         emailRepository.deleteAll();
@@ -108,6 +111,7 @@ public class UserRegistrationFeature {
 
     @Given( "User visits login page" )
     public void userVisitsLoginPage() {
+        webDriver.manage().window().maximize();
         webDriver.get( Utils.LOGIN_PAGE );
     }
 

@@ -147,6 +147,7 @@ public class ProposalFeature {
         assertEquals( proposals.size(), 1 );
 
         this.proposal = proposals.get( 0 );
+        webDriver.manage().window().maximize();
     }
 
     @And( "freelancer visits my proposals page" )

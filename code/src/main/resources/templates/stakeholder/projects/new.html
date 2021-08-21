@@ -63,7 +63,7 @@
 
                 <div class="col-4 my-auto">
                     <div class="form-check mb-4">
-                        <input required th:classappend="${#fields.hasErrors('allowBidding') ? 'is-invalid' : ''}"
+                        <input th:classappend="${#fields.hasErrors('allowBidding') ? 'is-invalid' : ''}"
                                class="form-check-input" type="checkbox" name="allowBidding" th:field="*{allowBidding}"
                                id="allow-bidding">
                         <label class="form-check-label" for="allow-bidding">Bidding</label>

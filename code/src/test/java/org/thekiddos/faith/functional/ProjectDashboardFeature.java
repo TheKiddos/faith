@@ -18,13 +18,14 @@ import org.thekiddos.faith.services.UserService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ProjectDashboardFeature {
+public class
+ProjectDashboardFeature {
     private final UserService userService;
     private final WebDriver webDriver;
     private final ProjectRepository projectRepository;
     private final ProjectService projectService;
     private final Project project;
-    
+
     @Autowired
     public ProjectDashboardFeature( UserService userService, WebDriver webDriver, ProjectRepository projectRepository, ProjectService projectService ) {
         this.userService = userService;
