@@ -19,6 +19,6 @@ Feature: Proposal Feature
   Scenario: Freelancer Rejects Proposal
     Given Proposal Freelancer logs in
     And freelancer visits my proposals page
-    When Freelancer clicks the accept button
+    When Freelancer clicks the reject button
     Then proposal status is changed to rejected
     And stakeholder is informed by email that proposal was rejected

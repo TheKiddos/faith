@@ -85,33 +85,37 @@ public class ProposalFeature {
         bid = bidService.findByProject( project ).get( 0 );
     }
 
-    @Given( "Proposal Stakeholder logs in" )
+    @Given("Proposal Stakeholder logs in")
     public void proposalStakeholderLogsIn() {
         setUp();
-
+        emailRepository.deleteAll();
+        webDriver.manage().window().maximize();
         webDriver.get( Utils.LOGIN_PAGE );
         webDriver.findElement( By.id( "email" ) ).sendKeys( stakeholder.getEmail() );
         webDriver.findElement( By.id( "password" ) ).sendKeys( "password" );
         webDriver.findElement( By.id( "submit" ) ).click();
     }
 
-    @And( "stakeholder goes to a project dashboard" )
+    @And("stakeholder goes to a project dashboard")
     public void stakeholderGoesToAProjectDashboard() {
         webDriver.get( Utils.getProjectDashboardPage( project.getId() ) );
     }
 
-    @And( "stakeholder sets his proposal amount to a freelancer" )
+    @And("stakeholder sets his proposal amount to a freelancer")
     public void stakeholderSetsHisProposalAmountToAFreelancer() {
         webDriver.findElement( By.id( "amount-" + freelancer.getType().getId() ) ).clear();
         webDriver.findElement( By.id( "amount-" + freelancer.getType().getId() ) ).sendKeys( "200" );
     }
 
-    @When( "stakeholder clicks the send proposal button" )
+    @When("stakeholder clicks the send proposal button")
     public void stakeholderClicksTheSendProposalButton() {
-        webDriver.findElement( By.className( "send-proposal-btn" ) ).click();
+        var element = webDriver.findElement( By.className( "send-proposal-btn" ) );
+        WebDriverWait wait = new WebDriverWait( webDriver, 3 );
+        wait.until( ExpectedConditions.elementToBeClickable( element ) );
+        element.click();
     }
 
-    @Then( "proposal is saved" )
+    @Then("proposal is saved")
     public void proposalIsSaved() {
         WebDriverWait wait = new WebDriverWait( webDriver, 20 );
         wait.until( ExpectedConditions.visibilityOfElementLocated( By.id( "toast-container" ) ) );
@@ -121,7 +125,7 @@ public class ProposalFeature {
         assertEquals( 200, proposal.get().getAmount() );
     }
 
-    @And( "freelancer is informed by email that a new proposal was sent" )
+    @And("freelancer is informed by email that a new proposal was sent")
     public void freelancerIsInformedByEmailThatANewProposalWasSent() {
         var emails = emailRepository.findAll();
         assertEquals( 1, emails.size() );
@@ -132,7 +136,7 @@ public class ProposalFeature {
         webDriver.close();
     }
 
-    @Given( "Proposal Freelancer logs in" )
+    @Given("Proposal Freelancer logs in")
     public void proposalFreelancerLogsIn() {
         setUp();
         proposalService.sendProposal(
@@ -147,27 +151,33 @@ public class ProposalFeature {
         assertEquals( proposals.size(), 1 );
 
         this.proposal = proposals.get( 0 );
+        emailRepository.deleteAll();
         webDriver.manage().window().maximize();
+
+        webDriver.get( Utils.LOGIN_PAGE );
+        webDriver.findElement( By.id( "email" ) ).sendKeys( freelancer.getEmail() );
+        webDriver.findElement( By.id( "password" ) ).sendKeys( "password" );
+        webDriver.findElement( By.id( "submit" ) ).click();
     }
 
-    @And( "freelancer visits my proposals page" )
+    @And("freelancer visits my proposals page")
     public void freelancerVisitsMyProposalsPage() {
         webDriver.get( Utils.MY_PROPOSALS_PAGE );
     }
 
-    @When( "Freelancer clicks the accept button" )
+    @When("Freelancer clicks the accept button")
     public void freelancerClicksTheAcceptButton() {
         webDriver.findElement( By.className( "accept-btn" ) ).click();
     }
 
-    @Then( "proposal status is changed to accepted" )
+    @Then("proposal status is changed to accepted")
     public void proposalStatusIsChangedToAccepted() {
         var proposal = proposalRepository.findById( this.proposal.getId() );
         assertTrue( proposal.isPresent() );
         assertEquals( Status.ACCEPTED, proposal.get().getStatus() );
     }
 
-    @And( "stakeholder is informed by email that proposal was accepted" )
+    @And("stakeholder is informed by email that proposal was accepted")
     public void stakeholderIsInformedByEmailThatProposalWasAccepted() {
         var emails = emailRepository.findAll();
         assertEquals( 1, emails.size() );
@@ -178,14 +188,20 @@ public class ProposalFeature {
         webDriver.close();
     }
 
-    @Then( "proposal status is changed to rejected" )
+
+    @When("Freelancer clicks the reject button")
+    public void freelancerClicksTheRejectButton() {
+        webDriver.findElement( By.className( "reject-btn" ) ).click();
+    }
+
+    @Then("proposal status is changed to rejected")
     public void proposalStatusIsChangedToRejected() {
         var proposal = proposalRepository.findById( this.proposal.getId() );
         assertTrue( proposal.isPresent() );
         assertEquals( Status.REJECTED, proposal.get().getStatus() );
     }
 
-    @And( "stakeholder is informed by email that proposal was rejected" )
+    @And("stakeholder is informed by email that proposal was rejected")
     public void stakeholderIsInformedByEmailThatProposalWasRejected() {
         var emails = emailRepository.findAll();
         assertEquals( 1, emails.size() );
